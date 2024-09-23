@@ -2,10 +2,9 @@ package com.school.service;
 
 import com.school.repository.GradeRepository;
 import com.school.repository.SchoolClassRepository;
+import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
 import com.schoolmodel.model.*;
-import com.school.repository.StudentRepository;
-import com.schoolmodel.model.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,19 +19,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class StudentsService {
+public class SchoolManagingService {
     private final StudentRepository studentRepository;
     private final SubjectRepository subjectRepository;
     private final GradeRepository gradeRepository;
     private final SchoolClassRepository schoolClassRepository;
-    private static final Logger log = LoggerFactory.getLogger(StudentsService.class);
+    private static final Logger log = LoggerFactory.getLogger(SchoolManagingService.class);
     @Value("${grades.to.add}")
     private String gradeRecords2Add;
     @Value("${divider}")
     private String divider;
 
 
-    public StudentsService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SchoolClassRepository schoolClassRepository) {
+    public SchoolManagingService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SchoolClassRepository schoolClassRepository) {
         this.studentRepository = studentRepository;
         this.subjectRepository = subjectRepository;
         this.gradeRepository = gradeRepository;
@@ -148,8 +147,8 @@ public class StudentsService {
     }
 
     public Grade addGrade(int grade, String subject, String studentCode) {
-        log.info("Adding grade {} to student {} to subject {}", grade, studentCode, subject);
-        Optional<Subject> subjectFound = subjectRepository.findSubjectByName(subject);
+        log.info("Adding grade {} to student's code {} to subject {}", grade, studentCode, subject);
+        Optional<Subject> subjectFound = subjectRepository.findFirstByName(subject);
         if (subjectFound.isPresent()) {
             Optional<Student> studentFound = studentRepository.findStudentByCode(studentCode);
             if (studentFound.isPresent()) {

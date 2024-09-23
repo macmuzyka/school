@@ -29,7 +29,11 @@ public class WarmupDatabasePopulation implements ApplicationListener<Application
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {
         log.info("Application warmup...");
-        addSchoolWithClassOnWarmup();
+        if (schoolRepository.findAll().isEmpty()) {
+            addSchoolWithClassOnWarmup();
+        } else {
+            log.info("Warmup population not needed!");
+        }
     }
 
     private void addSchoolWithClassOnWarmup() {
