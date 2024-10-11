@@ -21,5 +21,5 @@ public interface GradeRepository extends JpaRepository<Grade, Long> {
             "GROUP BY s.name, sub.name",
             nativeQuery = true
     )
-    List<Object[]> findAllGradesGroupedBySubjectForStudent(@Param("studentId") Long studentId);
+    List<Object[]> findAllGradesGroupedBySubject(@Param("studentId") Long studentId);
 }

@@ -44,23 +44,10 @@ public class StudentsController {
         }
     }
 
-    @PostMapping("/add-grade")
-    public ResponseEntity<?> addGrade(@RequestBody Grade grade) {
+    @GetMapping("/all-classes")
+    public ResponseEntity<?> getClassesWithStudents() {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(schoolManagingService.addGrade(grade));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
-    @PostMapping("/add-raw-grade")
-    public ResponseEntity<?> addRawGrade(@RequestBody GradeRaw grade) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(schoolManagingService.addGrade(
-                    grade.getGrade(),
-                    grade.getSubject(),
-                    grade.getStudentCode())
-            );
+            return ResponseEntity.status(HttpStatus.OK).body(schoolManagingService.getClassesWithStudents());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

@@ -1,6 +1,6 @@
 package com.school.configuration;
 
-import com.school.service.SchoolManagingService;
+import com.school.service.GradeService;
 import com.schoolmodel.model.GradeRaw;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -25,10 +25,10 @@ public class KafkaConsumerConfig {
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
     private static final Logger log = LoggerFactory.getLogger(KafkaConsumerConfig.class);
-    private final SchoolManagingService service;
+    private final GradeService gradeService;
 
-    public KafkaConsumerConfig(SchoolManagingService service) {
-        this.service = service;
+    public KafkaConsumerConfig(GradeService service) {
+        this.gradeService = service;
     }
 
     @Bean
@@ -51,6 +51,6 @@ public class KafkaConsumerConfig {
     @KafkaListener(topics = "grade-supplier", groupId = "grades")
     public void listenGroupGrades(GradeRaw grade) {
         log.info("Received Message in group grades: " + grade);
-        service.addGrade(grade.getGrade(), grade.getSubject(), grade.getStudentCode());
+        gradeService.addGrade(grade.getGrade(), grade.getSubject(), grade.getStudentCode());
     }
 }
