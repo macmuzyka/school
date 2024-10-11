@@ -76,20 +76,6 @@ public class SchoolManagingService {
         return studentRepository.findAll();
     }
 
-    public List<SubjectGradesDTO> getSubjectGradesForStudent(Long studentId) {
-        log.info("Getting grades for students grouped by subjects..");
-        List<Object[]> results = gradeRepository.findAllGradesGroupedBySubject(studentId);
-        try {
-            return results.stream()
-                    .map(QueryResultsMappingUtils::buildSubjectGradesObject)
-                    .toList();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            log.error(Arrays.toString(e.getStackTrace()));
-            throw e;
-        }
-    }
-
     private void fillStudentsWithRandomizedGrades() {
         Random rand = new Random();
         int students = studentRepository.findAll().size();
@@ -145,8 +131,8 @@ public class SchoolManagingService {
                     .toList();
         } catch (Exception e) {
             log.error(e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            log.error(Arrays.toString(e.getStackTrace()));
+            throw e;
         }
     }
 }

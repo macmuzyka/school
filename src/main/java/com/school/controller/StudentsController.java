@@ -26,15 +26,6 @@ public class StudentsController {
         }
     }
 
-    @GetMapping("/get-subject-grades")
-    public ResponseEntity<?> addStudents(@RequestParam(value = "studentId", required = false) Long studentId) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(schoolManagingService.getSubjectGradesForStudent(studentId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
     @GetMapping("/all-students")
     public ResponseEntity<?> getStudents() {
         try {

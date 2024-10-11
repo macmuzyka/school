@@ -1,8 +1,10 @@
 package com.school.service;
 
+import com.school.model.SubjectGradesDTO;
 import com.school.repository.GradeRepository;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
+import com.school.service.utils.QueryResultsMappingUtils;
 import com.schoolmodel.model.Grade;
 import com.schoolmodel.model.Student;
 import com.schoolmodel.model.Subject;
@@ -10,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -57,6 +61,20 @@ public class GradeService {
             String message = "Cannot find " + subject + " subject to assign grade to!";
             log.error(message);
             throw new IllegalArgumentException(message);
+        }
+    }
+
+    public List<SubjectGradesDTO> getSubjectGradesForStudent(Long studentId) {
+        log.info("Getting grades for students grouped by subjects..");
+        List<Object[]> results = gradeRepository.findAllGradesGroupedBySubject(studentId);
+        try {
+            return results.stream()
+                    .map(QueryResultsMappingUtils::buildSubjectGradesObject)
+                    .toList();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            log.error(Arrays.toString(e.getStackTrace()));
+            throw e;
         }
     }
 }
