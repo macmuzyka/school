@@ -1,7 +1,5 @@
 package com.school.controller;
 
-import com.schoolmodel.model.Grade;
-import com.schoolmodel.model.GradeRaw;
 import com.school.service.SchoolManagingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
