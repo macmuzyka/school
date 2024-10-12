@@ -1,7 +1,9 @@
-package com.school.service.utils.file.xls;
+package com.school.service.utils.filetype.xls;
 
-import com.school.model.SubjectGradesDTO;
-import com.school.service.FileProviderService;
+import com.school.model.*;
+import com.school.model.dto.SubjectGradesDTO;
+import com.school.model.response.FileProviderResponse;
+import com.school.model.response.FileStatus;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -13,10 +15,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class XlsUtils {
+public class XlsUtils implements FilePreparation {
     private static final Logger log = LoggerFactory.getLogger(XlsUtils.class);
 
-    public static String prepareXlsFile(List<SubjectGradesDTO> dataTransferObjects, String outputFilePath) {
+    @Override
+    public FileProviderResponse prepareFile(List<SubjectGradesDTO> records, String outputFilePath) {
         String resultMessage;
         try (Workbook workbook = new HSSFWorkbook();
              FileOutputStream outFile = new FileOutputStream(outputFilePath)) {
@@ -30,7 +33,7 @@ public class XlsUtils {
             headerRow.createCell(3).setCellValue("Average Grade");
 
             int currentRow = 1;
-            for (SubjectGradesDTO record : dataTransferObjects) {
+            for (SubjectGradesDTO record : records) {
                 Row row = sheet.createRow(currentRow++);
                 row.createCell(0).setCellValue(record.getStudentName());
                 row.createCell(1).setCellValue(record.getSubject());
@@ -41,13 +44,13 @@ public class XlsUtils {
             workbook.write(outFile);
             resultMessage = "Xls file created successfully.";
             log.info(resultMessage);
-            return resultMessage;
+            return new FileProviderResponse(FileStatus.CREATED, records.size(), resultMessage);
 
         } catch (IOException e) {
             resultMessage = "prepareCsvFile() -> Error while creating CSV file from student subject grades records!";
             log.error(resultMessage);
             log.error(e.getMessage());
-            return resultMessage;
+            return new FileProviderResponse(FileStatus.ERROR_CREATING, 0, resultMessage);
         }
     }
 }

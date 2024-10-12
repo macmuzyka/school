@@ -1,6 +1,7 @@
-package com.school.model;
+package com.school.model.dto;
 
 import com.opencsv.bean.CsvBindByName;
+import com.school.model.CsvBean;
 
 import java.math.BigDecimal;
 

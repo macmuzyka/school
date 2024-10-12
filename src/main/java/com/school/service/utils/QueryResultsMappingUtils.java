@@ -1,7 +1,7 @@
 package com.school.service.utils;
 
-import com.school.model.ClassWithStudentsDto;
-import com.school.model.SubjectGradesDTO;
+import com.school.model.dto.ClassWithStudentsDto;
+import com.school.model.dto.SubjectGradesDTO;
 
 import java.math.BigDecimal;
 import java.util.Arrays;

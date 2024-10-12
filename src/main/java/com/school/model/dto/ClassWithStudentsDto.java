@@ -1,4 +1,4 @@
-package com.school.model;
+package com.school.model.dto;
 
 import java.util.List;
 
