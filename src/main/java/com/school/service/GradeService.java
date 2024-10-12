@@ -1,6 +1,6 @@
 package com.school.service;
 
-import com.school.model.SubjectGradesDTO;
+import com.school.model.dto.SubjectGradesDTO;
 import com.school.repository.GradeRepository;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;

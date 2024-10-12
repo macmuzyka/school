@@ -1,0 +1,1 @@
+#### Every new type of document/extension and its corresponding implementation class should also extend FilePreparation interface from package module 
