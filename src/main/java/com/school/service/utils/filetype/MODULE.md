@@ -1,1 +1,1 @@
-#### Every new type of document/extension and its corresponding implementation class should also extend FilePreparation interface from package module 
+#### Every new type of document/extension and its corresponding implementation class has to extend BaseFile class and implement FilePreparation interface from package module 

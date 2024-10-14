@@ -5,6 +5,7 @@ import com.school.model.response.FileProviderResponse;
 
 import java.util.List;
 
-public interface FilePreparation {
-    FileProviderResponse prepareFile(List<SubjectGradesDTO> dataTransferObjects, String outputFilePath);
+public interface FileBuilder {
+
+    FileProviderResponse prepare(List<SubjectGradesDTO> dataTransferObjects);
 }

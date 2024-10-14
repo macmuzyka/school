@@ -3,10 +3,11 @@ package com.school.service.utils.filetype.csv;
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.school.model.BaseFile;
 import com.school.model.response.FileProviderResponse;
 import com.school.model.response.FileStatus;
 import com.school.model.dto.SubjectGradesDTO;
-import com.school.model.FilePreparation;
+import com.school.model.FileBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,13 +15,17 @@ import java.io.FileWriter;
 import java.util.List;
 
 
-public class CsvUtils implements FilePreparation {
+public class CsvUtils extends BaseFile implements FileBuilder {
     private static final Logger log = LoggerFactory.getLogger(CsvUtils.class);
 
+    public CsvUtils(String outputPath, String fileExtension) {
+        super(outputPath, fileExtension);
+    }
+
     @Override
-    public FileProviderResponse prepareFile(List<SubjectGradesDTO> records, String outputFilePath) {
+    public FileProviderResponse prepare(List<SubjectGradesDTO> records) {
         String resultMessage;
-        try (FileWriter writer = new FileWriter(outputFilePath)) {
+        try (FileWriter writer = new FileWriter(this.getOutputPath() + this.getFileExtension())) {
             StatefulBeanToCsv<SubjectGradesDTO> beanToCsv =
                     new StatefulBeanToCsvBuilder<SubjectGradesDTO>(writer)
                             .withQuotechar('\'')

@@ -15,14 +15,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class XlsUtils implements FilePreparation {
+public class XlsUtils extends BaseFile implements FileBuilder {
     private static final Logger log = LoggerFactory.getLogger(XlsUtils.class);
 
+    public XlsUtils(String outputPath, String fileExtension) {
+        super(outputPath, fileExtension);
+    }
+
     @Override
-    public FileProviderResponse prepareFile(List<SubjectGradesDTO> records, String outputFilePath) {
+    public FileProviderResponse prepare(List<SubjectGradesDTO> records) {
         String resultMessage;
         try (Workbook workbook = new HSSFWorkbook();
-             FileOutputStream outFile = new FileOutputStream(outputFilePath)) {
+             FileOutputStream outFile = new FileOutputStream(this.getOutputPath() + this.getFileExtension())) {
 
             Sheet sheet = workbook.createSheet("Grades");
 
