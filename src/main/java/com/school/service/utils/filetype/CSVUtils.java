@@ -1,4 +1,4 @@
-package com.school.service.utils.filetype.csv;
+package com.school.service.utils.filetype;
 
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.StatefulBeanToCsv;
@@ -16,17 +16,17 @@ import java.io.FileWriter;
 import java.util.List;
 
 
-public class CsvUtils extends BaseFile implements FileBuilder {
-    private static final Logger log = LoggerFactory.getLogger(CsvUtils.class);
+public class CSVUtils extends BaseFile implements FileBuilder {
+    private static final Logger log = LoggerFactory.getLogger(CSVUtils.class);
 
-    public CsvUtils(String fileExtension, FileConfig fileConfig) {
+    public CSVUtils(String fileExtension, FileConfig fileConfig) {
         super(fileExtension, fileConfig);
     }
 
     @Override
     public FileProviderResponse prepare(List<SubjectGradesDTO> records) {
         String resultMessage;
-        try (FileWriter writer = new FileWriter(this.getFullPathWithoutExtenstion())) {
+        try (FileWriter writer = new FileWriter(this.getFullPathWithoutExtension())) {
             StatefulBeanToCsv<SubjectGradesDTO> beanToCsv =
                     new StatefulBeanToCsvBuilder<SubjectGradesDTO>(writer)
                             .withQuotechar('\'')
@@ -39,7 +39,7 @@ public class CsvUtils extends BaseFile implements FileBuilder {
             log.info(resultMessage);
             return new FileProviderResponse(FileStatus.CREATED, records.size(), resultMessage);
         } catch (Exception e) {
-            resultMessage = "prepareCsvFile() -> Error while creating CSV file from student subject grades records!";
+            resultMessage = "CSV prepare -> Error while creating CSV file from student subject grades records!";
             log.error(resultMessage);
             log.error(e.getMessage());
             return new FileProviderResponse(FileStatus.ERROR_CREATING, 0, resultMessage);
