@@ -19,7 +19,7 @@ public class FileController {
     }
 
     @GetMapping("/produce")
-    public ResponseEntity<?> getCsvFile(@RequestParam FileType fileType) {
+    public ResponseEntity<?> getCsvFile(@RequestParam String fileType) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(fileProviderService.getProperFile(fileType));
         } catch (Exception e) {

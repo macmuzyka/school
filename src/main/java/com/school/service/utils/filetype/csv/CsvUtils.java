@@ -3,6 +3,7 @@ package com.school.service.utils.filetype.csv;
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.school.configuration.FileConfig;
 import com.school.model.BaseFile;
 import com.school.model.response.FileProviderResponse;
 import com.school.model.response.FileStatus;
@@ -18,14 +19,14 @@ import java.util.List;
 public class CsvUtils extends BaseFile implements FileBuilder {
     private static final Logger log = LoggerFactory.getLogger(CsvUtils.class);
 
-    public CsvUtils(String outputPath, String fileExtension) {
-        super(outputPath, fileExtension);
+    public CsvUtils(String fileExtension, FileConfig fileConfig) {
+        super(fileExtension, fileConfig);
     }
 
     @Override
     public FileProviderResponse prepare(List<SubjectGradesDTO> records) {
         String resultMessage;
-        try (FileWriter writer = new FileWriter(this.getOutputPath() + this.getFileExtension())) {
+        try (FileWriter writer = new FileWriter(this.getFullPathWithoutExtenstion())) {
             StatefulBeanToCsv<SubjectGradesDTO> beanToCsv =
                     new StatefulBeanToCsvBuilder<SubjectGradesDTO>(writer)
                             .withQuotechar('\'')

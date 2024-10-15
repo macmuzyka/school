@@ -1,5 +1,6 @@
 package com.school.service.utils.filetype.xls;
 
+import com.school.configuration.FileConfig;
 import com.school.model.*;
 import com.school.model.dto.SubjectGradesDTO;
 import com.school.model.response.FileProviderResponse;
@@ -15,18 +16,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+
 public class XlsUtils extends BaseFile implements FileBuilder {
     private static final Logger log = LoggerFactory.getLogger(XlsUtils.class);
 
-    public XlsUtils(String outputPath, String fileExtension) {
-        super(outputPath, fileExtension);
+    public XlsUtils(String fileExtension, FileConfig fileConfig) {
+        super(fileExtension, fileConfig);
     }
 
     @Override
     public FileProviderResponse prepare(List<SubjectGradesDTO> records) {
         String resultMessage;
         try (Workbook workbook = new HSSFWorkbook();
-             FileOutputStream outFile = new FileOutputStream(this.getOutputPath() + this.getFileExtension())) {
+             FileOutputStream outFile = new FileOutputStream(this.getFullPathWithoutExtenstion())) {
 
             Sheet sheet = workbook.createSheet("Grades");
 

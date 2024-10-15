@@ -1,6 +1,6 @@
 package com.school.model.request;
 
 public enum FileType {
-    CSV, csv,
-    XLS, xls
+    CSV,
+    XLS
 }
