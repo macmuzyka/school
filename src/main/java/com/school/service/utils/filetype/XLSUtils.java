@@ -1,5 +1,6 @@
-package com.school.service.utils.filetype.xls;
+package com.school.service.utils.filetype;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.school.configuration.FileConfig;
 import com.school.model.*;
 import com.school.model.dto.SubjectGradesDTO;
@@ -17,10 +18,10 @@ import java.io.IOException;
 import java.util.List;
 
 
-public class XlsUtils extends BaseFile implements FileBuilder {
-    private static final Logger log = LoggerFactory.getLogger(XlsUtils.class);
+public class XLSUtils extends BaseFile implements FileBuilder {
+    private static final Logger log = LoggerFactory.getLogger(XLSUtils.class);
 
-    public XlsUtils(String fileExtension, FileConfig fileConfig) {
+    public XLSUtils(String fileExtension, FileConfig fileConfig) {
         super(fileExtension, fileConfig);
     }
 
@@ -28,7 +29,7 @@ public class XlsUtils extends BaseFile implements FileBuilder {
     public FileProviderResponse prepare(List<SubjectGradesDTO> records) {
         String resultMessage;
         try (Workbook workbook = new HSSFWorkbook();
-             FileOutputStream outFile = new FileOutputStream(this.getFullPathWithoutExtenstion())) {
+             FileOutputStream outFile = new FileOutputStream(this.getFullPathWithoutExtension())) {
 
             Sheet sheet = workbook.createSheet("Grades");
 
@@ -48,12 +49,12 @@ public class XlsUtils extends BaseFile implements FileBuilder {
             }
 
             workbook.write(outFile);
-            resultMessage = "Xls file created successfully.";
+            resultMessage = "XLS file created successfully.";
             log.info(resultMessage);
             return new FileProviderResponse(FileStatus.CREATED, records.size(), resultMessage);
 
         } catch (IOException e) {
-            resultMessage = "prepareCsvFile() -> Error while creating CSV file from student subject grades records!";
+            resultMessage = "XLS prepare -> Error while creating CSV file from student subject grades records!";
             log.error(resultMessage);
             log.error(e.getMessage());
             return new FileProviderResponse(FileStatus.ERROR_CREATING, 0, resultMessage);

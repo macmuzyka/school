@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 public abstract class BaseFile {
     private final String fileName;
     private final String fileDirectory;
-    private final String fullPathWithoutExtenstion;
+    private final String fullPathWithoutExtension;
     private final String fileExtension;
     private final FileConfig fileConfig;
 
@@ -19,7 +19,7 @@ public abstract class BaseFile {
         this.fileName = fileConfig.getName();
         this.fileDirectory = fileConfig.getDirectory();
         this.fileExtension = fileExtension;
-        this.fullPathWithoutExtenstion = this.getFileDirectory() +
+        this.fullPathWithoutExtension = this.getFileDirectory() +
                 LocalDateTime.now().format(this.getFormatter()) +
                 "_" +
                 this.getFileName() +
@@ -42,8 +42,8 @@ public abstract class BaseFile {
         return formatter;
     }
 
-    public String getFullPathWithoutExtenstion() {
-        return fullPathWithoutExtenstion;
+    public String getFullPathWithoutExtension() {
+        return fullPathWithoutExtension;
     }
 
     public FileConfig getFileConfig() {
