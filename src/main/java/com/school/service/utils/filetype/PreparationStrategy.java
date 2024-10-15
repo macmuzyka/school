@@ -12,7 +12,7 @@ public class PreparationStrategy {
     private static final String csvExtension = ".csv";
     private static final String xlsExtension = ".xls";
 
-    public static FileBuilder resolve(FileType type, FileConfig fileConfig) throws IllegalAccessException {
+    public static FileBuilder resolve(FileType type, FileConfig fileConfig) {
         return switch (type) {
             case CSV -> {
                 yield new CsvUtils(csvExtension, fileConfig);
