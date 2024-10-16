@@ -7,8 +7,6 @@ import com.school.model.response.FileProviderResponse;
 import com.school.model.response.FileStatus;
 import com.school.service.builder.utils.XLSUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +16,7 @@ import java.io.IOException;
 import java.util.List;
 
 
-public class XLSBuilder extends BaseFile implements FileBuilder {
+public class XLSBuilder extends FileResource implements FileBuilder {
     private static final Logger log = LoggerFactory.getLogger(XLSBuilder.class);
 
     public XLSBuilder(String fileExtension, FileConfig fileConfig) {

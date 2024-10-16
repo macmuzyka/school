@@ -5,7 +5,7 @@ import com.school.configuration.FileConfig;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public abstract class BaseFile {
+public abstract class FileResource {
     private final String fileName;
     private final String fileDirectory;
     private final String fullPathWithoutExtension;
@@ -14,7 +14,7 @@ public abstract class BaseFile {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-    public BaseFile(String fileExtension, FileConfig fileConfig) {
+    public FileResource(String fileExtension, FileConfig fileConfig) {
         this.fileConfig = fileConfig;
         this.fileName = fileConfig.getName();
         this.fileDirectory = fileConfig.getDirectory();

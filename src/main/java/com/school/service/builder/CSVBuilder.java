@@ -4,7 +4,7 @@ import com.opencsv.CSVWriter;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.school.configuration.FileConfig;
-import com.school.model.BaseFile;
+import com.school.model.FileResource;
 import com.school.model.response.FileProviderResponse;
 import com.school.model.response.FileStatus;
 import com.school.model.dto.SubjectGradesDTO;
@@ -16,7 +16,7 @@ import java.io.FileWriter;
 import java.util.List;
 
 
-public class CSVBuilder extends BaseFile implements FileBuilder {
+public class CSVBuilder extends FileResource implements FileBuilder {
     private static final Logger log = LoggerFactory.getLogger(CSVBuilder.class);
 
     public CSVBuilder(String fileExtension, FileConfig fileConfig) {
