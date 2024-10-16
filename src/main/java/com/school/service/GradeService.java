@@ -4,7 +4,7 @@ import com.school.model.dto.SubjectGradesDTO;
 import com.school.repository.GradeRepository;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
-import com.school.service.utils.QueryResultsMappingUtils;
+import com.school.service.builder.QueryResultsMappingUtils;
 import com.schoolmodel.model.Grade;
 import com.schoolmodel.model.Student;
 import com.schoolmodel.model.Subject;

@@ -3,9 +3,9 @@ package com.school.service;
 import com.school.configuration.FileConfig;
 import com.school.model.FileBuilder;
 import com.school.model.request.FileType;
-import com.school.service.utils.filetype.CSVUtils;
-import com.school.service.utils.filetype.PDFUtils;
-import com.school.service.utils.filetype.XLSUtils;
+import com.school.service.builder.CSVBuilder;
+import com.school.service.builder.PDFBuilder;
+import com.school.service.builder.XLSBuilder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,13 +17,13 @@ public class PreparationStrategy {
     public static FileBuilder resolve(FileType type, FileConfig fileConfig) {
         return switch (type) {
             case CSV -> {
-                yield new CSVUtils(csvExtension, fileConfig);
+                yield new CSVBuilder(csvExtension, fileConfig);
             }
             case XLS -> {
-                yield new XLSUtils(xlsExtension, fileConfig);
+                yield new XLSBuilder(xlsExtension, fileConfig);
             }
             case PDF -> {
-                yield new PDFUtils(pdfExtenstion, fileConfig);
+                yield new PDFBuilder(pdfExtenstion, fileConfig);
             }
             //TODO: pdf
             default -> {

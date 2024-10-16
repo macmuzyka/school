@@ -1,11 +1,11 @@
-package com.school.service.utils.filetype;
+package com.school.service.builder;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.school.configuration.FileConfig;
 import com.school.model.*;
 import com.school.model.dto.SubjectGradesDTO;
 import com.school.model.response.FileProviderResponse;
 import com.school.model.response.FileStatus;
+import com.school.service.builder.utils.XLSUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -18,10 +18,10 @@ import java.io.IOException;
 import java.util.List;
 
 
-public class XLSUtils extends BaseFile implements FileBuilder {
-    private static final Logger log = LoggerFactory.getLogger(XLSUtils.class);
+public class XLSBuilder extends BaseFile implements FileBuilder {
+    private static final Logger log = LoggerFactory.getLogger(XLSBuilder.class);
 
-    public XLSUtils(String fileExtension, FileConfig fileConfig) {
+    public XLSBuilder(String fileExtension, FileConfig fileConfig) {
         super(fileExtension, fileConfig);
     }
 
@@ -31,24 +31,9 @@ public class XLSUtils extends BaseFile implements FileBuilder {
         try (Workbook workbook = new HSSFWorkbook();
              FileOutputStream outFile = new FileOutputStream(this.getFullPathWithoutExtension())) {
 
-            Sheet sheet = workbook.createSheet("Grades");
-
-            Row headerRow = sheet.createRow(0);
-            headerRow.createCell(0).setCellValue("Student Name");
-            headerRow.createCell(1).setCellValue("Subject");
-            headerRow.createCell(2).setCellValue("Grades");
-            headerRow.createCell(3).setCellValue("Average Grade");
-
-            int currentRow = 1;
-            for (SubjectGradesDTO record : records) {
-                Row row = sheet.createRow(currentRow++);
-                row.createCell(0).setCellValue(record.getStudentName());
-                row.createCell(1).setCellValue(record.getSubject());
-                row.createCell(2).setCellValue(record.getGrades());
-                row.createCell(3).setCellValue(record.getAverageGrade().doubleValue());
-            }
-
+            XLSUtils.prepareXLSDocument(records, workbook);
             workbook.write(outFile);
+
             resultMessage = "XLS file created successfully.";
             log.info(resultMessage);
             return new FileProviderResponse(FileStatus.CREATED, records.size(), resultMessage);

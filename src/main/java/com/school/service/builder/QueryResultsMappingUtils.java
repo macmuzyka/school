@@ -1,4 +1,4 @@
-package com.school.service.utils;
+package com.school.service.builder;
 
 import com.school.model.dto.ClassWithStudentsDto;
 import com.school.model.dto.SubjectGradesDTO;

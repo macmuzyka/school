@@ -5,7 +5,7 @@ import com.school.repository.GradeRepository;
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
-import com.school.service.utils.QueryResultsMappingUtils;
+import com.school.service.builder.QueryResultsMappingUtils;
 import com.schoolmodel.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

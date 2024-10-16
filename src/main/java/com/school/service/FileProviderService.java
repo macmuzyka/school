@@ -5,7 +5,7 @@ import com.school.model.FileBuilder;
 import com.school.model.request.FileType;
 import com.school.model.response.FileProviderResponse;
 import com.school.repository.GradeRepository;
-import com.school.service.utils.QueryResultsMappingUtils;
+import com.school.service.builder.QueryResultsMappingUtils;
 import com.school.model.dto.SubjectGradesDTO;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,7 @@ public class FileProviderService {
         try {
             resolvedFileType = FileType.valueOf(fileType.toUpperCase());
         } catch (Exception e) {
-            List<String> values = Arrays.stream(FileType.values()).map(it -> it.toString()).toList();
+            List<String> values = Arrays.stream(FileType.values()).map(Enum::toString).toList();
             throw new IllegalAccessException("Declared file type [" + fileType + "] not supported yet! Available types are: " + values);
         }
         FileBuilder fileBuilder = PreparationStrategy.resolve(resolvedFileType, fileConfig);

@@ -1,4 +1,4 @@
-package com.school.service.utils.filetype;
+package com.school.service.builder;
 
 import com.opencsv.CSVWriter;
 import com.opencsv.bean.StatefulBeanToCsv;
@@ -16,10 +16,10 @@ import java.io.FileWriter;
 import java.util.List;
 
 
-public class CSVUtils extends BaseFile implements FileBuilder {
-    private static final Logger log = LoggerFactory.getLogger(CSVUtils.class);
+public class CSVBuilder extends BaseFile implements FileBuilder {
+    private static final Logger log = LoggerFactory.getLogger(CSVBuilder.class);
 
-    public CSVUtils(String fileExtension, FileConfig fileConfig) {
+    public CSVBuilder(String fileExtension, FileConfig fileConfig) {
         super(fileExtension, fileConfig);
     }
 
