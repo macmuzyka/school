@@ -3,8 +3,6 @@ package com.school.service
 import com.school.repository.SchoolClassRepository
 import com.school.repository.StudentRepository
 import com.school.service.utils.mapper.QueryResultsMappingUtils
-import com.schoolmodel.model.SchoolClass
-import com.schoolmodel.model.Student
 import com.schoolmodel.model.dto.ClassWithStudentsDTO
 import com.schoolmodel.model.dto.ExistingStudentToClassDTO
 import com.schoolmodel.model.dto.SimpleClassDTO

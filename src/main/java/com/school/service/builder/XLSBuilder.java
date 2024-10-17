@@ -4,7 +4,7 @@ import com.school.configuration.FileConfig;
 import com.school.model.*;
 import com.schoolmodel.model.dto.SubjectGradesDTO;
 import com.school.model.response.FileProviderResponse;
-import com.school.model.response.FileStatus;
+import com.school.model.enums.FileStatus;
 import com.school.service.utils.filetype.XLSUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;

@@ -16,19 +16,10 @@ public class PreparationStrategy {
 
     public static FileBuilder resolve(FileType type, FileConfig fileConfig) {
         return switch (type) {
-            case CSV -> {
-                yield new CSVBuilder(csvExtension, fileConfig);
-            }
-            case XLS -> {
-                yield new XLSBuilder(xlsExtension, fileConfig);
-            }
-            case PDF -> {
-                yield new PDFBuilder(pdfExtenstion, fileConfig);
-            }
-            //TODO: pdf
-            default -> {
-                throw new IllegalArgumentException("File type " + type + " not supported yet!");
-            }
+            case CSV -> new CSVBuilder(csvExtension, fileConfig);
+            case XLS -> new XLSBuilder(xlsExtension, fileConfig);
+            case PDF -> new PDFBuilder(pdfExtenstion, fileConfig);
+            default -> throw new IllegalArgumentException("File type " + type + " not supported yet!");
         };
     }
 }

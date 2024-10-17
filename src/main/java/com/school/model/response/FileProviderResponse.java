@@ -1,5 +1,7 @@
 package com.school.model.response;
 
+import com.school.model.enums.FileStatus;
+
 public class FileProviderResponse {
     private FileStatus fileStatus;
     private int totalRecords;
