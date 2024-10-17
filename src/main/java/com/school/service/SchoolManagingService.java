@@ -1,11 +1,9 @@
 package com.school.service;
 
-import com.school.model.dto.ClassWithStudentsDto;
 import com.school.repository.GradeRepository;
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
-import com.school.service.builder.QueryResultsMappingUtils;
 import com.schoolmodel.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,24 +112,6 @@ public class SchoolManagingService {
             return subject.get();
         } else {
             throw new IllegalArgumentException("Subject not present upon application warmup!");
-        }
-    }
-
-    public List<Student> getAllStudents() {
-        log.info("Getting all students info..");
-        return studentRepository.findAll();
-    }
-
-
-    public List<ClassWithStudentsDto> getClassesWithStudents() {
-        try {
-            return schoolClassRepository.findStudentsGroupedIntoClasses().stream()
-                    .map(QueryResultsMappingUtils::buildClassWithStudentsObject)
-                    .toList();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            log.error(Arrays.toString(e.getStackTrace()));
-            throw e;
         }
     }
 }

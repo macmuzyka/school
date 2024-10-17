@@ -7,7 +7,7 @@ import com.school.configuration.FileConfig;
 import com.school.model.FileResource;
 import com.school.model.response.FileProviderResponse;
 import com.school.model.response.FileStatus;
-import com.school.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.dto.SubjectGradesDTO;
 import com.school.model.FileBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
