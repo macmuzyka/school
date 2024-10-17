@@ -1,4 +1,4 @@
-package com.school.service.builder.utils;
+package com.school.service.utils.filetype;
 
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -8,7 +8,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.school.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.dto.SubjectGradesDTO;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

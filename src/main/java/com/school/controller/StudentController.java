@@ -1,18 +1,23 @@
 package com.school.controller;
 
+import com.schoolmodel.model.dto.NewStudentWithClassDTO;
 import com.school.service.SchoolManagingService;
+import com.school.service.StudentService;
+import com.schoolmodel.model.Student;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/school")
-public class StudentsController {
+@RequestMapping("/student")
+public class StudentController {
     private final SchoolManagingService schoolManagingService;
+    private final StudentService studentService;
 
-    public StudentsController(SchoolManagingService schoolManagingService) {
+    public StudentController(SchoolManagingService schoolManagingService, StudentService studentService) {
         this.schoolManagingService = schoolManagingService;
+        this.studentService = studentService;
     }
 
     @PostMapping("/add-students")
@@ -27,16 +32,25 @@ public class StudentsController {
     @GetMapping("/all-students")
     public ResponseEntity<?> getStudents() {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(schoolManagingService.getAllStudents());
+            return ResponseEntity.status(HttpStatus.OK).body(studentService.getAllStudents());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    @GetMapping("/all-classes")
-    public ResponseEntity<?> getClassesWithStudents() {
+    @PostMapping("/add-student-to-class")
+    public ResponseEntity<?> addStudentToClass(@RequestBody NewStudentWithClassDTO studentDto) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(schoolManagingService.getClassesWithStudents());
+            return ResponseEntity.status(HttpStatus.OK).body(studentService.addStudentAndAssignToClass(studentDto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/add-student")
+    public ResponseEntity<?> addStudent(@RequestBody Student student) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(studentService.addStudent(student));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

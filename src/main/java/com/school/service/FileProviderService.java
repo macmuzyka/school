@@ -5,8 +5,8 @@ import com.school.model.FileBuilder;
 import com.school.model.request.FileType;
 import com.school.model.response.FileProviderResponse;
 import com.school.repository.GradeRepository;
-import com.school.service.builder.QueryResultsMappingUtils;
-import com.school.model.dto.SubjectGradesDTO;
+import com.school.service.utils.mapper.QueryResultsMappingUtils;
+import com.schoolmodel.model.dto.SubjectGradesDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;

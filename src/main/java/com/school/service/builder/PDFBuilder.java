@@ -4,10 +4,10 @@ import com.itextpdf.layout.Document;
 import com.school.configuration.FileConfig;
 import com.school.model.FileResource;
 import com.school.model.FileBuilder;
-import com.school.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.dto.SubjectGradesDTO;
 import com.school.model.response.FileProviderResponse;
 import com.school.model.response.FileStatus;
-import com.school.service.builder.utils.PDFUtils;
+import com.school.service.utils.filetype.PDFUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

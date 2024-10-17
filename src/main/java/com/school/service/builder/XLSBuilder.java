@@ -2,10 +2,10 @@ package com.school.service.builder;
 
 import com.school.configuration.FileConfig;
 import com.school.model.*;
-import com.school.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.dto.SubjectGradesDTO;
 import com.school.model.response.FileProviderResponse;
 import com.school.model.response.FileStatus;
-import com.school.service.builder.utils.XLSUtils;
+import com.school.service.utils.filetype.XLSUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
