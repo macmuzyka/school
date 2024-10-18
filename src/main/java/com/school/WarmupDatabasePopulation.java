@@ -18,11 +18,9 @@ public class WarmupDatabasePopulation implements ApplicationListener<Application
     @Value("#{'${available.subjects}'.split(',')}")
     private List<String> subjects;
     private final SchoolRepository schoolRepository;
-    private final SchoolClassRepository schoolClassRepository;
 
-    public WarmupDatabasePopulation(SchoolRepository schoolRepository, SchoolClassRepository schoolClassRepository) {
+    public WarmupDatabasePopulation(SchoolRepository schoolRepository) {
         this.schoolRepository = schoolRepository;
-        this.schoolClassRepository = schoolClassRepository;
     }
 
     @Override
@@ -40,15 +38,12 @@ public class WarmupDatabasePopulation implements ApplicationListener<Application
         SchoolClass class2 = new SchoolClass("Class 2", subjects.stream().map(Subject::new).toList());
         SchoolClass class3 = new SchoolClass("Class 3", subjects.stream().map(Subject::new).toList());
 
-        List<SchoolClass> classes = new ArrayList<>();
+        ArrayList<SchoolClass> classes = new ArrayList<>();
         classes.add(class1);
         classes.add(class2);
         classes.add(class3);
 
         School saved = schoolRepository.save(new School("SCHOOL ONE", classes));
-        schoolClassRepository.save(class3);
-        schoolClassRepository.save(class1);
-        schoolClassRepository.save(class2);
 
         log.info("Application warmup school saved to database!");
         log.debug("Saved School: {}", saved);

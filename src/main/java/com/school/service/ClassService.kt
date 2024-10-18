@@ -27,8 +27,7 @@ class ClassService(private val studentRepository: StudentRepository,
     }
 
     fun assignStudentToClass(existingStudentToClassDTO: ExistingStudentToClassDTO): SimpleClassDTO {
-        val studentCode = existingStudentToClassDTO.studentCode
-        val schoolClassId = existingStudentToClassDTO.schoolClassId
+        val (studentCode, schoolClassId) = existingStudentToClassDTO
 
         val foundStudent = studentRepository.findStudentByCode(studentCode).takeIf { it.isPresent }?.get()
                 ?: throw IllegalArgumentException("Student with code: " + studentCode + "not found!")
@@ -41,5 +40,11 @@ class ClassService(private val studentRepository: StudentRepository,
         val updatedClass = schoolClassRepository.save(foundSchoolClass)
         log.debug("Updated class: {}", updatedClass.simpleDisplay())
         return SimpleClassDTO(updatedClass)
+    }
+
+    fun detachStudentFromClass(existingStudentFromClassDTO: ExistingStudentToClassDTO): SimpleClassDTO {
+        val (studentCode, schoolClassId) = existingStudentFromClassDTO
+        //TODO: implement
+        throw NotImplementedError("Not yet implemented!")
     }
 }

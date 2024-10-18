@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 public class PreparationStrategy {
     private static final String csvExtension = ".csv";
     private static final String xlsExtension = ".xls";
-    private static final String pdfExtenstion = ".pdf";
+    private static final String pdfExtension = ".pdf";
 
     public static FileBuilder resolve(FileType type, FileConfig fileConfig) {
         return switch (type) {
             case CSV -> new CSVBuilder(csvExtension, fileConfig);
             case XLS -> new XLSBuilder(xlsExtension, fileConfig);
-            case PDF -> new PDFBuilder(pdfExtenstion, fileConfig);
+            case PDF -> new PDFBuilder(pdfExtension, fileConfig);
             default -> throw new IllegalArgumentException("File type " + type + " not supported yet!");
         };
     }
