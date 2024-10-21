@@ -41,7 +41,7 @@ public class GradeService {
             Optional<Student> studentFound = studentRepository.findStudentByCode(studentCode);
             if (studentFound.isPresent()) {
                 log.info(studentFound.get().getName() + " " + studentFound.get().getSurname() + " found based on code!");
-                if (grade > 0 && grade < 6) {
+                if (grade > 0 && grade <= 6) {
                     return gradeRepository.save(new Grade(
                             grade,
                             studentFound.get(),
