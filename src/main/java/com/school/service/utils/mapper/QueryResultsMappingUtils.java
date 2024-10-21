@@ -3,7 +3,6 @@ package com.school.service.utils.mapper;
 import com.schoolmodel.model.dto.ClassWithStudentsDTO;
 import com.schoolmodel.model.dto.SubjectGradesDTO;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
