@@ -1,7 +1,7 @@
 package com.school.model;
 
 import com.schoolmodel.model.dto.SubjectGradesDTO;
-import com.school.model.response.FileProviderResponse;
+import com.schoolmodel.model.response.FileProviderResponse;
 
 import java.util.List;
 

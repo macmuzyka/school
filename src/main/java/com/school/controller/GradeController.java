@@ -1,8 +1,8 @@
 package com.school.controller;
 
 import com.school.service.GradeService;
-import com.schoolmodel.model.Grade;
-import com.schoolmodel.model.GradeRaw;
+import com.schoolmodel.model.entity.Grade;
+import com.schoolmodel.model.entity.GradeRaw;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

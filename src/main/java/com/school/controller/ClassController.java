@@ -25,10 +25,10 @@ public class ClassController {
         }
     }
 
-    @PutMapping("/assign-student-to-class")
+    @PutMapping("/student-to-class-action")
     public ResponseEntity<?> assignStudentToClass(@RequestBody ExistingStudentToClassDTO existingStudentToClassDTO) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(classService.assignStudentToClass(existingStudentToClassDTO));
+            return ResponseEntity.status(HttpStatus.OK).body(classService.studentToClassAction(existingStudentToClassDTO));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

@@ -1,6 +1,5 @@
 package com.school.controller;
 
-import com.school.model.request.FileType;
 import com.school.service.FileProviderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

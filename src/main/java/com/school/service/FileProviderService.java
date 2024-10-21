@@ -2,8 +2,8 @@ package com.school.service;
 
 import com.school.configuration.FileConfig;
 import com.school.model.FileBuilder;
-import com.school.model.request.FileType;
-import com.school.model.response.FileProviderResponse;
+import com.schoolmodel.model.enums.FileType;
+import com.schoolmodel.model.response.FileProviderResponse;
 import com.school.repository.GradeRepository;
 import com.school.service.utils.mapper.QueryResultsMappingUtils;
 import com.schoolmodel.model.dto.SubjectGradesDTO;

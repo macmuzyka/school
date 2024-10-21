@@ -1,8 +1,9 @@
 package com.school;
 
-import com.school.repository.SchoolClassRepository;
 import com.school.repository.SchoolRepository;
-import com.schoolmodel.model.*;
+import com.schoolmodel.model.entity.School;
+import com.schoolmodel.model.entity.SchoolClass;
+import com.schoolmodel.model.entity.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

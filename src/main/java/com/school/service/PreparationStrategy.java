@@ -2,7 +2,7 @@ package com.school.service;
 
 import com.school.configuration.FileConfig;
 import com.school.model.FileBuilder;
-import com.school.model.request.FileType;
+import com.schoolmodel.model.enums.FileType;
 import com.school.service.builder.CSVBuilder;
 import com.school.service.builder.PDFBuilder;
 import com.school.service.builder.XLSBuilder;

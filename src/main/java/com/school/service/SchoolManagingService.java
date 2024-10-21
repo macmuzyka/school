@@ -4,7 +4,10 @@ import com.school.repository.GradeRepository;
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
-import com.schoolmodel.model.*;
+import com.schoolmodel.model.entity.Grade;
+import com.schoolmodel.model.entity.SchoolClass;
+import com.schoolmodel.model.entity.Student;
+import com.schoolmodel.model.entity.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +54,7 @@ public class SchoolManagingService {
                     String firstName = lineParts[1];
                     String lastName = lineParts[2];
 
-                    Student currentStudent = studentRepository.save(new Student(firstName, lastName, UUID.randomUUID().toString()));
+                    Student currentStudent = studentRepository.save(new Student(firstName, lastName, UUID.randomUUID().toString(), true));
                     int classId = randClass.nextInt(classRange);
                     log.debug("Randomized class ID: {}", classId);
                     SchoolClass currentRandomizedClass = classes.get(classId);

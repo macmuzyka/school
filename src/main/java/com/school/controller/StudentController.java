@@ -3,7 +3,7 @@ package com.school.controller;
 import com.schoolmodel.model.dto.NewStudentWithClassDTO;
 import com.school.service.SchoolManagingService;
 import com.school.service.StudentService;
-import com.schoolmodel.model.Student;
+import com.schoolmodel.model.entity.Student;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
