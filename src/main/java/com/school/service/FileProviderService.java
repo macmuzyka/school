@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class FileProviderService {
@@ -44,18 +43,8 @@ public class FileProviderService {
         return fileBuilder.prepare(getDataTransferObjects(Long.parseLong(studentId), subjectName));
     }
 
-    public List<SubjectGradesDTO> getDataTransferObjects(long studentId, String subjectName) {
-        Long properLong = studentId;
-        if (studentId == 0) {
-            properLong = null;
-        }
-        return gradeRepository.findAllGradesGroupedBySubject(properLong, subjectName).stream()
-                .map(QueryResultsMappingUtils::buildSubjectGradesObject)
-                .toList();
-    }
-
     private String preparePrefixFromParameters(String studentId, String subjectName) {
-        long properId = longValue(studentId);
+        long properId = longValueFromRequestParameter(studentId);
         Student foundStudent = studentRepository.findById(properId).orElse(null);
         Subject foundSubject = subjectRepository.findFirstByName(subjectName).orElse(null);
 
@@ -70,7 +59,22 @@ public class FileProviderService {
         }
     }
 
-    private long longValue(String studentId) {
-        return Long.parseLong(studentId);
+    private long longValueFromRequestParameter(String requestParamStudentId) {
+        return Long.parseLong(requestParamStudentId);
+    }
+
+    public List<SubjectGradesDTO> getDataTransferObjects(long studentId, String subjectName) {
+        Long longValueForQuery = prepareLongValueForRepositoryQuery(studentId);
+        return gradeRepository.findAllGradesGroupedBySubject(longValueForQuery, subjectName).stream()
+                .map(QueryResultsMappingUtils::buildSubjectGradesObject)
+                .toList();
+    }
+
+    private Long prepareLongValueForRepositoryQuery(long studentId) {
+        if (studentId == 0) {
+            return null;
+        } else {
+            return studentId;
+        }
     }
 }
