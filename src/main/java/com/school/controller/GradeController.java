@@ -39,9 +39,11 @@ public class GradeController {
     }
 
     @GetMapping("/get-subject-grades")
-    public ResponseEntity<?> addStudents(@RequestParam(value = "studentId", required = false) Long studentId) {
+    public ResponseEntity<?> addStudents(
+            @RequestParam(value = "studentId", required = false) Long studentId,
+            @RequestParam(value = "subjectName", required = false) String subjectName) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(gradeService.getSubjectGradesForStudent(studentId));
+            return ResponseEntity.status(HttpStatus.CREATED).body(gradeService.getSubjectGradesForStudent(studentId, subjectName));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

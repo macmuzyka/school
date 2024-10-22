@@ -3,6 +3,7 @@ package com.school.service.utils.mapper;
 import com.schoolmodel.model.dto.ClassWithStudentsDTO;
 import com.schoolmodel.model.dto.SubjectGradesDTO;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +13,7 @@ public class QueryResultsMappingUtils {
         String studentName = (String) queryResult[0];
         String subject = (String) queryResult[1];
         String grades = (String) queryResult[2];
-        double average = (double) queryResult[3];
+        BigDecimal average = (BigDecimal) queryResult[3];
         return new SubjectGradesDTO(studentName, subject, grades, average);
     }
 

@@ -14,11 +14,11 @@ public class PreparationStrategy {
     private static final String xlsExtension = ".xls";
     private static final String pdfExtension = ".pdf";
 
-    public static FileBuilder resolve(FileType type, FileConfig fileConfig) {
+    public static FileBuilder resolve(FileType type, FileConfig fileConfig, String parametrizedFileNamePrefix) {
         return switch (type) {
-            case CSV -> new CSVBuilder(csvExtension, fileConfig);
-            case XLS -> new XLSBuilder(xlsExtension, fileConfig);
-            case PDF -> new PDFBuilder(pdfExtension, fileConfig);
+            case CSV -> new CSVBuilder(csvExtension, fileConfig, parametrizedFileNamePrefix);
+            case XLS -> new XLSBuilder(xlsExtension, fileConfig, parametrizedFileNamePrefix);
+            case PDF -> new PDFBuilder(pdfExtension, fileConfig, parametrizedFileNamePrefix);
             default -> throw new IllegalArgumentException("File type " + type + " not supported yet!");
         };
     }

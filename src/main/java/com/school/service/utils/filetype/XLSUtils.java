@@ -23,7 +23,7 @@ public class XLSUtils {
             row.createCell(0).setCellValue(record.getStudentName());
             row.createCell(1).setCellValue(record.getSubject());
             row.createCell(2).setCellValue(record.getGrades());
-            row.createCell(3).setCellValue(record.getAverageGrade());
+            row.createCell(3).setCellValue(Double.parseDouble(String.valueOf(record.getAverageGrade())));
         }
     }
 }

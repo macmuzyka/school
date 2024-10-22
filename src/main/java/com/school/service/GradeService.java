@@ -64,9 +64,9 @@ public class GradeService {
         }
     }
 
-    public List<SubjectGradesDTO> getSubjectGradesForStudent(Long studentId) {
+    public List<SubjectGradesDTO> getSubjectGradesForStudent(Long studentId, String subjectName) {
         log.info("Getting grades for students grouped by subjects..");
-        List<Object[]> results = gradeRepository.findAllGradesGroupedBySubject(studentId);
+        List<Object[]> results = gradeRepository.findAllGradesGroupedBySubject(studentId, subjectName);
         try {
             return results.stream()
                     .map(QueryResultsMappingUtils::buildSubjectGradesObject)

@@ -17,8 +17,8 @@ import java.util.List;
 public class PDFBuilder extends FileResource implements FileBuilder {
     private static final Logger log = LoggerFactory.getLogger(XLSBuilder.class);
 
-    public PDFBuilder(String fileExtension, FileConfig fileConfig) {
-        super(fileExtension, fileConfig);
+    public PDFBuilder(String fileExtension, FileConfig fileConfig, String parametrizedFileNamePrefix) {
+        super(fileExtension, fileConfig, parametrizedFileNamePrefix);
     }
 
     @Override

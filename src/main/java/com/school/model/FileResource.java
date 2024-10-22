@@ -12,14 +12,15 @@ public abstract class FileResource {
     private final String fileExtension;
     private final FileConfig fileConfig;
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");
 
-    public FileResource(String fileExtension, FileConfig fileConfig) {
+    public FileResource(String fileExtension, FileConfig fileConfig, String parametrizedFileName) {
         this.fileConfig = fileConfig;
         this.fileName = fileConfig.getName();
         this.fileDirectory = fileConfig.getDirectory();
         this.fileExtension = fileExtension;
         this.fullPathWithoutExtension = this.getFileDirectory() +
+                parametrizedFileName +
                 LocalDateTime.now().format(this.getFormatter()) +
                 "_" +
                 this.getFileName() +

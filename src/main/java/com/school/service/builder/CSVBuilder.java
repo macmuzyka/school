@@ -19,8 +19,8 @@ import java.util.List;
 public class CSVBuilder extends FileResource implements FileBuilder {
     private static final Logger log = LoggerFactory.getLogger(CSVBuilder.class);
 
-    public CSVBuilder(String fileExtension, FileConfig fileConfig) {
-        super(fileExtension, fileConfig);
+    public CSVBuilder(String fileExtension, FileConfig fileConfig, String parametrizedFileNamePrefix) {
+        super(fileExtension, fileConfig, parametrizedFileNamePrefix);
     }
 
     @Override
