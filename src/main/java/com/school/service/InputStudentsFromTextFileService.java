@@ -20,25 +20,26 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 @Service
-public class SchoolManagingService {
+public class InputStudentsFromTextFileService {
     private final StudentRepository studentRepository;
     private final SubjectRepository subjectRepository;
     private final GradeRepository gradeRepository;
     private final SchoolClassRepository schoolClassRepository;
-    private static final Logger log = LoggerFactory.getLogger(SchoolManagingService.class);
+    private static final Logger log = LoggerFactory.getLogger(InputStudentsFromTextFileService.class);
     @Value("${grades.to.add}")
     private String gradeRecords2Add;
     @Value("${divider}")
     private String divider;
 
 
-    public SchoolManagingService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SchoolClassRepository schoolClassRepository) {
+    public InputStudentsFromTextFileService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SchoolClassRepository schoolClassRepository) {
         this.studentRepository = studentRepository;
         this.subjectRepository = subjectRepository;
         this.gradeRepository = gradeRepository;
         this.schoolClassRepository = schoolClassRepository;
     }
 
+    //TODO: change logic so classes are automatically added when class max size is exceeded!
     public List<Student> addStudents(MultipartFile studentsFile) {
         log.info("Adding students from file..");
         List<SchoolClass> classes = schoolClassRepository.findAll();
