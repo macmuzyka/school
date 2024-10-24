@@ -20,7 +20,7 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @PostMapping("/add-students")
+    @PostMapping("/add-students-from-file")
     public ResponseEntity<?> addStudents(@RequestParam("file") MultipartFile studentsFile) {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(schoolManagingService.addStudents(studentsFile));
@@ -29,10 +29,10 @@ public class StudentController {
         }
     }
 
-    @GetMapping("/all-students")
-    public ResponseEntity<?> getStudents() {
+    @PostMapping("/add-student")
+    public ResponseEntity<?> addStudent(@RequestBody Student student) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(studentService.getAllStudents());
+            return ResponseEntity.status(HttpStatus.OK).body(studentService.addStudent(student));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
@@ -47,10 +47,28 @@ public class StudentController {
         }
     }
 
-    @PostMapping("/add-student")
-    public ResponseEntity<?> addStudent(@RequestBody Student student) {
+    @GetMapping("/all-students")
+    public ResponseEntity<?> getStudents(@RequestParam(value = "assigned", required = false) Boolean assignedParam) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(studentService.addStudent(student));
+            return ResponseEntity.status(HttpStatus.OK).body(studentService.getAllStudents(assignedParam));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete-student")
+    public ResponseEntity<?> deleteStudent(@RequestParam(value = "studentId") long id) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(studentService.deleteStudent(id));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/update-student")
+    public ResponseEntity<?> editStudent(@RequestBody Student updatedStudent) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(studentService.updateStudent(updatedStudent));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

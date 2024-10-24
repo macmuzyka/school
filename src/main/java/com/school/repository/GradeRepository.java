@@ -2,12 +2,14 @@ package com.school.repository;
 
 
 import com.schoolmodel.model.entity.Grade;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface GradeRepository extends JpaRepository<Grade, Long> {
@@ -19,8 +21,9 @@ public interface GradeRepository extends JpaRepository<Grade, Long> {
             "INNER JOIN subject sub ON g.subject_id = sub.id " +
             "WHERE (:studentId IS NULL OR s.id = :studentId) " +
             "AND (:subjectName IS NULL OR sub.name = :subjectName) " +
-            "GROUP BY s.name, s.surname, sub.name",
+            "GROUP BY s.name, s.surname, sub.name " +
+            "ORDER BY average DESC",
             nativeQuery = true
     )
-    List<Object[]>  findAllGradesGroupedBySubject(@Param("studentId") Long studentId, @Param("subjectName") String subjectName);
+    List<Object[]> findAllGradesGroupedBySubject(@Param("studentId") Long studentId, @Param("subjectName") String subjectName);
 }

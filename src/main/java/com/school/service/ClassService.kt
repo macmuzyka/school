@@ -51,6 +51,7 @@ class ClassService(private val studentRepository: StudentRepository,
         if (isAssigned(student, schoolClass)) {
             throw IllegalArgumentException("Student $student is already assigned to class!")
         } else {
+            student.isAssigned = true
             schoolClass.classStudents.add(student)
             log.info("[ASSIGN] Student [${student.simpleDisplay()}] assigned to class: [${schoolClass.name}]")
             val updatedClass = schoolClassRepository.save(schoolClass)
@@ -71,6 +72,7 @@ class ClassService(private val studentRepository: StudentRepository,
     }
 
     private fun removeStudentFromClass(student: Student, schoolClass: SchoolClass): SimpleClassDTO {
+        student.isAssigned = false
         val removed = schoolClass.classStudents.remove(student)
         if (removed) {
             log.info("[REMOVE] Student [${student.simpleDisplay()}] removed from class: [${schoolClass.name}]")

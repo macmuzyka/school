@@ -11,6 +11,8 @@ import com.schoolmodel.model.entity.Student;
 import com.school.repository.GradeRepository;
 import com.school.service.utils.mapper.QueryResultsMappingUtils;
 import com.schoolmodel.model.dto.SubjectGradesDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -18,6 +20,7 @@ import java.util.List;
 
 @Service
 public class FileProviderService {
+    private final Logger log = LoggerFactory.getLogger(FileProviderService.class);
     private final GradeRepository gradeRepository;
     private final StudentRepository studentRepository;
     private final SubjectRepository subjectRepository;
@@ -65,6 +68,7 @@ public class FileProviderService {
 
     public List<SubjectGradesDTO> getDataTransferObjects(long studentId, String subjectName) {
         Long longValueForQuery = prepareLongValueForRepositoryQuery(studentId);
+
         return gradeRepository.findAllGradesGroupedBySubject(longValueForQuery, subjectName).stream()
                 .map(QueryResultsMappingUtils::buildSubjectGradesObject)
                 .toList();

@@ -3,6 +3,7 @@ package com.school.service;
 import com.schoolmodel.model.dto.NewStudentWithClassDTO;
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.StudentRepository;
+import com.schoolmodel.model.dto.StudentDTO;
 import com.schoolmodel.model.entity.SchoolClass;
 import com.schoolmodel.model.entity.Student;
 import org.slf4j.Logger;
@@ -27,9 +28,19 @@ public class StudentService {
         this.schoolClassRepository = schoolClassRepository;
     }
 
-    public List<Student> getAllStudents() {
+    public List<StudentDTO> getAllStudents(Boolean assignedParam) {
         log.info("Getting all students info..");
-        return studentRepository.findAll();
+        return findStudentsBasedOnPassedParam(assignedParam);
+    }
+
+    private List<StudentDTO> findStudentsBasedOnPassedParam(Boolean assignedParam) {
+        List<Student> foundStudents;
+        if (assignedParam == null) {
+            foundStudents = studentRepository.findAll();
+        } else {
+            foundStudents = studentRepository.findAllByAssigned(assignedParam);
+        }
+        return foundStudents.stream().map(StudentDTO::new).toList();
     }
 
     public Student addStudentAndAssignToClass(NewStudentWithClassDTO studentDto) {
@@ -42,7 +53,6 @@ public class StudentService {
             if (existingClass.getClassStudents().size() < Integer.parseInt(classMaxSize)) {
                 existingClass.getClassStudents().add(savedStudent);
                 schoolClassRepository.save(existingClass);
-                log.info("saved via school class repository!");
             } else {
                 throw new IllegalArgumentException("Class " + studentDto.getClassName() + " reached max size, find other class to assign student to!");
             }
@@ -55,5 +65,32 @@ public class StudentService {
     public Student addStudent(Student student) {
         log.info("Adding student: [{}]", student);
         return studentRepository.save(student);
+    }
+
+    public String deleteStudent(long id) {
+        Optional<Student> studentToDelete = studentRepository.findById(id);
+        if (studentToDelete.isPresent()) {
+            Student student = studentToDelete.get();
+            log.info("Student {} {} with id [{}] to delete found:", student.getName(), student.getSurname(), student.getId());
+            studentRepository.delete(studentToDelete.get());
+            return "Student with id: " + student.getId() + " deleted!";
+        } else {
+            return "Student with id: " + id + " to delete not found!";
+        }
+    }
+
+    public Student updateStudent(Student updatedStudent) {
+        Optional<Student> studentToUpdate = studentRepository.findById(updatedStudent.getId());
+        if (studentToUpdate.isPresent()) {
+            Student toSave = studentToUpdate.get();
+            toSave.setName(updatedStudent.getName());
+            toSave.setSurname(updatedStudent.getSurname());
+            Student savedStudent = studentRepository.save(toSave);
+            log.info("Student before update: {}", toSave);
+            log.info("Student after update: {}", savedStudent);
+            return savedStudent;
+        } else {
+            throw new IllegalArgumentException("Student with id: " + updatedStudent.getId() + " does not exist!");
+        }
     }
 }
