@@ -1,6 +1,5 @@
 package com.school.controller;
 
-import com.school.model.request.FileType;
 import com.school.service.FileProviderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +18,11 @@ public class FileController {
     }
 
     @GetMapping("/produce")
-    public ResponseEntity<?> getCsvFile(@RequestParam String fileType) {
+    public ResponseEntity<?> getCsvFile(@RequestParam String fileType,
+                                        @RequestParam(value = "studentId", required = false, defaultValue = "0") String studentId,
+                                        @RequestParam(value = "subjectName", required = false) String subjectName) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(fileProviderService.getProperFile(fileType));
+            return ResponseEntity.status(HttpStatus.OK).body(fileProviderService.getProperFile(fileType, studentId, subjectName));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

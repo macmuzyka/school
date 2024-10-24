@@ -1,6 +1,6 @@
 package com.school.repository;
 
-import com.schoolmodel.model.School;
+import com.schoolmodel.model.entity.School;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

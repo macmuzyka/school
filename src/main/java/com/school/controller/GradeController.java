@@ -1,8 +1,8 @@
 package com.school.controller;
 
 import com.school.service.GradeService;
-import com.schoolmodel.model.Grade;
-import com.schoolmodel.model.GradeRaw;
+import com.schoolmodel.model.entity.Grade;
+import com.schoolmodel.model.entity.GradeRaw;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,9 +39,11 @@ public class GradeController {
     }
 
     @GetMapping("/get-subject-grades")
-    public ResponseEntity<?> addStudents(@RequestParam(value = "studentId", required = false) Long studentId) {
+    public ResponseEntity<?> addStudents(
+            @RequestParam(value = "studentId", required = false) Long studentId,
+            @RequestParam(value = "subjectName", required = false) String subjectName) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(gradeService.getSubjectGradesForStudent(studentId));
+            return ResponseEntity.status(HttpStatus.CREATED).body(gradeService.getSubjectGradesForStudent(studentId, subjectName));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

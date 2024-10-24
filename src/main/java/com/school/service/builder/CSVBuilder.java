@@ -5,9 +5,9 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.school.configuration.FileConfig;
 import com.school.model.FileResource;
-import com.school.model.response.FileProviderResponse;
-import com.school.model.response.FileStatus;
-import com.school.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.response.FileProviderResponse;
+import com.schoolmodel.model.enums.FileStatus;
+import com.schoolmodel.model.dto.SubjectGradesDTO;
 import com.school.model.FileBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +19,8 @@ import java.util.List;
 public class CSVBuilder extends FileResource implements FileBuilder {
     private static final Logger log = LoggerFactory.getLogger(CSVBuilder.class);
 
-    public CSVBuilder(String fileExtension, FileConfig fileConfig) {
-        super(fileExtension, fileConfig);
+    public CSVBuilder(String fileExtension, FileConfig fileConfig, String parametrizedFileNamePrefix) {
+        super(fileExtension, fileConfig, parametrizedFileNamePrefix);
     }
 
     @Override

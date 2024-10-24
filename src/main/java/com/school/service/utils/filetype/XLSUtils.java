@@ -1,6 +1,6 @@
-package com.school.service.builder.utils;
+package com.school.service.utils.filetype;
 
-import com.school.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.dto.SubjectGradesDTO;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -23,7 +23,7 @@ public class XLSUtils {
             row.createCell(0).setCellValue(record.getStudentName());
             row.createCell(1).setCellValue(record.getSubject());
             row.createCell(2).setCellValue(record.getGrades());
-            row.createCell(3).setCellValue(record.getAverageGrade().doubleValue());
+            row.createCell(3).setCellValue(Double.parseDouble(String.valueOf(record.getAverageGrade())));
         }
     }
 }

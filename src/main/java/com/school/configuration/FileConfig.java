@@ -1,25 +1,23 @@
 package com.school.configuration;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@ConfigurationProperties
+@ConfigurationProperties(prefix = "config.file")
 public class FileConfig {
-    @Value("${config.file.name}")
     private final String name;
-    @Value("${config.file.directory}")
     private final String directory;
     private final String fullPathWithoutExtension;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    private final String formatter;
 
-    public FileConfig(String name, String directory) {
+    public FileConfig(String name, String directory, String formatter) {
         this.name = name;
         this.directory = directory;
+        this.formatter = formatter;
         this.fullPathWithoutExtension = this.getDirectory() +
-                LocalDateTime.now().format(this.getFormatter()) +
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern(formatter)) +
                 "_" +
                 this.getName();
     }
@@ -36,7 +34,7 @@ public class FileConfig {
         return fullPathWithoutExtension;
     }
 
-    public DateTimeFormatter getFormatter() {
+    public String getFormatter() {
         return formatter;
     }
 }

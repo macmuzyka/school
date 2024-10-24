@@ -1,13 +1,14 @@
 package com.school.service;
 
-import com.school.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.dto.StudentDTO;
+import com.schoolmodel.model.dto.SubjectGradesDTO;
 import com.school.repository.GradeRepository;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
-import com.school.service.builder.QueryResultsMappingUtils;
-import com.schoolmodel.model.Grade;
-import com.schoolmodel.model.Student;
-import com.schoolmodel.model.Subject;
+import com.school.service.utils.mapper.QueryResultsMappingUtils;
+import com.schoolmodel.model.entity.Grade;
+import com.schoolmodel.model.entity.Student;
+import com.schoolmodel.model.entity.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class GradeService {
             Optional<Student> studentFound = studentRepository.findStudentByCode(studentCode);
             if (studentFound.isPresent()) {
                 log.info(studentFound.get().getName() + " " + studentFound.get().getSurname() + " found based on code!");
-                if (grade > 0 && grade < 6) {
+                if (grade > 0 && grade <= 6) {
                     return gradeRepository.save(new Grade(
                             grade,
                             studentFound.get(),
@@ -64,12 +65,16 @@ public class GradeService {
         }
     }
 
-    public List<SubjectGradesDTO> getSubjectGradesForStudent(Long studentId) {
+    public List<SubjectGradesDTO> getSubjectGradesForStudent(Long studentId, String subjectName) {
         log.info("Getting grades for students grouped by subjects..");
-        List<Object[]> results = gradeRepository.findAllGradesGroupedBySubject(studentId);
+        List<Object[]> results = gradeRepository.findAllGradesGroupedBySubject(studentId, subjectName);
+
         try {
             return results.stream()
                     .map(QueryResultsMappingUtils::buildSubjectGradesObject)
+                    // TODO: useless comparator for now as db query is supposed to be faster
+                    //  -> might use more complex comparator in the future
+                    //.sorted(SubjectGradesDTO.compareAverageGrade)
                     .toList();
         } catch (Exception e) {
             log.error(e.getMessage());

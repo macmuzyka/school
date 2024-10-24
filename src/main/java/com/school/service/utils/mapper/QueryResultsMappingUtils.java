@@ -1,10 +1,11 @@
-package com.school.service.builder;
+package com.school.service.utils.mapper;
 
-import com.school.model.dto.ClassWithStudentsDto;
-import com.school.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.dto.ClassWithStudentsDTO;
+import com.schoolmodel.model.dto.SubjectGradesDTO;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class QueryResultsMappingUtils {
@@ -16,10 +17,15 @@ public class QueryResultsMappingUtils {
         return new SubjectGradesDTO(studentName, subject, grades, average);
     }
 
-    public static ClassWithStudentsDto buildClassWithStudentsObject(Object[] queryResult) {
+    public static ClassWithStudentsDTO buildClassWithStudentsObject(Object[] queryResult) {
         long studentCount = (long) queryResult[0];
         String className = (String) queryResult[1];
-        List<String> studentNames = Arrays.asList(((String) queryResult[2]).split(","));
-        return new ClassWithStudentsDto(studentCount, className, studentNames);
+        List<String> studentNames;
+        if (queryResult[2] == null) {
+            studentNames = Collections.emptyList();
+        } else {
+            studentNames = Arrays.asList(((String) queryResult[2]).split(","));
+        }
+        return new ClassWithStudentsDTO(studentCount, className, studentNames);
     }
 }

@@ -1,12 +1,13 @@
 package com.school.service;
 
-import com.school.model.dto.ClassWithStudentsDto;
 import com.school.repository.GradeRepository;
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
-import com.school.service.builder.QueryResultsMappingUtils;
-import com.schoolmodel.model.*;
+import com.schoolmodel.model.entity.Grade;
+import com.schoolmodel.model.entity.SchoolClass;
+import com.schoolmodel.model.entity.Student;
+import com.schoolmodel.model.entity.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,7 +54,7 @@ public class SchoolManagingService {
                     String firstName = lineParts[1];
                     String lastName = lineParts[2];
 
-                    Student currentStudent = studentRepository.save(new Student(firstName, lastName, UUID.randomUUID().toString()));
+                    Student currentStudent = studentRepository.save(new Student(firstName, lastName, UUID.randomUUID().toString(), true));
                     int classId = randClass.nextInt(classRange);
                     log.debug("Randomized class ID: {}", classId);
                     SchoolClass currentRandomizedClass = classes.get(classId);
@@ -114,24 +115,6 @@ public class SchoolManagingService {
             return subject.get();
         } else {
             throw new IllegalArgumentException("Subject not present upon application warmup!");
-        }
-    }
-
-    public List<Student> getAllStudents() {
-        log.info("Getting all students info..");
-        return studentRepository.findAll();
-    }
-
-
-    public List<ClassWithStudentsDto> getClassesWithStudents() {
-        try {
-            return schoolClassRepository.findStudentsGroupedIntoClasses().stream()
-                    .map(QueryResultsMappingUtils::buildClassWithStudentsObject)
-                    .toList();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            log.error(Arrays.toString(e.getStackTrace()));
-            throw e;
         }
     }
 }
