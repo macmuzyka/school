@@ -2,6 +2,8 @@ package com.school.service.utils.mapper;
 
 import com.schoolmodel.model.dto.ClassWithStudentsDTO;
 import com.schoolmodel.model.dto.SubjectGradesDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -9,12 +11,22 @@ import java.util.Collections;
 import java.util.List;
 
 public class QueryResultsMappingUtils {
+    private static final Logger log = LoggerFactory.getLogger(QueryResultsMappingUtils.class);
+
     public static SubjectGradesDTO buildSubjectGradesObject(Object[] queryResult) {
-        String studentName = (String) queryResult[0];
-        String subject = (String) queryResult[1];
-        String grades = (String) queryResult[2];
-        BigDecimal average = (BigDecimal) queryResult[3];
-        return new SubjectGradesDTO(studentName, subject, grades, average);
+        String id = String.valueOf((long) queryResult[0]);
+        String name = (String) queryResult[1];
+        String surname = (String) queryResult[2];
+        String subject = (String) queryResult[3];
+        String grades = (String) queryResult[4];
+        String average;
+        try {
+            average = String.valueOf((BigDecimal) queryResult[5]);
+        } catch (Exception e) {
+            log.warn("Probably other cast needed");
+            average = String.valueOf((double) queryResult[5]);
+        }
+        return new SubjectGradesDTO(id + ". " + name + " " + surname, subject, grades, average);
     }
 
     public static ClassWithStudentsDTO buildClassWithStudentsObject(Object[] queryResult) {

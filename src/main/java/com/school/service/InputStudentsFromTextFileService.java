@@ -11,12 +11,15 @@ import com.schoolmodel.model.entity.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -30,13 +33,15 @@ public class InputStudentsFromTextFileService {
     private String gradeRecords2Add;
     @Value("${divider}")
     private String divider;
+    private final Environment environment;
 
 
-    public InputStudentsFromTextFileService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SchoolClassRepository schoolClassRepository) {
+    public InputStudentsFromTextFileService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SchoolClassRepository schoolClassRepository, Environment environment) {
         this.studentRepository = studentRepository;
         this.subjectRepository = subjectRepository;
         this.gradeRepository = gradeRepository;
         this.schoolClassRepository = schoolClassRepository;
+        this.environment = environment;
     }
 
     //TODO: change logic so classes are automatically added when class max size is exceeded!
@@ -54,8 +59,9 @@ public class InputStudentsFromTextFileService {
                 if (lineParts.length >= 3) {
                     String firstName = lineParts[1];
                     String lastName = lineParts[2];
+                    LocalDate birtDate = LocalDate.parse(lineParts[3], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-                    Student currentStudent = studentRepository.save(new Student(firstName, lastName, UUID.randomUUID().toString(), true));
+                    Student currentStudent = studentRepository.save(new Student(firstName, lastName, UUID.randomUUID().toString(), birtDate, true));
                     int classId = randClass.nextInt(classRange);
                     log.debug("Randomized class ID: {}", classId);
                     SchoolClass currentRandomizedClass = classes.get(classId);
@@ -72,9 +78,23 @@ public class InputStudentsFromTextFileService {
             log.error(e.getMessage());
             return Collections.emptyList();
         }
-
-        fillStudentsWithRandomizedGrades();
+        if (isActiveProfile("devel")) {
+            log.info("Devel profile active, populating on random student added from file                                   with some random grades");
+            fillStudentsWithRandomizedGrades();
+        } else {
+            log.debug("Not populating added students with randomized grades");
+        }
         return studentRepository.findAll();
+    }
+
+    private boolean isActiveProfile(String develProfile) {
+        String[] activeProfiles = environment.getActiveProfiles();
+        for (String profile : activeProfiles) {
+            if (profile.equalsIgnoreCase(develProfile)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void fillStudentsWithRandomizedGrades() {

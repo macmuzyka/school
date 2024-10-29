@@ -6,6 +6,7 @@ import com.school.repository.StudentRepository;
 import com.schoolmodel.model.dto.StudentDTO;
 import com.schoolmodel.model.entity.SchoolClass;
 import com.schoolmodel.model.entity.Student;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,10 +44,13 @@ public class StudentService {
         return foundStudents.stream().map(StudentDTO::new).toList();
     }
 
+    @Transactional
     public Student addStudentAndAssignToClass(NewStudentWithClassDTO studentDto) {
         log.info("Adding student: [{}] and assigning it to class: [{}]", studentDto, studentDto.getClassName());
-        Student savedStudent = studentRepository.save(new Student(studentDto.getName(), studentDto.getSurname(), UUID.randomUUID().toString(), true));
+        Student savedStudent = studentRepository.save(
+                new Student(studentDto.getName(), studentDto.getSurname(), UUID.randomUUID().toString(), studentDto.getBirthDate(), true));
         String className = studentDto.getClassName();
+
         Optional<SchoolClass> schoolClass = schoolClassRepository.findSchoolClassByName(className);
         if (schoolClass.isPresent()) {
             SchoolClass existingClass = schoolClass.get();
