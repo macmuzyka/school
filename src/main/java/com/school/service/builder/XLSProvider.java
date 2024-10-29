@@ -16,15 +16,15 @@ import java.io.IOException;
 import java.util.List;
 
 
-public class XLSBuilder extends FileResource implements FileBuilder {
-    private static final Logger log = LoggerFactory.getLogger(XLSBuilder.class);
+public class XLSProvider extends FileResource implements FileProvider {
+    private static final Logger log = LoggerFactory.getLogger(XLSProvider.class);
 
-    public XLSBuilder(String fileExtension, FileConfig fileConfig, String parametrizedFileNamePrefix) {
+    public XLSProvider(String fileExtension, FileConfig fileConfig, String parametrizedFileNamePrefix) {
         super(fileExtension, fileConfig, parametrizedFileNamePrefix);
     }
 
     @Override
-    public FileProviderResponse prepare(List<SubjectGradesDTO> records) {
+    public FileProviderResponse build(List<SubjectGradesDTO> records) {
         String resultMessage;
         try (Workbook workbook = new HSSFWorkbook();
              FileOutputStream outFile = new FileOutputStream(this.getFullPathWithoutExtension())) {

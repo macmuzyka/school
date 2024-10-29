@@ -31,8 +31,6 @@ public class InputStudentsFromTextFileService {
     private static final Logger log = LoggerFactory.getLogger(InputStudentsFromTextFileService.class);
     @Value("${grades.to.add}")
     private String gradeRecords2Add;
-    @Value("${divider}")
-    private String divider;
     private final Environment environment;
 
 
@@ -104,10 +102,11 @@ public class InputStudentsFromTextFileService {
         int subjects = subjectRepository.findAll().size();
         log.debug("Subjects found: {}", subjects);
         int numberOfRecords = Integer.parseInt(gradeRecords2Add);
+        int divider = numberOfRecords / 10;
         log.info("Populating students with {} example grades by random..", numberOfRecords);
         double progress = 0;
         for (int i = 0; i < numberOfRecords; i++) {
-            if (progress % Integer.parseInt(divider) == 0 && progress != 0) {
+            if (progress % divider == 0 && progress != 0) {
                 double percentage = (progress / numberOfRecords) * 100;
                 log.info("Progress: {}%", String.format("%.0f", percentage));
             }

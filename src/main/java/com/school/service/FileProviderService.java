@@ -1,7 +1,7 @@
 package com.school.service;
 
 import com.school.configuration.FileConfig;
-import com.school.model.FileBuilder;
+import com.school.model.FileProvider;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
 import com.schoolmodel.model.entity.Subject;
@@ -33,17 +33,20 @@ public class FileProviderService {
         this.fileConfig = fileConfig;
     }
 
-    public FileProviderResponse getProperFile(String fileType, String studentId, String subjectName) throws IllegalAccessException {
-        FileType resolvedFileType;
+    public FileProviderResponse getProperFile(String fileType, String optionalStudentIdParameter, String optionalSubjectNameParameter) throws IllegalAccessException {
+        FileType validFileType;
         try {
-            resolvedFileType = FileType.valueOf(fileType.toUpperCase());
+            validFileType = FileType.valueOf(fileType.toUpperCase());
         } catch (Exception e) {
             List<String> values = Arrays.stream(FileType.values()).map(Enum::toString).toList();
             throw new IllegalAccessException("Declared file type [" + fileType + "] not supported yet! Available types are: " + values);
         }
-        String parametrizedFilePrefix = preparePrefixFromParameters(studentId, subjectName);
-        FileBuilder fileBuilder = PreparationStrategy.resolve(resolvedFileType, fileConfig, parametrizedFilePrefix);
-        return fileBuilder.prepare(getDataTransferObjects(Long.parseLong(studentId), subjectName));
+
+        String parametrizedFilePrefix = preparePrefixFromParameters(optionalStudentIdParameter, optionalSubjectNameParameter);
+        FileProvider fileProvider = FileProviderStrategy.resolve(validFileType, fileConfig, parametrizedFilePrefix);
+
+        List<SubjectGradesDTO> subjectGrades = getDataTransferObjects(Long.parseLong(optionalStudentIdParameter), optionalSubjectNameParameter);
+        return fileProvider.build(subjectGrades);
     }
 
     private String preparePrefixFromParameters(String studentId, String subjectName) {

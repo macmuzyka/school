@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import java.util.List;
 
 public class XLSUtils {
+
     public static void prepareXLSDocument(List<SubjectGradesDTO> records, Workbook workbook) {
         Sheet sheet = workbook.createSheet("Grades");
 

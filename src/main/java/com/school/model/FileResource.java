@@ -11,7 +11,6 @@ public abstract class FileResource {
     private final String fullPathWithoutExtension;
     private final String fileExtension;
     private final FileConfig fileConfig;
-
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");
 
     public FileResource(String fileExtension, FileConfig fileConfig, String parametrizedFileName) {
