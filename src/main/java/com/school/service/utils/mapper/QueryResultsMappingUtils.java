@@ -1,11 +1,11 @@
 package com.school.service.utils.mapper;
 
-import com.schoolmodel.model.dto.ClassWithStudentsDTO;
-import com.schoolmodel.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.dto.ClassWithStudentCountDto;
+import com.schoolmodel.model.dto.ClassWithListedStudentsDTO;
+import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -13,23 +13,32 @@ import java.util.List;
 public class QueryResultsMappingUtils {
     private static final Logger log = LoggerFactory.getLogger(QueryResultsMappingUtils.class);
 
-    public static SubjectGradesDTO buildSubjectGradesObject(Object[] queryResult) {
-        String id = String.valueOf((long) queryResult[0]);
-        String name = (String) queryResult[1];
-        String surname = (String) queryResult[2];
-        String subject = (String) queryResult[3];
-        String grades = (String) queryResult[4];
+    public static StudentSubjectGradesDTO buildStudentSubjectGradesObject(Object[] queryResult) {
+        String name = (String) queryResult[0];
+        String surname = (String) queryResult[1];
+        String subject = (String) queryResult[2];
+        String grades = (String) queryResult[3];
         String average;
         try {
-            average = String.valueOf((BigDecimal) queryResult[5]);
+            average = castFromPostgresSqlDatabase(queryResult[4]);
         } catch (Exception e) {
-            log.warn("Probably other cast needed");
-            average = String.valueOf((double) queryResult[5]);
+            log.warn("Attempting other cast, as primary failed..");
+            average = castFromH2InMemoryDatabase(queryResult[4]);
+            log.info("Cast success");
+
         }
-        return new SubjectGradesDTO(id + ". " + name + " " + surname, subject, grades, average);
+        return new StudentSubjectGradesDTO(name + " " + surname, subject, grades, average);
     }
 
-    public static ClassWithStudentsDTO buildClassWithStudentsObject(Object[] queryResult) {
+    private static String castFromPostgresSqlDatabase(Object queryResultObject) {
+        return String.valueOf(queryResultObject);
+    }
+
+    private static String castFromH2InMemoryDatabase(Object queryResultObject) {
+        return String.valueOf((double) queryResultObject);
+    }
+
+    public static ClassWithListedStudentsDTO buildClassWithListedStudents(Object[] queryResult) {
         long studentCount = (long) queryResult[0];
         String className = (String) queryResult[1];
         List<String> studentNames;
@@ -38,6 +47,12 @@ public class QueryResultsMappingUtils {
         } else {
             studentNames = Arrays.asList(((String) queryResult[2]).split(","));
         }
-        return new ClassWithStudentsDTO(studentCount, className, studentNames);
+        return new ClassWithListedStudentsDTO(studentCount, className, studentNames);
+    }
+
+    public static ClassWithStudentCountDto buildClassWithStudentCount(Object[] queryResult) {
+        long classId = (long) queryResult[0];
+        long studentCount = (long) queryResult[1];
+        return new ClassWithStudentCountDto(classId, studentCount);
     }
 }

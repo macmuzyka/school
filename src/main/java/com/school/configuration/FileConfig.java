@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class FileConfig {
     private final String name;
     private final String directory;
+    private String optionalFileNamePrefix;
 
     public FileConfig(String name, String directory) {
         this.name = name;
@@ -18,5 +19,14 @@ public class FileConfig {
 
     public String getDirectory() {
         return directory;
+    }
+
+
+    public String getOptionalFileNamePrefix() {
+        return optionalFileNamePrefix;
+    }
+
+    public void setOptionalFileNamePrefix(String optionalFileNamePrefix) {
+        this.optionalFileNamePrefix = optionalFileNamePrefix;
     }
 }

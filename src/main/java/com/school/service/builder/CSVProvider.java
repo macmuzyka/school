@@ -7,7 +7,7 @@ import com.school.configuration.FileConfig;
 import com.school.model.FileResource;
 import com.schoolmodel.model.response.FileProviderResponse;
 import com.schoolmodel.model.enums.FileStatus;
-import com.schoolmodel.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
 import com.school.model.FileProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,16 +19,16 @@ import java.util.List;
 public class CSVProvider extends FileResource implements FileProvider {
     private static final Logger log = LoggerFactory.getLogger(CSVProvider.class);
 
-    public CSVProvider(String fileExtension, FileConfig fileConfig, String parametrizedFileNamePrefix) {
-        super(fileExtension, fileConfig, parametrizedFileNamePrefix);
+    public CSVProvider(String fileExtension, FileConfig fileConfig) {
+        super(fileExtension, fileConfig);
     }
 
     @Override
-    public FileProviderResponse build(List<SubjectGradesDTO> records) {
+    public FileProviderResponse build(List<StudentSubjectGradesDTO> records) {
         String resultMessage;
         try (FileWriter writer = new FileWriter(this.getFullPathWithoutExtension())) {
-            StatefulBeanToCsv<SubjectGradesDTO> beanToCsv =
-                    new StatefulBeanToCsvBuilder<SubjectGradesDTO>(writer)
+            StatefulBeanToCsv<StudentSubjectGradesDTO> beanToCsv =
+                    new StatefulBeanToCsvBuilder<StudentSubjectGradesDTO>(writer)
                             .withQuotechar('\'')
                             .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
                             .build();

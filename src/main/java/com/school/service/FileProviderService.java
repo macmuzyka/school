@@ -10,7 +10,7 @@ import com.schoolmodel.model.response.FileProviderResponse;
 import com.schoolmodel.model.entity.Student;
 import com.school.repository.GradeRepository;
 import com.school.service.utils.mapper.QueryResultsMappingUtils;
-import com.schoolmodel.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -42,10 +42,10 @@ public class FileProviderService {
             throw new IllegalAccessException("Declared file type [" + fileType + "] not supported yet! Available types are: " + values);
         }
 
-        String parametrizedFilePrefix = preparePrefixFromParameters(optionalStudentIdParameter, optionalSubjectNameParameter);
-        FileProvider fileProvider = FileProviderStrategy.resolve(validFileType, fileConfig, parametrizedFilePrefix);
+        fileConfig.setOptionalFileNamePrefix(preparePrefixFromParameters(optionalStudentIdParameter, optionalSubjectNameParameter));
+        FileProvider fileProvider = FileProviderStrategy.resolve(validFileType, fileConfig);
 
-        List<SubjectGradesDTO> subjectGrades = getDataTransferObjects(Long.parseLong(optionalStudentIdParameter), optionalSubjectNameParameter);
+        List<StudentSubjectGradesDTO> subjectGrades = getDataTransferObjects(Long.parseLong(optionalStudentIdParameter), optionalSubjectNameParameter);
         return fileProvider.build(subjectGrades);
     }
 
@@ -69,11 +69,11 @@ public class FileProviderService {
         return Long.parseLong(requestParamStudentId);
     }
 
-    public List<SubjectGradesDTO> getDataTransferObjects(long studentId, String subjectName) {
+    public List<StudentSubjectGradesDTO> getDataTransferObjects(long studentId, String subjectName) {
         Long longValueForQuery = prepareLongValueForRepositoryQuery(studentId);
 
         return gradeRepository.findAllGradesGroupedBySubject(longValueForQuery, subjectName).stream()
-                .map(QueryResultsMappingUtils::buildSubjectGradesObject)
+                .map(QueryResultsMappingUtils::buildStudentSubjectGradesObject)
                 .toList();
     }
 

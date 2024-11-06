@@ -1,7 +1,7 @@
 package com.school.configuration;
 
 import com.school.service.GradeService;
-import com.schoolmodel.model.entity.GradeRaw;
+import com.schoolmodel.model.dto.GradeDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -32,25 +32,25 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConsumerFactory<String, GradeRaw> gradeConsumerFactory() {
+    public ConsumerFactory<String, GradeDTO> gradeConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "grades");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(GradeRaw.class));
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(GradeDTO.class));
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, GradeRaw> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, GradeRaw> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, GradeDTO> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, GradeDTO> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(gradeConsumerFactory());
         return factory;
     }
 
-    @KafkaListener(topics = "grade-supplier", groupId = "grades")
-    public void listenGroupGrades(GradeRaw grade) {
+    @KafkaListener(topics = {"math-grade-supplier", "history-grade-supplier", "english-grade-supplier", "art-grade-supplier"}, groupId = "grades")
+    public void listenGroupGrades(GradeDTO grade) {
         log.info("Received Message in group grades: " + grade);
-        gradeService.addGrade(grade.getGrade(), grade.getSubject(), grade.getStudentCode());
+        gradeService.addGrade(grade.getValue(), grade.getSubject(), grade.getStudentCode());
     }
 }

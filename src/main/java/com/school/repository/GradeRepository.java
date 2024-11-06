@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface GradeRepository extends JpaRepository<Grade, Long> {
-    @Query(value = "SELECT s.id, s.name, s.surname, sub.name AS subject, " +
+    @Query(value = "SELECT s.name, s.surname, sub.name AS subject, " +
             "string_agg(g.grade_value::text, ', ') AS grades," +
             "ROUND(AVG(g.grade_value), 2) AS average " +
             "FROM grade g " +

@@ -1,6 +1,6 @@
 package com.school.service.utils.filetype;
 
-import com.schoolmodel.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -9,7 +9,8 @@ import java.util.List;
 
 public class XLSUtils {
 
-    public static void prepareXLSDocument(List<SubjectGradesDTO> records, Workbook workbook) {
+    public static void prepareXLSDocument(List<StudentSubjectGradesDTO> records, Workbook workbook) {
+        //TODO: add row numbers
         Sheet sheet = workbook.createSheet("Grades");
 
         Row headerRow = sheet.createRow(0);
@@ -19,7 +20,7 @@ public class XLSUtils {
         headerRow.createCell(3).setCellValue("Average Grade");
 
         int currentRow = 1;
-        for (SubjectGradesDTO record : records) {
+        for (StudentSubjectGradesDTO record : records) {
             Row row = sheet.createRow(currentRow++);
             row.createCell(0).setCellValue(record.getStudentName());
             row.createCell(1).setCellValue(record.getSubject());

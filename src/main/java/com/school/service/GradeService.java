@@ -1,6 +1,6 @@
 package com.school.service;
 
-import com.schoolmodel.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
 import com.school.repository.GradeRepository;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
@@ -64,13 +64,13 @@ public class GradeService {
         }
     }
 
-    public List<SubjectGradesDTO> getSubjectGradesForStudent(Long studentId, String subjectName) {
+    public List<StudentSubjectGradesDTO> getSubjectGradesForStudent(Long studentId, String subjectName) {
         log.info("Getting grades for students grouped by subjects..");
         List<Object[]> results = gradeRepository.findAllGradesGroupedBySubject(studentId, subjectName);
 
         try {
             return results.stream()
-                    .map(QueryResultsMappingUtils::buildSubjectGradesObject)
+                    .map(QueryResultsMappingUtils::buildStudentSubjectGradesObject)
                     // TODO: useless comparator for now as db query is supposed to be faster
                     //  -> might use more complex comparator in the future
                     //.sorted(SubjectGradesDTO.compareAverageGrade)

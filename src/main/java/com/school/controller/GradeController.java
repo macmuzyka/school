@@ -2,7 +2,7 @@ package com.school.controller;
 
 import com.school.service.GradeService;
 import com.schoolmodel.model.entity.Grade;
-import com.schoolmodel.model.entity.GradeRaw;
+import com.schoolmodel.model.dto.GradeDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +26,10 @@ public class GradeController {
     }
 
     @PostMapping("/add-raw-grade")
-    public ResponseEntity<?> addRawGrade(@RequestBody GradeRaw grade) {
+    public ResponseEntity<?> addRawGrade(@RequestBody GradeDTO grade) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(gradeService.addGrade(
-                    grade.getGrade(),
+                    grade.getValue(),
                     grade.getSubject(),
                     grade.getStudentCode())
             );
