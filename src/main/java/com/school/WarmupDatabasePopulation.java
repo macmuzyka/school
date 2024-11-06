@@ -1,12 +1,14 @@
 package com.school;
 
+import com.school.configuration.ApplicationConfig;
+import com.school.repository.SchoolClassRepository;
 import com.school.repository.SchoolRepository;
+import com.school.repository.SubjectRepository;
 import com.schoolmodel.model.entity.School;
 import com.schoolmodel.model.entity.SchoolClass;
 import com.schoolmodel.model.entity.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
@@ -16,12 +18,16 @@ import java.util.*;
 @Component
 public class WarmupDatabasePopulation implements ApplicationListener<ApplicationStartedEvent> {
     private static final Logger log = LoggerFactory.getLogger(WarmupDatabasePopulation.class);
-    @Value("#{'${available.subjects}'.split(',')}")
-    private List<String> subjects;
     private final SchoolRepository schoolRepository;
+    private final SchoolClassRepository schoolClassRepository;
+    private final SubjectRepository subjectRepository;
+    private final ApplicationConfig applicationConfig;
 
-    public WarmupDatabasePopulation(SchoolRepository schoolRepository) {
+    public WarmupDatabasePopulation(SchoolRepository schoolRepository, SchoolClassRepository schoolClassRepository, SubjectRepository subjectRepository, ApplicationConfig applicationConfig) {
         this.schoolRepository = schoolRepository;
+        this.schoolClassRepository = schoolClassRepository;
+        this.subjectRepository = subjectRepository;
+        this.applicationConfig = applicationConfig;
     }
 
     @Override
@@ -35,18 +41,20 @@ public class WarmupDatabasePopulation implements ApplicationListener<Application
     }
 
     private void addSchoolWithClassOnWarmup() {
-        SchoolClass class1 = new SchoolClass("Class 1", subjects.stream().map(Subject::new).toList());
-        SchoolClass class2 = new SchoolClass("Class 2", subjects.stream().map(Subject::new).toList());
-        SchoolClass class3 = new SchoolClass("Class 3", subjects.stream().map(Subject::new).toList());
-
-        ArrayList<SchoolClass> classes = new ArrayList<>();
-        classes.add(class1);
-        classes.add(class2);
-        classes.add(class3);
-
-        School saved = schoolRepository.save(new School("SCHOOL ONE", classes));
+        School savedSchool = schoolRepository.save(new School("SCHOOL ONE", new ArrayList<>()));
+        savedSchool.getSchoolClasses().add(firstWarmupClass());
+        schoolRepository.save(savedSchool);
 
         log.info("Application warmup school saved to database!");
-        log.debug("Saved School: {}", saved);
+        log.debug("Saved School: {}", savedSchool);
+    }
+
+    private SchoolClass firstWarmupClass() {
+        return schoolClassRepository.save(
+                new SchoolClass("Class 1", applicationConfig.getAvailableSubjects().stream()
+                        .map(sub -> subjectRepository.save(new Subject(sub)))
+                        .toList()
+                )
+        );
     }
 }

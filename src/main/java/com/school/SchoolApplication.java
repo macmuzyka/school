@@ -1,5 +1,6 @@
 package com.school;
 
+import com.school.configuration.ApplicationConfig;
 import com.school.configuration.FileConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,7 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @EntityScan(basePackages = {"com.schoolmodel.model"})
-@EnableConfigurationProperties(FileConfig.class)
+@EnableConfigurationProperties({FileConfig.class, ApplicationConfig.class})
 @EnableJpaAuditing
 public class SchoolApplication {
     public static void main(String[] args) {

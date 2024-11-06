@@ -5,7 +5,7 @@ import com.school.repository.StudentRepository;
 import com.school.service.ClassService;
 import com.school.service.StudentService;
 import com.schoolmodel.model.dto.ExistingStudentToClassDTO;
-import com.schoolmodel.model.dto.SimpleClassDTO;
+import com.schoolmodel.model.dto.ClassDTO;
 import com.schoolmodel.model.entity.SchoolClass;
 import com.schoolmodel.model.entity.Student;
 import com.schoolmodel.model.enums.ClassAction;
@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,8 +43,20 @@ public class ClassTest {
 
     @BeforeEach
     public void setUp() {
-        savedStudent = studentService.addStudent(new Student("Ad", "O'Ding", UUID.randomUUID().toString(), false));
-        additionalStudent = studentService.addStudent(new Student("Rem", "O'Ving", UUID.randomUUID().toString(), false));
+        savedStudent = studentService.addStudent(new Student(
+                "Ad",
+                "O'Ding",
+                UUID.randomUUID().toString(),
+                LocalDate.now().minus(Period.ofYears(20)),
+                false)
+        );
+        additionalStudent = studentService.addStudent(new Student(
+                "Rem",
+                "O'Ving",
+                UUID.randomUUID().toString(),
+                LocalDate.now().minus(Period.ofYears(25)),
+                false)
+        );
     }
 
     @AfterEach
@@ -53,7 +67,7 @@ public class ClassTest {
     @Test
     @Order(1)
     public void assignStudentToClassTest() {
-        SimpleClassDTO studentAddedClass = addStudentToClass(savedStudent);
+        ClassDTO studentAddedClass = addStudentToClass(savedStudent);
         assertEquals(1, studentAddedClass.getClassStudents().size());
     }
 
@@ -101,16 +115,15 @@ public class ClassTest {
         }
     }
 
-    private SimpleClassDTO addStudentToClass(Student student) {
+    private ClassDTO addStudentToClass(Student student) {
         return classService.studentToClassAction(new ExistingStudentToClassDTO(student.getCode(), primaryClassId, ClassAction.ADD));
     }
 
-    private SimpleClassDTO moveStudentToOtherClass(Student student) {
-//        addStudentToClass(student);
-        return classService.studentToClassAction(new ExistingStudentToClassDTO(student.getCode(), movedToClassId, ClassAction.MOVE));
+    private void moveStudentToOtherClass(Student student) {
+        classService.studentToClassAction(new ExistingStudentToClassDTO(student.getCode(), movedToClassId, ClassAction.MOVE));
     }
 
-    private SimpleClassDTO removeStudentFromClass(Student student) {
+    private ClassDTO removeStudentFromClass(Student student) {
         return classService.studentToClassAction(new ExistingStudentToClassDTO(student.getCode(), primaryClassId, ClassAction.REMOVE));
     }
 }

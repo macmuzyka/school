@@ -1,14 +1,15 @@
 package com.school.service;
 
+import com.school.configuration.ApplicationConfig;
 import com.schoolmodel.model.dto.NewStudentWithClassDTO;
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.StudentRepository;
 import com.schoolmodel.model.dto.StudentDTO;
 import com.schoolmodel.model.entity.SchoolClass;
 import com.schoolmodel.model.entity.Student;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,14 +19,14 @@ import java.util.UUID;
 @Service
 public class StudentService {
     private final Logger log = LoggerFactory.getLogger(StudentService.class);
-    @Value("${class.max.students}")
-    private String classMaxSize;
     private final StudentRepository studentRepository;
     private final SchoolClassRepository schoolClassRepository;
+    private final ApplicationConfig applicationConfig;
 
-    public StudentService(StudentRepository studentRepository, SchoolClassRepository schoolClassRepository) {
+    public StudentService(StudentRepository studentRepository, SchoolClassRepository schoolClassRepository, ApplicationConfig applicationConfig) {
         this.studentRepository = studentRepository;
         this.schoolClassRepository = schoolClassRepository;
+        this.applicationConfig = applicationConfig;
     }
 
     public List<StudentDTO> getAllStudents(Boolean assignedParam) {
@@ -43,14 +44,17 @@ public class StudentService {
         return foundStudents.stream().map(StudentDTO::new).toList();
     }
 
+    @Transactional
     public Student addStudentAndAssignToClass(NewStudentWithClassDTO studentDto) {
         log.info("Adding student: [{}] and assigning it to class: [{}]", studentDto, studentDto.getClassName());
-        Student savedStudent = studentRepository.save(new Student(studentDto.getName(), studentDto.getSurname(), UUID.randomUUID().toString(), true));
+        Student savedStudent = studentRepository.save(
+                new Student(studentDto.getName(), studentDto.getSurname(), UUID.randomUUID().toString(), studentDto.getBirthDate(), true));
         String className = studentDto.getClassName();
+
         Optional<SchoolClass> schoolClass = schoolClassRepository.findSchoolClassByName(className);
         if (schoolClass.isPresent()) {
             SchoolClass existingClass = schoolClass.get();
-            if (existingClass.getClassStudents().size() < Integer.parseInt(classMaxSize)) {
+            if (existingClass.getClassStudents().size() < applicationConfig.getClassMaxSize()) {
                 existingClass.getClassStudents().add(savedStudent);
                 schoolClassRepository.save(existingClass);
             } else {

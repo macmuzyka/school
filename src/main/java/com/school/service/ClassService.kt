@@ -1,26 +1,38 @@
 package com.school.service
 
+import com.school.configuration.ApplicationConfig
+import com.schoolmodel.model.dto.ClassWithStudentCountDto
 import com.school.repository.SchoolClassRepository
+import com.school.repository.SchoolRepository
 import com.school.repository.StudentRepository
+import com.school.repository.SubjectRepository
 import com.school.service.utils.mapper.QueryResultsMappingUtils
-import com.schoolmodel.model.dto.ClassWithStudentsDTO
+import com.schoolmodel.model.dto.ClassWithListedStudentsDTO
 import com.schoolmodel.model.dto.ExistingStudentToClassDTO
-import com.schoolmodel.model.dto.SimpleClassDTO
+import com.schoolmodel.model.dto.NewClassDTO
+import com.schoolmodel.model.dto.ClassDTO
 import com.schoolmodel.model.entity.SchoolClass
 import com.schoolmodel.model.entity.Student
+import com.schoolmodel.model.entity.Subject
 import com.schoolmodel.model.enums.ClassAction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-class ClassService(private val studentRepository: StudentRepository,
-                   private val schoolClassRepository: SchoolClassRepository) {
+class ClassService(
+        private val studentRepository: StudentRepository,
+        private val schoolClassRepository: SchoolClassRepository,
+        private val subjectRepository: SubjectRepository,
+        private val schoolRepository: SchoolRepository,
+        private val applicationConfig: ApplicationConfig,
+) {
     private val log: Logger = LoggerFactory.getLogger(ClassService::class.java)
-    fun getClassesWithStudents(): List<ClassWithStudentsDTO> {
+
+    fun getClassesWithStudents(): List<ClassWithListedStudentsDTO> {
         return try {
-            schoolClassRepository.findStudentsGroupedIntoClasses()
-                    .map { QueryResultsMappingUtils.buildClassWithStudentsObject(it) }
+            schoolClassRepository.findListedStudentsGroupedIntoClasses()
+                    .map { QueryResultsMappingUtils.buildClassWithListedStudents(it) }
                     .toList()
         } catch (e: Exception) {
             log.error(e.message)
@@ -29,7 +41,7 @@ class ClassService(private val studentRepository: StudentRepository,
         }
     }
 
-    fun studentToClassAction(existingStudentToClassDTO: ExistingStudentToClassDTO): SimpleClassDTO {
+    fun studentToClassAction(existingStudentToClassDTO: ExistingStudentToClassDTO): ClassDTO {
         val (studentCode, schoolClassId, action) = existingStudentToClassDTO
 
         val foundStudent = studentRepository.findStudentByCode(studentCode).takeIf { it.isPresent }?.get()
@@ -47,7 +59,7 @@ class ClassService(private val studentRepository: StudentRepository,
         }
     }
 
-    private fun assignStudentToClass(student: Student, schoolClass: SchoolClass): SimpleClassDTO {
+    private fun assignStudentToClass(student: Student, schoolClass: SchoolClass): ClassDTO {
         if (isAssigned(student, schoolClass)) {
             throw IllegalArgumentException("Student $student is already assigned to class!")
         } else {
@@ -56,36 +68,89 @@ class ClassService(private val studentRepository: StudentRepository,
             log.info("[ASSIGN] Student [${student.simpleDisplay()}] assigned to class: [${schoolClass.name}]")
             val updatedClass = schoolClassRepository.save(schoolClass)
             log.debug("[ASSIGN] Updated class: {}", updatedClass.simpleDisplay())
-            return SimpleClassDTO(updatedClass)
+            return ClassDTO(updatedClass)
         }
     }
 
-    private fun moveStudentToOtherClass(student: Student, destinationClass: SchoolClass): SimpleClassDTO {
+    private fun moveStudentToOtherClass(student: Student, destinationClass: SchoolClass): ClassDTO {
         if (isAssigned(student, destinationClass)) {
             throw IllegalArgumentException("Attempting to move student $student to the same class!")
         } else {
             destinationClass.classStudents.add(student)
             val updatedClass = schoolClassRepository.save(destinationClass)
             log.debug("[MOVE] Updated class: {}", updatedClass.simpleDisplay())
-            return SimpleClassDTO(updatedClass)
+            return ClassDTO(updatedClass)
         }
     }
 
-    private fun removeStudentFromClass(student: Student, schoolClass: SchoolClass): SimpleClassDTO {
+    private fun removeStudentFromClass(student: Student, schoolClass: SchoolClass): ClassDTO {
         student.isAssigned = false
         val removed = schoolClass.classStudents.remove(student)
         if (removed) {
             log.info("[REMOVE] Student [${student.simpleDisplay()}] removed from class: [${schoolClass.name}]")
         } else {
-            log.error("Error removing student with code ${student.code}",)
+            log.error("Error removing student with code ${student.code}")
         }
 
         val updatedClass = schoolClassRepository.save(schoolClass)
         log.debug("[REMOVE] Updated class: ${updatedClass.simpleDisplay()}")
-        return SimpleClassDTO(updatedClass)
+        return ClassDTO(updatedClass)
     }
 
     private fun isAssigned(student: Student, schoolClass: SchoolClass): Boolean {
         return schoolClass.classStudents.contains(student)
     }
+
+    fun classFull(schoolClass: SchoolClass) = schoolClass.classStudents.size >= applicationConfig.classMaxSize
+    fun assignStudent2Class(currentRandomClass: SchoolClass, currentStudent: Student) = currentRandomClass.classStudents.add(currentStudent)
+
+    fun getOtherExistingClass(): SchoolClass {
+        log.info("Attempting to get other class..")
+        val auxiliaryClassIdAndStudentCount = findClassDataStudentCanBeAssignedTo()
+        return getOtherExistingClass(auxiliaryClassIdAndStudentCount) ?: createNewClass()
+    }
+
+    private fun getOtherExistingClass(auxiliary: ClassWithStudentCountDto?): SchoolClass? {
+        return auxiliary?.let { a ->
+            schoolClassRepository.findById(a.id)
+                    .takeIf { schoolClass -> schoolClass.isPresent }!!.get()
+                    .also { log.info("Class found: $it") }
+        }
+    }
+
+    private fun findClassDataStudentCanBeAssignedTo(): ClassWithStudentCountDto? {
+        return schoolClassRepository.findSchoolClassWithLessThanMaxSizeStudentsAndLowestCount(applicationConfig.classMaxSize)
+                .takeIf { it.isNotEmpty() }
+                ?.let { queryResult -> QueryResultsMappingUtils.buildClassWithStudentCount(queryResult.find { it[0] != null }) }
+    }
+
+    private fun createNewClass(): SchoolClass {
+        val resolvedNextClassNumber = findNextClassNumber()
+        log.info("Resolved next class number: $resolvedNextClassNumber")
+        val newSchoolClass = schoolClassRepository.save(
+                SchoolClass("Class $resolvedNextClassNumber", applicationConfig.availableSubjects
+                        .map { subject -> subjectRepository.save(Subject(subject)) }
+                        .toList()
+                )
+        )
+
+        val school = schoolRepository.findById(1L).takeIf { it.isPresent }?.get()
+                ?: throw IllegalStateException("No school to assign class to! This should be done upon application warmup!")
+        school.schoolClasses.add(newSchoolClass)
+        schoolRepository.save(school)
+        return newSchoolClass
+    }
+
+    private fun findNextClassNumber(): Int {
+        log.info("Resolving next class number..")
+        val maxClassNumber = schoolClassRepository.findAll()
+                .map { schoolClass -> Integer.valueOf(schoolClass.name.substringAfter(" ")) }
+                .maxOf { it }
+        return maxClassNumber + 1
+    }
+
+    fun createClass(newClassDto: NewClassDTO): SchoolClass = schoolClassRepository.save(SchoolClass(newClassDto.name, applicationConfig.availableSubjects
+            .map { sub -> subjectRepository.save(Subject(sub)) }
+            .toList())
+    )
 }

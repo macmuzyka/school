@@ -2,7 +2,7 @@ package com.school.service.builder;
 
 import com.school.configuration.FileConfig;
 import com.school.model.*;
-import com.schoolmodel.model.dto.SubjectGradesDTO;
+import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
 import com.schoolmodel.model.response.FileProviderResponse;
 import com.schoolmodel.model.enums.FileStatus;
 import com.school.service.utils.filetype.XLSUtils;
@@ -16,15 +16,15 @@ import java.io.IOException;
 import java.util.List;
 
 
-public class XLSBuilder extends FileResource implements FileBuilder {
-    private static final Logger log = LoggerFactory.getLogger(XLSBuilder.class);
+public class XLSProvider extends FileResource implements FileProvider {
+    private static final Logger log = LoggerFactory.getLogger(XLSProvider.class);
 
-    public XLSBuilder(String fileExtension, FileConfig fileConfig, String parametrizedFileNamePrefix) {
-        super(fileExtension, fileConfig, parametrizedFileNamePrefix);
+    public XLSProvider(String fileExtension, FileConfig fileConfig) {
+        super(fileExtension, fileConfig);
     }
 
     @Override
-    public FileProviderResponse prepare(List<SubjectGradesDTO> records) {
+    public FileProviderResponse build(List<StudentSubjectGradesDTO> records) {
         String resultMessage;
         try (Workbook workbook = new HSSFWorkbook();
              FileOutputStream outFile = new FileOutputStream(this.getFullPathWithoutExtension())) {
