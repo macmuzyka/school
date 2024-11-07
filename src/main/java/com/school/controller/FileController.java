@@ -22,7 +22,7 @@ public class FileController {
                                         @RequestParam(value = "studentId", required = false, defaultValue = "0") String studentId,
                                         @RequestParam(value = "subjectName", required = false) String subjectName) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(fileProviderService.getProperFile(fileType, studentId, subjectName));
+            return ResponseEntity.status(HttpStatus.OK).body(fileProviderService.produceFile(fileType, studentId, subjectName));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

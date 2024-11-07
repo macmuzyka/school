@@ -19,7 +19,7 @@ public abstract class FileResource {
         this.fileDirectory = fileConfig.getDirectory();
         this.fileExtension = fileExtension;
         this.fullPathWithoutExtension = this.getFileDirectory() +
-                fileConfig.getOptionalFileNamePrefix() +
+                fileConfig.getOptionalNamePrefix() +
                 LocalDateTime.now().format(this.getFormatter()) +
                 "_" +
                 this.getFileName() +

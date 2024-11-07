@@ -1,12 +1,14 @@
 package com.school.configuration;
 
+import com.schoolmodel.model.enums.FileType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "config.file")
 public class FileConfig {
     private final String name;
     private final String directory;
-    private String optionalFileNamePrefix;
+    private String optionalNamePrefix;
+    private FileType fileType;
 
     public FileConfig(String name, String directory) {
         this.name = name;
@@ -22,11 +24,19 @@ public class FileConfig {
     }
 
 
-    public String getOptionalFileNamePrefix() {
-        return optionalFileNamePrefix;
+    public String getOptionalNamePrefix() {
+        return optionalNamePrefix;
     }
 
-    public void setOptionalFileNamePrefix(String optionalFileNamePrefix) {
-        this.optionalFileNamePrefix = optionalFileNamePrefix;
+    public void setOptionalNamePrefix(String optionalNamePrefix) {
+        this.optionalNamePrefix = optionalNamePrefix;
+    }
+
+    public FileType getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(FileType fileType) {
+        this.fileType = fileType;
     }
 }

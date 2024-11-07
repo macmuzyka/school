@@ -149,8 +149,11 @@ class ClassService(
         return maxClassNumber + 1
     }
 
-    fun createClass(newClassDto: NewClassDTO): SchoolClass = schoolClassRepository.save(SchoolClass(newClassDto.name, applicationConfig.availableSubjects
-            .map { sub -> subjectRepository.save(Subject(sub)) }
-            .toList())
+    fun createClass(newClassDto: NewClassDTO): SchoolClass = schoolClassRepository.save(
+            SchoolClass(
+                    newClassDto.name,
+                    applicationConfig.availableSubjects
+                            .map { sub -> subjectRepository.save(Subject(sub)) }
+                            .toList())
     )
 }

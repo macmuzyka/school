@@ -4,6 +4,8 @@ import com.school.configuration.FileConfig;
 import com.school.model.FileProvider;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
+import com.school.service.utils.FileNamePrefixResolver;
+import com.school.service.utils.QueryParamValidator;
 import com.schoolmodel.model.entity.Subject;
 import com.schoolmodel.model.enums.FileType;
 import com.schoolmodel.model.response.FileProviderResponse;
@@ -33,55 +35,49 @@ public class FileProviderService {
         this.fileConfig = fileConfig;
     }
 
-    public FileProviderResponse getProperFile(String fileType, String optionalStudentIdParameter, String optionalSubjectNameParameter) throws IllegalAccessException {
-        FileType validFileType;
+    public FileProviderResponse produceFile(String fileType, String optionalStudentId, String optionalSubjectName) {
         try {
-            validFileType = FileType.valueOf(fileType.toUpperCase());
+            prepareFileTypeAndNamePrefix(fileType, optionalStudentId, optionalSubjectName);
+            List<StudentSubjectGradesDTO> records = getRecordsFromDatabase(optionalStudentId, optionalSubjectName);
+            return produceFileAndGetResponse(records);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    private void prepareFileTypeAndNamePrefix(String fileType, String optionalStudentId, String optionalSubjectName) {
+        resolveFileType(fileType);
+        prepareFileNamePrefix(optionalStudentId, optionalSubjectName);
+    }
+
+    private void resolveFileType(String fileType) {
+        try {
+            FileType resolvedFileType = FileType.valueOf(fileType.toUpperCase());
+            fileConfig.setFileType(resolvedFileType);
         } catch (Exception e) {
             List<String> values = Arrays.stream(FileType.values()).map(Enum::toString).toList();
-            throw new IllegalAccessException("Declared file type [" + fileType + "] not supported yet! Available types are: " + values);
-        }
-
-        fileConfig.setOptionalFileNamePrefix(preparePrefixFromParameters(optionalStudentIdParameter, optionalSubjectNameParameter));
-        FileProvider fileProvider = FileProviderStrategy.resolve(validFileType, fileConfig);
-
-        List<StudentSubjectGradesDTO> subjectGrades = getDataTransferObjects(Long.parseLong(optionalStudentIdParameter), optionalSubjectNameParameter);
-        return fileProvider.build(subjectGrades);
-    }
-
-    private String preparePrefixFromParameters(String studentId, String subjectName) {
-        long properId = longValueFromRequestParameter(studentId);
-        Student foundStudent = studentRepository.findById(properId).orElse(null);
-        Subject foundSubject = subjectRepository.findFirstByName(subjectName).orElse(null);
-
-        if (foundStudent != null && foundSubject != null) {
-            return foundStudent.getName() + "_" + foundStudent.getSurname() + "_" + foundSubject.getName() + "_";
-        } else if (foundStudent != null) {
-            return foundStudent.getName() + "_" + foundStudent.getSurname() + "_";
-        } else if (foundSubject != null) {
-            return foundSubject.getName() + "_";
-        } else {
-            return "";
+            throw new IllegalArgumentException("Declared file type [" + fileType + "] not supported yet! Available types are: " + values);
         }
     }
 
-    private long longValueFromRequestParameter(String requestParamStudentId) {
-        return Long.parseLong(requestParamStudentId);
+    private void prepareFileNamePrefix(String optionalStudentId, String optionalSubjectName) {
+        long repositoryStudentId = QueryParamValidator.longValueFromRequestParameter(optionalStudentId);
+        Student foundStudent = studentRepository.findById(repositoryStudentId).orElse(null);
+        Subject foundSubject = subjectRepository.findFirstByName(optionalSubjectName).orElse(null);
+
+        fileConfig.setOptionalNamePrefix(FileNamePrefixResolver.build(foundStudent, foundSubject));
     }
 
-    public List<StudentSubjectGradesDTO> getDataTransferObjects(long studentId, String subjectName) {
-        Long longValueForQuery = prepareLongValueForRepositoryQuery(studentId);
-
-        return gradeRepository.findAllGradesGroupedBySubject(longValueForQuery, subjectName).stream()
+    private List<StudentSubjectGradesDTO> getRecordsFromDatabase(String optionalStudentId, String optionalSubjectName) {
+        Long studentIdForQuery = QueryParamValidator.prepareLongValueForRepositoryQuery(optionalStudentId);
+        return gradeRepository.findAllGradesGroupedBySubject(studentIdForQuery, optionalSubjectName).stream()
                 .map(QueryResultsMappingUtils::buildStudentSubjectGradesObject)
                 .toList();
     }
-
-    private Long prepareLongValueForRepositoryQuery(long studentId) {
-        if (studentId == 0) {
-            return null;
-        } else {
-            return studentId;
-        }
+    private FileProviderResponse produceFileAndGetResponse(List<StudentSubjectGradesDTO> records) {
+        FileProvider fileProvider = FileProviderStrategy.resolve(fileConfig);
+        return fileProvider.build(records);
     }
 }
