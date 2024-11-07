@@ -2,7 +2,6 @@ package com.school.service;
 
 import com.school.configuration.FileConfig;
 import com.school.model.FileProvider;
-import com.schoolmodel.model.enums.FileType;
 import com.school.service.builder.CSVProvider;
 import com.school.service.builder.PDFProvider;
 import com.school.service.builder.XLSProvider;
@@ -19,7 +18,6 @@ public class FileProviderStrategy {
             case CSV -> new CSVProvider(csvExtension, fileConfig);
             case XLS -> new XLSProvider(xlsExtension, fileConfig);
             case PDF -> new PDFProvider(pdfExtension, fileConfig);
-            default -> throw new IllegalArgumentException("File type " + fileConfig.getFileType() + " not supported yet!");
         };
     }
 }
