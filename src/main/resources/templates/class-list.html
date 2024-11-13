@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Classes with Students</title>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>Classes with Students</h1>
+    <div class="button-container">
+        <button onclick="window.location.href='http://localhost:9000/view'">Main</button>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th>Class Name</th>
+            <th>Number of Students</th>
+            <th>Student Names</th>
+        </tr>
+
+        </thead>
+        <tbody>
+        <tr th:each="classDTO : ${classes}">
+            <td th:text="${classDTO.className}"></td>
+            <td th:text="${classDTO.numberOfStudents}"></td>
+            <td>
+                <ul>
+                    <li th:each="studentName : ${classDTO.studentNames}" th:text="${studentName}"></li>
+                </ul>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

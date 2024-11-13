@@ -134,6 +134,6 @@ class ClassService(
     fun assignStudentToFirstOpenClass(student: Student?): SchoolClass {
         val openClassId = schoolClassRepository.findSchoolClassesIdsWithStudentCountLessThanMaxClassSize(applicationConfig.classMaxSize).firstOrNull()
         val foundOpenClass = openClassId?.let { schoolClassRepository.findById(it).orElse(null) } ?: createNewClass()
-        return student?.let { foundOpenClass.apply { classStudents.add(student) } } ?: foundOpenClass
+        return student?.let { foundOpenClass.apply { classStudents.add(student) }.also { student.isAssigned = true } } ?: foundOpenClass
     }
 }

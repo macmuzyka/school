@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Grades</title>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <script>
+        function removeEmptyParams() {
+            const form = document.getElementById("filterForm");
+            const inputs = form.querySelectorAll("input");
+            inputs.forEach(input => {
+                if (!input.value) {
+                    input.removeAttribute("name"); // Remove name attribute for empty inputs
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>Student Subject Grades</h1>
+
+    <form id="filterForm" action="/view/subject-grades" method="get" onsubmit="removeEmptyParams()">
+        <div>
+            <label for="studentId">Student ID:</label>
+            <input type="text" id="studentId" name="studentId" placeholder="Enter Student ID">
+        </div>
+        <div>
+            <label for="subjectName">Subject Name:</label>
+            <input type="text" id="subjectName" name="subjectName" placeholder="Enter Subject Name">
+        </div>
+        <button type="submit">Filter</button>
+    </form>
+    <div class="button-container">
+        <button onclick="window.location.href='http://localhost:9000/view'">Main</button>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Student Name</th>
+            <th>Subject</th>
+            <th>Grades</th>
+            <th>Average Grade</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="gradeDTO : ${grades}">
+            <td th:text="${gradeDTO.studentName}"></td>
+            <td th:text="${gradeDTO.subject}"></td>
+            <td th:text="${gradeDTO.grades}"></td>
+            <td th:text="${gradeDTO.averageGrade}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
