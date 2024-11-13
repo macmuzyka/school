@@ -6,7 +6,6 @@ import com.school.repository.SchoolClassRepository;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
 import com.schoolmodel.model.entity.Grade;
-import com.schoolmodel.model.entity.SchoolClass;
 import com.schoolmodel.model.entity.Student;
 import com.schoolmodel.model.entity.Subject;
 import org.slf4j.Logger;
@@ -24,17 +23,15 @@ public class MockDataGradeSeederService {
     private final SubjectRepository subjectRepository;
     private final SchoolClassRepository schoolClassRepository;
     private final GradeRepository gradeRepository;
-    private final ClassService classService;
     private final ApplicationConfig applicationConfig;
     private final Random randomizer = new Random();
     private final Logger log = LoggerFactory.getLogger(MockDataGradeSeederService.class);
 
-    public MockDataGradeSeederService(StudentRepository studentRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository, GradeRepository gradeRepository, ClassService classService, ApplicationConfig applicationConfig) {
+    public MockDataGradeSeederService(StudentRepository studentRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository, GradeRepository gradeRepository, ApplicationConfig applicationConfig) {
         this.studentRepository = studentRepository;
         this.subjectRepository = subjectRepository;
         this.schoolClassRepository = schoolClassRepository;
         this.gradeRepository = gradeRepository;
-        this.classService = classService;
         this.applicationConfig = applicationConfig;
     }
 

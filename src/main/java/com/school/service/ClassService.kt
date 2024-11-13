@@ -14,7 +14,6 @@ import com.schoolmodel.model.enums.ClassAction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class ClassService(
@@ -96,17 +95,6 @@ class ClassService(
 
     private fun isAssigned(student: Student, schoolClass: SchoolClass): Boolean {
         return schoolClass.classStudents.contains(student)
-    }
-
-    fun classFull(schoolClass: SchoolClass) = schoolClass.classStudents.size >= applicationConfig.classMaxSize
-    fun assignStudent2Class(currentRandomClass: SchoolClass, currentStudent: Student) = currentRandomClass.classStudents.add(currentStudent)
-
-    private fun getOtherExistingClass(auxiliary: ClassWithStudentCountDto?): SchoolClass? {
-        return auxiliary?.let { a ->
-            schoolClassRepository.findById(a.id)
-                    .takeIf { schoolClass -> schoolClass.isPresent }!!.get()
-                    .also { log.info("Class found: $it") }
-        }
     }
 
     private fun createNewClass(): SchoolClass {
