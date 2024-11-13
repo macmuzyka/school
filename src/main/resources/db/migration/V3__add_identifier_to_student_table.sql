@@ -1,0 +1,1 @@
+ALTER TABLE IF EXISTS student ADD COLUMN identifier varchar(11);

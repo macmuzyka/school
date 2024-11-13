@@ -1,14 +1,10 @@
 package com.school.service;
 
 import com.school.configuration.ApplicationConfig;
-import com.school.repository.GradeRepository;
-import com.school.repository.SchoolClassRepository;
-import com.school.repository.StudentRepository;
-import com.school.repository.SubjectRepository;
-import com.schoolmodel.model.entity.Grade;
-import com.schoolmodel.model.entity.SchoolClass;
-import com.schoolmodel.model.entity.Student;
-import com.schoolmodel.model.entity.Subject;
+import com.school.repository.*;
+import com.schoolmodel.model.dto.StudentDTO;
+import com.schoolmodel.model.entity.*;
+import com.schoolmodel.model.enums.InsertStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -19,27 +15,35 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class InputStudentsFromTextFileService {
     private final StudentRepository studentRepository;
-    private final SubjectRepository subjectRepository;
-    private final GradeRepository gradeRepository;
+    private final StudentInsertErrorRepository studentInsertErrorRepository;
     private final SchoolClassRepository schoolClassRepository;
+    private final MockDataGradeSeederService mockDataGradeSeederService;
     private final ClassService classService;
     private final ApplicationConfig applicationConfig;
+    private final Map<InsertStatus, Set<StudentDTO>> insertions = new HashMap<>();
     private static final Logger log = LoggerFactory.getLogger(InputStudentsFromTextFileService.class);
     private final Environment environment;
-    private final Random randomizer = new Random();
 
 
-    public InputStudentsFromTextFileService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SchoolClassRepository schoolClassRepository, ClassService classService, ApplicationConfig applicationConfig, Environment environment) {
+    public InputStudentsFromTextFileService(StudentRepository studentRepository,
+                                            StudentInsertErrorRepository studentInsertErrorRepository,
+                                            SchoolClassRepository schoolClassRepository,
+                                            MockDataGradeSeederService mockDataGradeSeederService, ClassService classService,
+                                            ApplicationConfig applicationConfig,
+                                            Environment environment
+    ) {
         this.studentRepository = studentRepository;
-        this.subjectRepository = subjectRepository;
-        this.gradeRepository = gradeRepository;
+        this.studentInsertErrorRepository = studentInsertErrorRepository;
         this.schoolClassRepository = schoolClassRepository;
+        this.mockDataGradeSeederService = mockDataGradeSeederService;
         this.classService = classService;
         this.applicationConfig = applicationConfig;
         this.environment = environment;
@@ -47,8 +51,10 @@ public class InputStudentsFromTextFileService {
 
     public List<Student> addStudents(MultipartFile studentsFile) {
         log.info("Adding students from file..");
+        initializeAuxiliaryMap();
         readAndSaveStudentsFromFile(studentsFile);
         populateStudentsWithGradesBasedOnActiveProfile();
+        clearAuxiliaryMap();
         return studentRepository.findAll();
     }
 
@@ -56,16 +62,16 @@ public class InputStudentsFromTextFileService {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(studentsFile.getInputStream()))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] lineParts = line.split(" ");
+                String[] parts = line.split(" ");
 
-                if (lineParts.length >= applicationConfig.getMinimumStudentTags()) {
-                    Student currentStudent = saveStudentFromReaderLine(lineParts);
-                    SchoolClass currentRandomClass = assignStudentToRandomClass(currentStudent);
-
+                if (lineHasProperNumberOfTags(parts)) {
+                    Student currentStudent = buildStudentFromReaderLine(parts);
+                    SchoolClass currentRandomClass = classService.assignStudentToFirstOpenClass(currentStudent);
                     schoolClassRepository.save(currentRandomClass);
                 } else {
-                    log.warn("Improper student record format, adding to database omitted!");
-                    log.warn("Line was: {}", line);
+                    log.warn("Improper student record format, error line: {}", line);
+                    StudentInsertError errorStudent = buildStudentFromImproperReadLine(parts);
+                    studentInsertErrorRepository.save(errorStudent);
                 }
             }
         } catch (IOException e) {
@@ -74,129 +80,62 @@ public class InputStudentsFromTextFileService {
         }
     }
 
-    private Student saveStudentFromReaderLine(String[] lineParts) {
+    private boolean lineHasProperNumberOfTags(String[] lineParts) {
+        return lineParts.length == applicationConfig.getMinimumStudentTags();
+    }
+
+    private StudentInsertError buildStudentFromImproperReadLine(String[] lineParts) {
+        return new StudentInsertError(
+                new Student("", "", "", "", LocalDate.now().minus(Period.ofYears(1000)), false),
+                "Error line in file: " + String.join(",", lineParts),
+                "Bad format in student file"
+        );
+    }
+
+    //TODO: refactor code, and elevate to separate service
+    private Student buildStudentFromReaderLine(String[] lineParts) {
         String firstName = lineParts[1];
         String lastName = lineParts[2];
         LocalDate birtDate = LocalDate.parse(lineParts[3], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        return studentRepository.save(new Student(firstName, lastName, UUID.randomUUID().toString(), birtDate, false));
-    }
-
-    private SchoolClass assignStudentToRandomClass(Student currentStudent) {
-        Random randomizer = new Random();
-        List<SchoolClass> classes = schoolClassRepository.findAll();
-        int classId = randomizer.nextInt(classes.size());
-
-        SchoolClass currentRandomClass = classes.get(classId);
-        if (classService.classFull(currentRandomClass)) {
-            log.info("Max size class reached, new class needed!");
-            currentRandomClass = classService.getOtherExistingClass();
-        }
-
-        if (classService.assignStudent2Class(currentRandomClass, currentStudent)) {
-            currentStudent.setAssigned(true);
-            log.info("Student added: {} to class: {}", currentStudent, currentRandomClass.className());
+        String identifier = lineParts[4];
+        Student toSave = new Student(firstName, lastName, identifier, UUID.randomUUID().toString(), birtDate, false);
+        if (insertions.get(InsertStatus.SUCCESS).add(new StudentDTO(toSave))) {
+            return studentRepository.save(toSave);
         } else {
-            log.error("Error adding student: {} to class: {}", currentStudent, currentRandomClass.className());
+            log.warn("Student with identifier {} is already added, verify correctness of its value in uploaded students file!", toSave.getIdentifier());
+            log.warn("Saving student omitted");
+            studentInsertErrorRepository.save(new StudentInsertError(toSave, "Duplicated identifier", "Insert error"));
+            insertions.get(InsertStatus.ERROR).add(new StudentDTO(toSave));
+            return null;
         }
-        return currentRandomClass;
-
     }
 
     private void populateStudentsWithGradesBasedOnActiveProfile() {
-        if (isActiveProfile("devel")) {
+        if (develProfileActive()) {
             log.info("Devel profile active, populating on random student added from file with some random grades");
-            fillStudentsWithRandomizedGrades();
+            mockDataGradeSeederService.fillStudentsWithRandomizedGrades();
         } else {
             log.debug("Not populating added students with randomized grades");
         }
     }
 
-    private boolean isActiveProfile(String develProfile) {
+    private boolean develProfileActive() {
         String[] activeProfiles = environment.getActiveProfiles();
         for (String profile : activeProfiles) {
-            if (profile.equalsIgnoreCase(develProfile)) {
+            if (profile.equalsIgnoreCase("devel")) {
                 return true;
             }
         }
         return false;
     }
 
-    private void fillStudentsWithRandomizedGrades() {
-        int studentsCount = studentRepository.findAll().size();
-        log.debug("Students found: {}", studentsCount);
-        int subjectsCount = subjectRepository.findAll().size();
-        log.debug("Subjects found: {}", subjectsCount);
-
-        int numberOfRecords = applicationConfig.getGradesToAdd();
-
-        log.info("Populating students with {} example grades by random..", numberOfRecords);
-        double progress = 0;
-        long eachTenthPartOfLoopTimeStart = System.currentTimeMillis();
-        for (int i = 0; i < numberOfRecords; i++) {
-            if (progressEveryTenPercent(progress, numberOfRecords)) {
-                eachTenthPartOfLoopTimeStart = logProgressAndUpdateDuration(progress, numberOfRecords, eachTenthPartOfLoopTimeStart);
-            }
-
-            saveRandomGradeForRandomStudent(studentsCount);
-            progress++;
-        }
-        log.info("Done!");
+    private void initializeAuxiliaryMap() {
+        insertions.put(InsertStatus.SUCCESS, studentRepository.findAll().stream().map(StudentDTO::new).collect(Collectors.toSet()));
+        insertions.put(InsertStatus.ERROR, studentInsertErrorRepository.findAll().stream().map(StudentDTO::new).collect(Collectors.toSet()));
     }
 
-    private boolean progressEveryTenPercent(double progress, int numberOfRecords) {
-        int divider = numberOfRecords / 10;
-        return progress % divider == 0 && progress != 0;
-    }
-
-    private long logProgressAndUpdateDuration(double progress, int numberOfRecords, long startTime) {
-        double percentage = (progress / numberOfRecords) * 100;
-        log.info("Progress: {}%", String.format("%.0f", percentage));
-        long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
-        log.info("This took {}s", String.format("%.2f", ((double) duration / 1000)));
-        return System.currentTimeMillis();
-    }
-
-    private void saveRandomGradeForRandomStudent(int studentsCount) {
-        try {
-            Student randomStudent = findRandomStudent(zeroExclusiveRandomValue(studentsCount));
-            long associatedWithStudentRandomSubjectId = findRandomSubjectIdForStudent(randomStudent);
-            List<Integer> availableGrades = applicationConfig.getAvailableGrades();
-
-            Optional<Subject> optionalRandomStudentSubject = subjectRepository.findById(associatedWithStudentRandomSubjectId);
-            if (optionalRandomStudentSubject.isPresent()) {
-                Subject randomStudentSubject = optionalRandomStudentSubject.get();
-                gradeRepository.save(new Grade(
-                                availableGrades.get(randomizer.nextInt(availableGrades.size())),
-                                randomStudent,
-                                randomStudentSubject
-                        )
-                );
-            } else {
-                throw new IllegalArgumentException("No subjects found for student: " + randomStudent);
-            }
-        } catch (Exception e) {
-            log.error(Arrays.toString(e.getStackTrace()));
-            log.error(e.getMessage());
-        }
-    }
-
-    private Student findRandomStudent(Long random) {
-        Optional<Student> student = studentRepository.findById(random);
-        if (student.isPresent()) {
-            return student.get();
-        } else {
-            throw new IllegalArgumentException("Student not present upon application warmup!");
-        }
-    }
-
-    private long zeroExclusiveRandomValue(long range) {
-        return randomizer.nextLong(range) + 1;
-    }
-
-    private long findRandomSubjectIdForStudent(Student randomStudent) {
-        List<Long> subjectsIdsStudentBelongTo = schoolClassRepository.findStudentClassSubjects(randomStudent.getCode());
-        return subjectsIdsStudentBelongTo.get(randomizer.nextInt(subjectsIdsStudentBelongTo.size()));
+    private void clearAuxiliaryMap() {
+        this.insertions.get(InsertStatus.SUCCESS).clear();
+        this.insertions.get(InsertStatus.ERROR).clear();
     }
 }

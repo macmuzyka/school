@@ -17,7 +17,7 @@ public class ClassController {
     }
 
 
-    @GetMapping("/all-classes")
+    @GetMapping("/all")
     public ResponseEntity<?> getClassesWithStudents() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(classService.getClassesWithStudents());
@@ -35,7 +35,7 @@ public class ClassController {
         }
     }
 
-    @PostMapping("/create-class")
+    @PostMapping("/create")
     public ResponseEntity<?> createClass(@RequestBody NewClassDTO newClassDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(classService.createClass(newClassDto));

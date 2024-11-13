@@ -1,16 +1,12 @@
 package com.school.service
 
 import com.school.configuration.ApplicationConfig
-import com.schoolmodel.model.dto.ClassWithStudentCountDto
 import com.school.repository.SchoolClassRepository
 import com.school.repository.SchoolRepository
 import com.school.repository.StudentRepository
 import com.school.repository.SubjectRepository
 import com.school.service.utils.mapper.QueryResultsMappingUtils
-import com.schoolmodel.model.dto.ClassWithListedStudentsDTO
-import com.schoolmodel.model.dto.ExistingStudentToClassDTO
-import com.schoolmodel.model.dto.NewClassDTO
-import com.schoolmodel.model.dto.ClassDTO
+import com.schoolmodel.model.dto.*
 import com.schoolmodel.model.entity.SchoolClass
 import com.schoolmodel.model.entity.Student
 import com.schoolmodel.model.entity.Subject
@@ -18,6 +14,7 @@ import com.schoolmodel.model.enums.ClassAction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class ClassService(
@@ -104,24 +101,12 @@ class ClassService(
     fun classFull(schoolClass: SchoolClass) = schoolClass.classStudents.size >= applicationConfig.classMaxSize
     fun assignStudent2Class(currentRandomClass: SchoolClass, currentStudent: Student) = currentRandomClass.classStudents.add(currentStudent)
 
-    fun getOtherExistingClass(): SchoolClass {
-        log.info("Attempting to get other class..")
-        val auxiliaryClassIdAndStudentCount = findClassDataStudentCanBeAssignedTo()
-        return getOtherExistingClass(auxiliaryClassIdAndStudentCount) ?: createNewClass()
-    }
-
     private fun getOtherExistingClass(auxiliary: ClassWithStudentCountDto?): SchoolClass? {
         return auxiliary?.let { a ->
             schoolClassRepository.findById(a.id)
                     .takeIf { schoolClass -> schoolClass.isPresent }!!.get()
                     .also { log.info("Class found: $it") }
         }
-    }
-
-    private fun findClassDataStudentCanBeAssignedTo(): ClassWithStudentCountDto? {
-        return schoolClassRepository.findSchoolClassWithLessThanMaxSizeStudentsAndLowestCount(applicationConfig.classMaxSize)
-                .takeIf { it.isNotEmpty() }
-                ?.let { queryResult -> QueryResultsMappingUtils.buildClassWithStudentCount(queryResult.find { it[0] != null }) }
     }
 
     private fun createNewClass(): SchoolClass {
@@ -154,6 +139,13 @@ class ClassService(
                     newClassDto.name,
                     applicationConfig.availableSubjects
                             .map { sub -> subjectRepository.save(Subject(sub)) }
-                            .toList())
+                            .toList()
+            )
     )
+
+    fun assignStudentToFirstOpenClass(student: Student?): SchoolClass {
+        val openClassId = schoolClassRepository.findSchoolClassesIdsWithStudentCountLessThanMaxClassSize(applicationConfig.classMaxSize).firstOrNull()
+        val foundOpenClass = openClassId?.let { schoolClassRepository.findById(it).orElse(null) } ?: createNewClass()
+        return student?.let { foundOpenClass.apply { classStudents.add(student) } } ?: foundOpenClass
+    }
 }

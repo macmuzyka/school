@@ -47,12 +47,14 @@ public class ClassTest {
                 "Ad",
                 "O'Ding",
                 UUID.randomUUID().toString(),
+                "10101022222",
                 LocalDate.now().minus(Period.ofYears(20)),
                 false)
         );
         additionalStudent = studentService.addStudent(new Student(
                 "Rem",
                 "O'Ving",
+                "01010133333",
                 UUID.randomUUID().toString(),
                 LocalDate.now().minus(Period.ofYears(25)),
                 false)
