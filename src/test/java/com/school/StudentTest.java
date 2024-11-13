@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -52,7 +54,7 @@ public class StudentTest {
         classes.add(class3);
         schoolRepository.save(new School("SCHOOL ONE", classes));
 
-        savedStudent = studentRepository.save(new Student("John", "O'Connor", UUID.randomUUID().toString(), false));
+        savedStudent = studentRepository.save(new Student("John", "O'Connor", "123456789", UUID.randomUUID().toString(), LocalDate.now().minus(Period.ofYears(20)),  false));
     }
 
     @Test

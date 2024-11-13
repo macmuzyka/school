@@ -33,14 +33,12 @@ public interface SchoolClassRepository extends JpaRepository<SchoolClass, Long> 
     List<Long> findStudentClassSubjects(@Param("studentCodeFound") String studentCodeFound);
 
     @Query(
-            value = "SELECT sc.id, count(s.id) " +
-                    "FROM school_class sc JOIN " +
-                    "student s ON sc.id = s.school_class_id " +
+            value = "SELECT sc.id FROM school_class sc " +
+                    "LEFT JOIN student s ON s.school_class_id = sc.id " +
                     "GROUP BY sc.id " +
-                    "HAVING count(s.id) < :maxClassSize " +
-                    "ORDER BY count(s.id) " +
-                    "LIMIT 1 ",
+                    "HAVING count(s.id) < 10\n" +
+                    "ORDER BY count(s.id) ",
             nativeQuery = true
     )
-    List<Object[]> findSchoolClassWithLessThanMaxSizeStudentsAndLowestCount(@Param("maxClassSize") int maxClassSize);
+    List<Long> findSchoolClassesIdsWithStudentCountLessThanMaxClassSize(@Param("maxClassSize") int maxClassSize);
 }
