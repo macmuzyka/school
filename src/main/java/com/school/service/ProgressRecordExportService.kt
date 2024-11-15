@@ -86,7 +86,7 @@ class ProgressRecordExportService(
     @Scheduled(cron = "*/15 * * * * *")
     fun scheduledExportTask() {
         if (progressRecords.isNotEmpty() && recordsReadyToExport) {
-            log.info("[Executing scheduled export task]");
+            log.info("[Executing scheduled export task]")
             exportProgressRecordsToXlsFile(progressRecords)
             progressRecords = mutableListOf()
             recordsReadyToExport = false

@@ -24,17 +24,15 @@ public class SeedMockGradesService {
     private final SubjectRepository subjectRepository;
     private final SchoolClassRepository schoolClassRepository;
     private final GradeRepository gradeRepository;
-    private final ProgressRecordExportService progressRecordsExportService;
     private final ApplicationConfig applicationConfig;
     private final Random randomizer = new Random();
     private final Logger log = LoggerFactory.getLogger(SeedMockGradesService.class);
 
-    public SeedMockGradesService(StudentRepository studentRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository, GradeRepository gradeRepository, ProgressRecordExportService progressRecordsExportService, ApplicationConfig applicationConfig) {
+    public SeedMockGradesService(StudentRepository studentRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository, GradeRepository gradeRepository, ApplicationConfig applicationConfig) {
         this.studentRepository = studentRepository;
         this.subjectRepository = subjectRepository;
         this.schoolClassRepository = schoolClassRepository;
         this.gradeRepository = gradeRepository;
-        this.progressRecordsExportService = progressRecordsExportService;
         this.applicationConfig = applicationConfig;
     }
 
