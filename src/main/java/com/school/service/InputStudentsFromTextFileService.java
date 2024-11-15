@@ -7,7 +7,6 @@ import com.schoolmodel.model.entity.*;
 import com.schoolmodel.model.enums.InsertStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,28 +24,28 @@ public class InputStudentsFromTextFileService {
     private final StudentRepository studentRepository;
     private final StudentInsertErrorRepository studentInsertErrorRepository;
     private final SchoolClassRepository schoolClassRepository;
-    private final MockDataGradeSeederService mockDataGradeSeederService;
+    private final SeedMockGradesService seedMockGradesService;
     private final ClassService classService;
+    private final EnvironmentService environmentService;
     private final ApplicationConfig applicationConfig;
     private final Map<InsertStatus, Set<StudentDTO>> insertions = new HashMap<>();
     private static final Logger log = LoggerFactory.getLogger(InputStudentsFromTextFileService.class);
-    private final Environment environment;
 
 
     public InputStudentsFromTextFileService(StudentRepository studentRepository,
                                             StudentInsertErrorRepository studentInsertErrorRepository,
                                             SchoolClassRepository schoolClassRepository,
-                                            MockDataGradeSeederService mockDataGradeSeederService, ClassService classService,
+                                            SeedMockGradesService seedMockGradesService, ClassService classService,
                                             ApplicationConfig applicationConfig,
-                                            Environment environment
+                                            EnvironmentService environmentService
     ) {
         this.studentRepository = studentRepository;
         this.studentInsertErrorRepository = studentInsertErrorRepository;
         this.schoolClassRepository = schoolClassRepository;
-        this.mockDataGradeSeederService = mockDataGradeSeederService;
+        this.seedMockGradesService = seedMockGradesService;
         this.classService = classService;
         this.applicationConfig = applicationConfig;
-        this.environment = environment;
+        this.environmentService = environmentService;
     }
 
     public List<Student> addStudents(MultipartFile studentsFile) {
@@ -103,30 +102,25 @@ public class InputStudentsFromTextFileService {
             return studentRepository.save(toSave);
         } else {
             log.warn("Student with identifier {} is already added, verify correctness of its value in uploaded students file!", toSave.getIdentifier());
-            log.warn("Saving student omitted");
-            studentInsertErrorRepository.save(new StudentInsertError(toSave, "Duplicated identifier", "Insert error"));
-            insertions.get(InsertStatus.ERROR).add(new StudentDTO(toSave));
+            log.warn("Attempting to save invalid record..");
+            StudentInsertError studentInsertError = new StudentInsertError(toSave, "Duplicated identifier", "Insert error");
+            if (insertions.get(InsertStatus.ERROR).add(new StudentDTO(studentInsertError))) {
+                studentInsertErrorRepository.save(studentInsertError);
+                log.warn("Invalid record saved to be repaired in future");
+            } else {
+                log.warn("Student with duplicated {} identifier already saved, omitting record", studentInsertError.getIdentifier());
+            }
             return null;
         }
     }
 
     private void populateStudentsWithGradesBasedOnActiveProfile() {
-        if (develProfileActive()) {
-            log.info("Devel profile active, populating on random student added from file with some random grades");
-            mockDataGradeSeederService.fillStudentsWithRandomizedGrades();
+        if (environmentService.profileOtherThanDefaultIsActive()) {
+            log.info("Other than default profile active thus for performance measure populating on random student added from file with some random grades");
+            seedMockGradesService.seedStudentsWithRandomizedGrades();
         } else {
             log.debug("Not populating added students with randomized grades");
         }
-    }
-
-    private boolean develProfileActive() {
-        String[] activeProfiles = environment.getActiveProfiles();
-        for (String profile : activeProfiles) {
-            if (profile.equalsIgnoreCase("devel")) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void initializeAuxiliaryMap() {

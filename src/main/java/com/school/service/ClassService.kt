@@ -99,7 +99,6 @@ class ClassService(
 
     private fun createNewClass(): SchoolClass {
         val resolvedNextClassNumber = findNextClassNumber()
-        log.info("Resolved next class number: $resolvedNextClassNumber")
         val newSchoolClass = schoolClassRepository.save(
                 SchoolClass("Class $resolvedNextClassNumber", applicationConfig.availableSubjects
                         .map { subject -> subjectRepository.save(Subject(subject)) }
@@ -115,7 +114,6 @@ class ClassService(
     }
 
     private fun findNextClassNumber(): Int {
-        log.info("Resolving next class number..")
         val maxClassNumber = schoolClassRepository.findAll()
                 .map { schoolClass -> Integer.valueOf(schoolClass.name.substringAfter(" ")) }
                 .maxOf { it }

@@ -12,13 +12,17 @@ public class ApplicationConfig {
     private int classMaxSize;
     private int minimumStudentTags;
     private int gradesToAdd;
+    private String progressRecordsDirectory;
+    private String progressRecordsFile;
 
-    public ApplicationConfig(String availableGrades, String availableSubjects, int classMaxSize, int minimumStudentTags, int gradesToAdd) {
+    public ApplicationConfig(String availableGrades, String availableSubjects, int classMaxSize, int minimumStudentTags, int gradesToAdd, String progressRecordsDirectory, String progressRecordsFile) {
         this.availableGrades = availableGrades;
         this.availableSubjects = availableSubjects;
         this.classMaxSize = classMaxSize;
         this.minimumStudentTags = minimumStudentTags;
         this.gradesToAdd = gradesToAdd;
+        this.progressRecordsDirectory = progressRecordsDirectory;
+        this.progressRecordsFile = progressRecordsFile;
     }
 
     public List<Integer> getAvailableGrades() {
@@ -59,5 +63,21 @@ public class ApplicationConfig {
 
     public void setGradesToAdd(int gradesToAdd) {
         this.gradesToAdd = gradesToAdd;
+    }
+
+    public String getProgressRecordsDirectory() {
+        return progressRecordsDirectory;
+    }
+
+    public void setProgressRecordsDirectory(String progressRecordsDirectory) {
+        this.progressRecordsDirectory = progressRecordsDirectory;
+    }
+
+    public String getProgressRecordsFile() {
+        return progressRecordsFile;
+    }
+
+    public void setProgressRecordsFile(String progressRecordsFile) {
+        this.progressRecordsFile = progressRecordsFile;
     }
 }
