@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class InputStudentsFromTextFileService {
     private final StudentRepository studentRepository;
     private final StudentInsertErrorRepository studentInsertErrorRepository;
+    private final StudentDuplicateErrorRepository studentDuplicateErrorRepository;
     private final SchoolClassRepository schoolClassRepository;
     private final SeedMockGradesService seedMockGradesService;
     private final ClassService classService;
@@ -34,13 +35,16 @@ public class InputStudentsFromTextFileService {
 
     public InputStudentsFromTextFileService(StudentRepository studentRepository,
                                             StudentInsertErrorRepository studentInsertErrorRepository,
+                                            StudentDuplicateErrorRepository studentDuplicateErrorRepository,
                                             SchoolClassRepository schoolClassRepository,
-                                            SeedMockGradesService seedMockGradesService, ClassService classService,
+                                            SeedMockGradesService seedMockGradesService,
+                                            ClassService classService,
                                             ApplicationConfig applicationConfig,
                                             EnvironmentService environmentService
     ) {
         this.studentRepository = studentRepository;
         this.studentInsertErrorRepository = studentInsertErrorRepository;
+        this.studentDuplicateErrorRepository = studentDuplicateErrorRepository;
         this.schoolClassRepository = schoolClassRepository;
         this.seedMockGradesService = seedMockGradesService;
         this.classService = classService;
@@ -52,7 +56,7 @@ public class InputStudentsFromTextFileService {
         log.info("Adding students from file..");
         initializeAuxiliaryMap();
         readAndSaveStudentsFromFile(studentsFile);
-        populateStudentsWithGradesBasedOnActiveProfile();
+        populateStudentsWithGradesIfOtherThanDefaultProfileIsActive();
         clearAuxiliaryMap();
         return studentRepository.findAll();
     }
@@ -70,7 +74,11 @@ public class InputStudentsFromTextFileService {
                 } else {
                     log.warn("Improper student record format, error line: {}", line);
                     StudentInsertError errorStudent = buildStudentFromImproperReadLine(parts);
-                    studentInsertErrorRepository.save(errorStudent);
+                    if (errorInserts().add(new StudentDTO(errorStudent))) {
+                        studentInsertErrorRepository.save(errorStudent);
+                    } else {
+                        log.warn("Improper student record already saved to database to be repaired in future");
+                    }
                 }
             }
         } catch (IOException e) {
@@ -84,9 +92,10 @@ public class InputStudentsFromTextFileService {
     }
 
     private StudentInsertError buildStudentFromImproperReadLine(String[] lineParts) {
+        String pseudoIdentifierFromInvalidRecord = String.join(",", lineParts);
         return new StudentInsertError(
-                new Student("", "", "", "", LocalDate.now().minus(Period.ofYears(1000)), false),
-                "Error line in file: " + String.join(",", lineParts),
+                new Student("", "", pseudoIdentifierFromInvalidRecord, "", LocalDate.now().minus(Period.ofYears(1000)), false),
+                "Error line in file: " + pseudoIdentifierFromInvalidRecord,
                 "Bad format in student file"
         );
     }
@@ -98,23 +107,23 @@ public class InputStudentsFromTextFileService {
         LocalDate birtDate = LocalDate.parse(lineParts[3], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String identifier = lineParts[4];
         Student toSave = new Student(firstName, lastName, identifier, UUID.randomUUID().toString(), birtDate, false);
-        if (insertions.get(InsertStatus.SUCCESS).add(new StudentDTO(toSave))) {
+        if (validInserts().add(new StudentDTO(toSave))) {
             return studentRepository.save(toSave);
         } else {
-            log.warn("Student with identifier {} is already added, verify correctness of its value in uploaded students file!", toSave.getIdentifier());
-            log.warn("Attempting to save invalid record..");
-            StudentInsertError studentInsertError = new StudentInsertError(toSave, "Duplicated identifier", "Insert error");
-            if (insertions.get(InsertStatus.ERROR).add(new StudentDTO(studentInsertError))) {
-                studentInsertErrorRepository.save(studentInsertError);
-                log.warn("Invalid record saved to be repaired in future");
+            log.warn("Student {} is already added, verify correctness of its value in uploaded students file!", toSave.simpleDisplay());
+            log.warn("Attempting to save record as duplicated");
+            StudentDuplicateError duplicatedStudent = new StudentDuplicateError(toSave, "Duplicated identifier", "Insert error");
+            if (duplicatedInerts().add(new StudentDTO(duplicatedStudent))) {
+                studentDuplicateErrorRepository.save(duplicatedStudent);
+                log.warn("Duplicated record {} saved to be repaired or removed in future", duplicatedStudent.simpleDisplay());
             } else {
-                log.warn("Student with duplicated {} identifier already saved, omitting record", studentInsertError.getIdentifier());
+                log.warn("Student with duplicated {} identifier already saved, not saving", duplicatedStudent.getIdentifier());
             }
             return null;
         }
     }
 
-    private void populateStudentsWithGradesBasedOnActiveProfile() {
+    private void populateStudentsWithGradesIfOtherThanDefaultProfileIsActive() {
         if (environmentService.profileOtherThanDefaultIsActive()) {
             log.info("Other than default profile active thus for performance measure populating on random student added from file with some random grades");
             seedMockGradesService.seedStudentsWithRandomizedGrades();
@@ -126,10 +135,24 @@ public class InputStudentsFromTextFileService {
     private void initializeAuxiliaryMap() {
         insertions.put(InsertStatus.SUCCESS, studentRepository.findAll().stream().map(StudentDTO::new).collect(Collectors.toSet()));
         insertions.put(InsertStatus.ERROR, studentInsertErrorRepository.findAll().stream().map(StudentDTO::new).collect(Collectors.toSet()));
+        insertions.put(InsertStatus.DUPLICATED, studentDuplicateErrorRepository.findAll().stream().map(StudentDTO::new).collect(Collectors.toSet()));
     }
 
     private void clearAuxiliaryMap() {
         this.insertions.get(InsertStatus.SUCCESS).clear();
         this.insertions.get(InsertStatus.ERROR).clear();
+        this.insertions.get(InsertStatus.DUPLICATED).clear();
+    }
+
+    private Set<StudentDTO> validInserts() {
+        return this.insertions.get(InsertStatus.SUCCESS);
+    }
+
+    private Set<StudentDTO> duplicatedInerts() {
+        return this.insertions.get(InsertStatus.DUPLICATED);
+    }
+
+    private Set<StudentDTO> errorInserts() {
+        return this.insertions.get(InsertStatus.ERROR);
     }
 }
