@@ -133,7 +133,9 @@ public class InputStudentsFromTextFileService {
     }
 
     private boolean databaseShouldBeSeeded() {
-        return environmentService.profileOtherThanDefaultIsActive() && seedMockGradesService.wasAlreadyPopulated();
+        log.info("environmentService.profileOtherThanDefaultIsActive(): {}", environmentService.profileOtherThanDefaultIsActive());
+        log.info("seedMockGradesService.wasAlreadyPopulated(): {}", seedMockGradesService.notPopulatedYet());
+        return environmentService.profileOtherThanDefaultIsActive() && seedMockGradesService.notPopulatedYet();
     }
 
     private void initializeAuxiliaryMap() {

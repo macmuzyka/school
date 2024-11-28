@@ -24,7 +24,7 @@
         <tr>
             <th>
                 <label for="selectAll"></label>
-                <input type="checkbox" class="student-checkbox" id="selectAll" onclick="toggleSelectAll(this)">
+                <input type="checkbox" class="label-checkbox" id="selectAll" onclick="toggleSelectAll(this)">
             </th>
             <th>ID</th>
             <th>Name</th>
@@ -63,12 +63,11 @@
             let studentId = button.getAttribute('data')
             console.log("ID of student to be removed: " + studentId)
             if (confirm('Are you sure you want to remove this student?')) {
-                fetch('/duplicated/delete/' + studentId, {
+                fetch('/duplicated/delete-selected' + studentId, {
                     method: 'DELETE'
                 }).then(response => {
                     if (response.ok) {
                         alert('Student removed successfully');
-                        location.reload();
                     } else {
                         alert('Failed to remove the student');
                     }
@@ -95,10 +94,8 @@
                 return;
             }
 
-            // Log selected IDs (for debugging)
             console.log('Selected Student IDs:', studentIds);
 
-            // Send selected IDs to backend using POST or PUT
             fetch('/duplicated/delete-selected', {
                 method: 'DELETE',
                 headers: {
@@ -108,7 +105,7 @@
             }).then(response => {
                 if (response.ok) {
                     alert('Selected students removed successfully');
-                    location.reload(); // Refresh the page
+                    location.reload();
                 } else {
                     alert('Failed to remove selected students');
                 }
@@ -128,7 +125,6 @@
             button.disabled = !anyChecked && !selectAllChecked
         }
     </script>
-
 </div>
 </body>
 </html>

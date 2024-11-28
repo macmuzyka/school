@@ -149,7 +149,7 @@ public class SeedMockGradesService {
         return subjectsIdsStudentBelongTo.get(randomizer.nextInt(subjectsIdsStudentBelongTo.size()));
     }
 
-    public boolean wasAlreadyPopulated() {
-        return !gradeRepository.findAll().isEmpty();
+    public boolean notPopulatedYet() {
+        return gradeRepository.findAll().isEmpty();
     }
 }
