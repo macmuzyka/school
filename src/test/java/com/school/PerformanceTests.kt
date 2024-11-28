@@ -23,8 +23,6 @@ class PerformanceTests(@Autowired
                        @Autowired
                        private val gradeRepository: GradeRepository
 ) {
-
-
     private val numberOfTests = 10
     private val log = LoggerFactory.getLogger(PerformanceTests::class.java)
     private val file = File("src/test/resources/students_list.txt")
