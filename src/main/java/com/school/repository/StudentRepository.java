@@ -1,7 +1,5 @@
 package com.school.repository;
 
-
-import com.schoolmodel.model.dto.StudentDTO;
 import com.schoolmodel.model.entity.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

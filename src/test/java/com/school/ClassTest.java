@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("devel")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ClassTest {
-    private final Logger log = LoggerFactory.getLogger(ClassTest.class);
     @Autowired
     public StudentService studentService;
     @Autowired

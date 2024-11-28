@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
@@ -10,16 +10,19 @@
 <div class="container">
     <h1 class="header">
         <span class="title">Grades management</span>
-        <button class="redirect-icon previous-page-icon" onclick="window.location.href='http://localhost:9000/view'" title="Go back">
+        <button class="redirect-icon previous-page-icon" onclick="window.location.href='http://localhost:9000/view'"
+                title="Go back">
             <i class="fa-solid fa-circle-arrow-left"></i>
         </button>
     </h1>
 
     <div class="button-container">
-        <button class="student-grades-by-student" onclick="window.location.href='http://localhost:9000/view/add-student-grade'">Add
+        <button class="student-grades-by-student"
+                onclick="window.location.href='http://localhost:9000/view/add-student-grade'">Add
             Grade [Student]
         </button>
-        <button class="student-grades-by-class" onclick="window.location.href='http://localhost:9000/view/classes?recordsWithRedirect=true'">Add
+        <button class="student-grades-by-class"
+                onclick="window.location.href='http://localhost:9000/view/classes?recordsWithRedirect=true'">Add
             Grade [Class]
         </button>
         <button onclick="window.location.href='http://localhost:9000/view/subject-grades'">Show Grades</button>
