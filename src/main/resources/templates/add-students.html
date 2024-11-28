@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add students</title>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <link rel="stylesheet" type="text/css" href="/css/notification.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1 class="header">
+        <span class="title">Insert Students</span>
+        <button class="redirect-icon show-students"
+                onclick="window.location.href='http://localhost:9000/view/students'"
+                title="Show students">
+            <i class="fa-solid fa-user-check"></i>
+        </button>
+        <button class="redirect-icon previous-page-icon"
+                onclick="window.location.href='http://localhost:9000/view/student-entry-point'"
+                title="Go back">
+            <i class="fa-solid fa-circle-arrow-left"></i>
+        </button>
+    </h1>
+
+    <h1 class="header">
+        <button id="submitButton" class="green-button" onclick="redirectToSubmitForm()" type="button">+ Single Student
+        </button>
+        <div class="drop-area-raw" id="drop-area">
+            Drag & drop a .txt file here or <a href="#" id="file-link">select a file</a>
+            <input type="file" id="file-input" accept=".txt">
+        </div>
+    </h1>
+
+    <div id="popupContainer" style="display: none;">
+        <form id="correctionForm">
+            <h3>New Student</h3>
+            <div></div>
+            <div class="form-group">
+                <label for="studentName">Enter Student Name:</label>
+                <input type="text" id="studentName" name="studentName" required><br>
+            </div>
+
+            <div class="form-group">
+                <label for="studentSurname">Enter Student Surname:</label>
+                <input type="text" id="studentSurname" name="studentSurname" required><br>
+            </div>
+
+            <div class="form-group">
+                <label for="studentIdentifier">Enter Student Identifier:</label>
+                <input type="text" id="studentIdentifier" name="studentIdentifier" required><br>
+            </div>
+
+            <div class="form-group">
+                <label for="studentBirthDate">Enter Student Birth Date:</label>
+                <input type="date" id="studentBirthDate" name="studentBirthDate" pattern="\d{4}-\d{2}-\d{2}"
+                       required><br>
+            </div>
+
+            <div class="submit-form-buttons">
+                <button id="submitNewStudentButton" onclick="sendSubmittedStudent()" type="button">Submit</button>
+                <button type="button" onclick="closeSubmitPopup()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="loadingSpinner" style="display: none;">
+    <i class="fa fa-spinner fa-spin"></i> Uploading...
+</div>
+<div id="notification" class="notification hidden">Sliding notification</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        const fileLink = document.getElementById('file-link');
+
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('hover');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('hover');
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('hover');
+
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === "text/plain") {
+                uploadFile(file);
+            } else {
+                alert("Please drop a .txt file.");
+            }
+        });
+
+        fileLink.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (file && file.type === "text/plain") {
+                uploadFile(file);
+            } else {
+                alert("Please select a .txt file.");
+            }
+        });
+
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const spinner = document.getElementById('loadingSpinner');
+            spinner.style.display = 'block';
+
+            fetch('/input/students-from-file', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('File uploaded successfully:', data);
+                    successNotification("File uploaded successfully, check students list")
+                })
+                .catch(error => {
+                    console.error('Error uploading file:', error);
+                    alert('Failed to upload file.');
+                })
+                .finally(() => {
+                    spinner.style.display = 'none';
+                });
+        }
+    });
+
+    function redirectToSubmitForm() {
+        document.getElementById("popupContainer").style.display = "block";
+    }
+
+    function closeSubmitPopup() {
+        document.getElementById("popupContainer").style.display = "none";
+    }
+
+    function sendSubmittedStudent() {
+        const studentName = document.getElementById("studentName").value;
+        const studentSurname = document.getElementById("studentSurname").value;
+        const studentIdentifier = document.getElementById("studentIdentifier").value;
+        const studentBirthDate = document.getElementById("studentBirthDate").value;
+
+        if (!studentName || !studentSurname || !studentIdentifier || !studentBirthDate) {
+            alert("Please fill in all fields before submitting.");
+            return;
+        }
+
+        const correctionData = {
+            name: studentName,
+            surname: studentSurname,
+            identifier: studentIdentifier,
+            birthDate: studentBirthDate,
+            code: "",
+            assigned: false
+        };
+
+        console.log("correctionData")
+        console.log(correctionData)
+
+        fetch('/student/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(correctionData),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                successNotification('Student successfully added');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to add student');
+            });
+        closeSubmitPopup()
+        refreshPage()
+    }
+
+    function refreshPage() {
+        console.log("Attempting to refresh page..")
+        setTimeout(() => location.reload(), 5000)
+    }
+
+    function successNotification(message) {
+        const notification = document.getElementById("notification");
+
+        notification.textContent = message;
+
+        notification.classList.remove("hidden");
+        notification.classList.add("visible");
+
+        setTimeout(() => {
+            notification.classList.remove("visible");
+            notification.classList.add("hidden");
+        }, 2500);
+    }
+</script>
+</body>
+</html>

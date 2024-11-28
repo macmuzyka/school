@@ -56,7 +56,7 @@ public class InputStudentsFromTextFileService {
         log.info("Adding students from file..");
         initializeAuxiliaryMap();
         readAndSaveStudentsFromFile(studentsFile);
-        populateStudentsWithGradesIfOtherThanDefaultProfileIsActive();
+        populateStudentsWithGradesIfProfileIsActive();
         clearAuxiliaryMap();
         return studentRepository.findAll();
     }
@@ -94,7 +94,7 @@ public class InputStudentsFromTextFileService {
     private StudentInsertError buildStudentFromImproperReadLine(String[] lineParts) {
         String pseudoIdentifierFromInvalidRecord = String.join(",", lineParts);
         return new StudentInsertError(
-                new Student("", "", pseudoIdentifierFromInvalidRecord, "", LocalDate.now().minus(Period.ofYears(1000)), false),
+                new Student("", "", pseudoIdentifierFromInvalidRecord, "insert-error", LocalDate.now().minus(Period.ofYears(1000)), false),
                 "Error line in file: " + pseudoIdentifierFromInvalidRecord,
                 "Bad format in student file"
         );
@@ -110,8 +110,8 @@ public class InputStudentsFromTextFileService {
         if (validInserts().add(new StudentDTO(toSave))) {
             return studentRepository.save(toSave);
         } else {
-            log.warn("Student {} is already added, verify correctness of its value in uploaded students file!", toSave.simpleDisplay());
-            log.warn("Attempting to save record as duplicated");
+            log.warn("Attempt to add Student {} stopped, other student with this identifier was already added", toSave.simpleDisplay());
+            log.warn("Saving records as duplicated");
             StudentDuplicateError duplicatedStudent = new StudentDuplicateError(toSave, "Duplicated identifier", "Insert error");
             if (duplicatedInerts().add(new StudentDTO(duplicatedStudent))) {
                 studentDuplicateErrorRepository.save(duplicatedStudent);
@@ -123,13 +123,17 @@ public class InputStudentsFromTextFileService {
         }
     }
 
-    private void populateStudentsWithGradesIfOtherThanDefaultProfileIsActive() {
-        if (environmentService.profileOtherThanDefaultIsActive()) {
-            log.info("Other than default profile active thus for performance measure populating on random student added from file with some random grades");
+    private void populateStudentsWithGradesIfProfileIsActive() {
+        if (databaseShouldBeSeeded()) {
+            log.info("Condition to seed randomized grades among student met, proceeding to populate");
             seedMockGradesService.seedStudentsWithRandomizedGrades();
         } else {
             log.debug("Not populating added students with randomized grades");
         }
+    }
+
+    private boolean databaseShouldBeSeeded() {
+        return environmentService.profileOtherThanDefaultIsActive() && seedMockGradesService.wasAlreadyPopulated();
     }
 
     private void initializeAuxiliaryMap() {

@@ -6,6 +6,7 @@ import com.school.service.ClassService;
 import com.school.service.StudentService;
 import com.schoolmodel.model.dto.ExistingStudentToClassDTO;
 import com.schoolmodel.model.dto.ClassDTO;
+import com.schoolmodel.model.dto.StudentDTO;
 import com.schoolmodel.model.entity.SchoolClass;
 import com.schoolmodel.model.entity.Student;
 import com.schoolmodel.model.enums.ClassAction;
@@ -43,21 +44,23 @@ public class ClassTest {
 
     @BeforeEach
     public void setUp() {
-        savedStudent = studentService.addStudent(new Student(
-                "Ad",
-                "O'Ding",
-                UUID.randomUUID().toString(),
-                "10101022222",
-                LocalDate.now().minus(Period.ofYears(20)),
-                false)
+        savedStudent = studentService.addStudent(new StudentDTO(new Student(
+                        "Ad",
+                        "O'Ding",
+                        UUID.randomUUID().toString(),
+                        "10101022222",
+                        LocalDate.now().minus(Period.ofYears(20)),
+                        false)
+                )
         );
-        additionalStudent = studentService.addStudent(new Student(
-                "Rem",
-                "O'Ving",
-                "01010133333",
-                UUID.randomUUID().toString(),
-                LocalDate.now().minus(Period.ofYears(25)),
-                false)
+        additionalStudent = studentService.addStudent(new StudentDTO(new Student(
+                        "Rem",
+                        "O'Ving",
+                        "01010133333",
+                        UUID.randomUUID().toString(),
+                        LocalDate.now().minus(Period.ofYears(25)),
+                        false)
+                )
         );
     }
 

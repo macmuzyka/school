@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1 class="header">
+        <span class="title">Students management</span>
+        <button class="redirect-icon previous-page-icon" onclick="window.location.href='http://localhost:9000/view'" title="Go back">
+            <i class="fa-solid fa-circle-arrow-left"></i>
+        </button>
+    </h1>
+
+    <div class="button-container">
+        <button class="add-things-button-light-green" onclick="window.location.href='http://localhost:9000/view/add-students'">Add Students</button>
+        <button onclick="window.location.href='http://localhost:9000/view/students'">Show Students</button>
+        <button class="warning-button" onclick="window.location.href='http://localhost:9000/view/duplicates'">Duplicates</button>
+        <button class="insert-errors-button" onclick="window.location.href='http://localhost:9000/view/insert-errors'">Insert Errors</button>
+    </div>
+</div>
+</body>
+</html>
