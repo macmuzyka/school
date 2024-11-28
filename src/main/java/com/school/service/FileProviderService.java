@@ -2,10 +2,11 @@ package com.school.service;
 
 import com.school.configuration.FileConfig;
 import com.school.model.FileProvider;
+import com.school.model.FileToImport;
+import com.school.model.OptionalRequestParams;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
 import com.school.service.utils.FileNamePrefixResolver;
-import com.school.service.utils.QueryParamValidator;
 import com.schoolmodel.model.entity.Subject;
 import com.schoolmodel.model.enums.FileType;
 import com.schoolmodel.model.response.FileProviderResponse;
@@ -15,8 +16,10 @@ import com.school.service.utils.mapper.QueryResultsMappingUtils;
 import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,10 +38,11 @@ public class FileProviderService {
         this.fileConfig = fileConfig;
     }
 
-    public FileProviderResponse produceFile(String fileType, String optionalStudentId, String optionalSubjectName) {
+    public FileToImport produceFile(OptionalRequestParams params) throws InterruptedException {
         try {
-            prepareFileTypeAndNamePrefix(fileType, optionalStudentId, optionalSubjectName);
-            List<StudentSubjectGradesDTO> records = getRecordsFromDatabase(optionalStudentId, optionalSubjectName);
+            clearTemporaryDirectoryFromPreviousFiles();
+            prepareFileTypeAndNamePrefix(params.getFileType(), params);
+            List<StudentSubjectGradesDTO> records = getRecordsFromDatabase(params);
             return produceFileAndGetResponse(records);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -47,9 +51,34 @@ public class FileProviderService {
         }
     }
 
-    private void prepareFileTypeAndNamePrefix(String fileType, String optionalStudentId, String optionalSubjectName) {
+    private void clearTemporaryDirectoryFromPreviousFiles() {
+        File directory = new File(fileConfig.getDirectory());
+        checkIfDirectoryExists(directory);
+        File[] files = directory.listFiles();
+        if (files != null) {
+            deleteAllPreviousFiles(files);
+        } else {
+            log.info("No files to delete from temporary directory");
+        }
+    }
+
+    private void checkIfDirectoryExists(File directory) {
+        if (!directory.exists() || !directory.isDirectory()) {
+            throw new RuntimeException("Directory does not exist.");
+        }
+    }
+
+    private void deleteAllPreviousFiles(File[] files) {
+        for (File f : files) {
+            if (f.delete()) {
+                log.info("Deleted {} file", f.getName());
+            }
+        }
+    }
+
+    private void prepareFileTypeAndNamePrefix(String fileType, OptionalRequestParams params) {
         resolveFileType(fileType);
-        prepareFileNamePrefix(optionalStudentId, optionalSubjectName);
+        prepareFileNamePrefix(params);
     }
 
     private void resolveFileType(String fileType) {
@@ -62,22 +91,62 @@ public class FileProviderService {
         }
     }
 
-    private void prepareFileNamePrefix(String optionalStudentId, String optionalSubjectName) {
-        long repositoryStudentId = QueryParamValidator.longValueFromRequestParameter(optionalStudentId);
-        Student foundStudent = studentRepository.findById(repositoryStudentId).orElse(null);
-        Subject foundSubject = subjectRepository.findFirstByName(optionalSubjectName).orElse(null);
+    private void prepareFileNamePrefix(OptionalRequestParams params) {
+        Student foundStudent;
+        log.info("params: {}", params);
+        if (params.getId() == null) {
+            foundStudent = null;
+        } else {
+            log.info("passed id: {}", params.getId());
+            foundStudent = studentRepository.findById(params.getId()).orElse(null);
+        }
 
+        Subject foundSubject = subjectRepository.findFirstByName(params.getSubject()).orElse(null);
+        log.info("subject found: {}", foundSubject);
         fileConfig.setOptionalNamePrefix(FileNamePrefixResolver.build(foundStudent, foundSubject));
     }
 
-    private List<StudentSubjectGradesDTO> getRecordsFromDatabase(String optionalStudentId, String optionalSubjectName) {
-        Long studentIdForQuery = QueryParamValidator.prepareLongValueForRepositoryQuery(optionalStudentId);
-        return gradeRepository.findAllGradesGroupedBySubject(studentIdForQuery, optionalSubjectName).stream()
+    private List<StudentSubjectGradesDTO> getRecordsFromDatabase(OptionalRequestParams params) {
+        return gradeRepository.findAllGradesGroupedBySubject(
+                        params.getId(),
+                        params.getSubject(),
+                        params.getName(),
+                        params.getSurname(),
+                        params.getIdentifier())
+                .stream()
                 .map(QueryResultsMappingUtils::buildStudentSubjectGradesObject)
                 .toList();
     }
-    private FileProviderResponse produceFileAndGetResponse(List<StudentSubjectGradesDTO> records) {
+
+    private FileToImport produceFileAndGetResponse(List<StudentSubjectGradesDTO> records) {
         FileProvider fileProvider = FileProviderStrategy.resolve(fileConfig);
-        return fileProvider.build(records);
+        FileProviderResponse response = fileProvider.build(records);
+        log.info("Response from creating file : {}", response);
+        return recentlyProducedFile();
+    }
+
+    private FileToImport recentlyProducedFile() {
+        File directory = new File(fileConfig.getDirectory());
+
+        checkIfDirectoryExists(directory);
+        File[] files = getFileIfExists(directory);
+        File fileToReturn = files[0];
+
+        try {
+            FileSystemResource resource = new FileSystemResource(fileToReturn);
+            log.info("fileToReturn.getName()");
+            log.info(fileToReturn.getName());
+            return new FileToImport(resource, fileToReturn.getName());
+        } catch (Exception e) {
+            throw new RuntimeException("Error retrieving the file: " + e.getMessage());
+        }
+    }
+
+    private File[] getFileIfExists(File directory) {
+        File[] files = directory.listFiles();
+        if (files == null || files.length == 0) {
+            throw new RuntimeException("No files available.");
+        }
+        return files;
     }
 }

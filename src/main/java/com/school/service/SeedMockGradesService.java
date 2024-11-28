@@ -28,6 +28,7 @@ public class SeedMockGradesService {
     private final Random randomizer = new Random();
     private final Logger log = LoggerFactory.getLogger(SeedMockGradesService.class);
 
+    //TODO: think about rewriting this class to kotlin service just to simplify and reduce code
     public SeedMockGradesService(StudentRepository studentRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository, GradeRepository gradeRepository, ApplicationConfig applicationConfig) {
         this.studentRepository = studentRepository;
         this.subjectRepository = subjectRepository;
@@ -146,5 +147,9 @@ public class SeedMockGradesService {
     private long findRandomSubjectIdForStudent(Student randomStudent) {
         List<Long> subjectsIdsStudentBelongTo = schoolClassRepository.findStudentClassSubjects(randomStudent.getCode());
         return subjectsIdsStudentBelongTo.get(randomizer.nextInt(subjectsIdsStudentBelongTo.size()));
+    }
+
+    public boolean wasAlreadyPopulated() {
+        return !gradeRepository.findAll().isEmpty();
     }
 }

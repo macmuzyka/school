@@ -2,37 +2,70 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Student Grades</title>
+    <title>Student Subject grouped by Subjects</title>
     <link rel="stylesheet" type="text/css" href="/css/styles.css">
-    <script>
-        function removeEmptyParams() {
-            const form = document.getElementById("filterForm");
-            const inputs = form.querySelectorAll("input");
-            inputs.forEach(input => {
-                if (!input.value) {
-                    input.removeAttribute("name"); // Remove name attribute for empty inputs
-                }
-            });
-        }
-    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
-    <h1>Student Subject Grades</h1>
-
-    <form id="filterForm" action="/view/subject-grades" method="get" onsubmit="removeEmptyParams()">
-        <div>
-            <label for="studentId">Student ID:</label>
-            <input type="text" id="studentId" name="studentId" placeholder="Enter Student ID">
-        </div>
-        <div>
-            <label for="subjectName">Subject Name:</label>
-            <input type="text" id="subjectName" name="subjectName" placeholder="Enter Subject Name">
-        </div>
-        <button type="submit">Filter</button>
-    </form>
-    <div class="button-container">
-        <button onclick="window.location.href='http://localhost:9000/view'">Main</button>
+    <h1 class="header">
+        <span class="title">Student Grades</span>
+        <button class="redirect-icon previous-page-icon" onclick="window.location.href='http://localhost:9000/view/grades-entry-point'"
+                title="Go back">
+            <i class="fa-solid fa-circle-arrow-left"></i>
+        </button>
+    </h1>
+    <div class="container">
+        <form th:action="@{/view/subject-grades}" method="GET" id="gradeForm" onsubmit="return submitForm()">
+            <div class="form-group">
+                <label for="studentId">ID:</label>
+                <input type="text" id="studentId" name="id" th:value="${id}" placeholder="Enter Student ID" oninput="debounceSubmit()">
+            </div>
+            <div class="form-group">
+                <label for="studentName">Name:</label>
+                <input type="text" id="studentName" name="name" th:value="${name}" placeholder="Enter Student Name" oninput="debounceSubmit()">
+            </div>
+            <div class="form-group">
+                <label for="studentSurname">Surname:</label>
+                <input type="text" id="studentSurname" name="surname" th:value="${surname}"
+                       placeholder="Enter Student Surname" oninput="debounceSubmit()">
+            </div>
+            <div class="form-group">
+                <label for="studentIdentifier">Identifier:</label>
+                <input type="text" id="studentIdentifier" name="identifier" th:value="${identifier}"
+                       placeholder="Enter Student Identifier" oninput="debounceSubmit()">
+            </div>
+            <div class="form-group">
+                <label for="subjectName">Subject:</label>
+                <select id="subjectName" name="subject" class="form-control">
+                    <option value="" disabled selected onselect="debounceSubmit()">Select a Subject</option>
+                    <option th:each="subject : ${subjects}"
+                            th:value="${subject}"
+                            th:text="${subject}">
+                    </option>
+                </select>
+            </div>
+            <div class="submit-form-buttons">
+                <button class="filter-button" type="submit" title="Filter">
+                    <i class="fa-solid fa-filter"></i>
+                </button>
+                <button class="clear-filters-button" onclick="clearFilters()" title="Clear filters" id="clearButton">
+                    <i class="fa-solid fa-filter-circle-xmark"></i>
+                </button>
+                <button class="import-button xls" type="button" onclick="importFile('xls')" title="Import XLS file"
+                        id="importToXls">
+                    <i class="fa-solid fa-file-excel"></i>
+                </button>
+                <button class="import-button pdf" type="button" onclick="importFile('pdf')" title="Import PDF file"
+                        id="importToPdf">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </button>
+                <button class="import-button csv" type="button" onclick="importFile('csv')" title="Import CSV file"
+                        id="importToCsv">
+                    <i class="fa-solid fa-file-csv"></i>
+                </button>
+            </div>
+        </form>
     </div>
 
     <table>
@@ -55,4 +88,98 @@
     </table>
 </div>
 </body>
+<script>
+    let debounceTimer;
+
+    function debounceSubmit() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            submitForm();
+        }, 2000);
+    }
+
+    function submitForm() {
+        document.getElementById('gradeForm').submit();
+    }
+    function clearFilters() {
+        const gradeForm = document.getElementById('gradeForm');
+        const inputs = gradeForm.querySelectorAll('input');
+        inputs.forEach(input => input.value = '');
+    }
+
+
+    document.getElementById("clearButton").addEventListener("click", function () {
+        console.log("clearing filters")
+        const defaultValues = getObject(null)
+
+        Object.keys(defaultValues).forEach(key => {
+            const input = document.querySelector(`input[name="${key}"]`);
+            if (input) {
+                input.value = defaultValues[key];
+            }
+        });
+    });
+
+    async function importFile(fileType) {
+        console.log("importing file")
+        const bodyRequest = getObject(fileType)
+
+        try {
+            const response = await fetch('/file/produce', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(bodyRequest)
+            })
+
+            if (response.status === 404) {
+                console.error("Directory does not exist.");
+                return;
+            }
+
+            if (response.status === 204) {
+                console.warn("No files available.");
+                return;
+            }
+
+            if (!response.ok) {
+                new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const contentDisposition = response.headers.get('Content-Disposition');
+            const fileName = contentDisposition
+                ? contentDisposition.split('filename=')[1]?.replace(/"/g, '')
+                : 'downloaded_file';
+
+            const blob = await response.blob();
+            const downloadLink = document.createElement('a');
+            downloadLink.href = window.URL.createObjectURL(blob);
+            downloadLink.download = fileName;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            console.log(`${fileName} downloaded successfully.`);
+        } catch (error) {
+            console.error('Error fetching file:', error.message);
+        }
+    }
+
+    function getObject(fileType) {
+        const studentId = document.getElementById('studentId').value;
+        const studentName = document.getElementById('studentName').value;
+        const studentSurname = document.getElementById('studentSurname').value;
+        const studentIdentifier = document.getElementById('studentIdentifier').value;
+        const subjectName = document.getElementById('subjectName').value;
+
+        return {
+            id: studentId,
+            name: studentName,
+            surname: studentSurname,
+            identifier: studentIdentifier,
+            subject: subjectName,
+            fileType: fileType
+        };
+    }
+</script>
 </html>

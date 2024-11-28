@@ -1,6 +1,6 @@
 package com.school.service.utils.mapper;
 
-import com.schoolmodel.model.dto.ClassWithStudentCountDto;
+import com.school.model.SubjectsWithGrades;
 import com.schoolmodel.model.dto.ClassWithListedStudentsDTO;
 import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
 import org.slf4j.Logger;
@@ -18,16 +18,23 @@ public class QueryResultsMappingUtils {
         String surname = (String) queryResult[1];
         String subject = (String) queryResult[2];
         String grades = (String) queryResult[3];
-        String average;
-        try {
-            average = castFromPostgresSqlDatabase(queryResult[4]);
-        } catch (Exception e) {
-            log.warn("Attempting other cast, as primary failed..");
-            average = castFromH2InMemoryDatabase(queryResult[4]);
-            log.info("Cast success");
+        String average = castAverage(queryResult[4]);
 
-        }
         return new StudentSubjectGradesDTO(name + " " + surname, subject, grades, average);
+    }
+
+    private static String castAverage(Object average) {
+        if (average == null) {
+            return "0.0";
+        } else {
+            try {
+                return castFromPostgresSqlDatabase(average);
+            } catch (Exception e) {
+                log.warn("Attempting other cast, as primary failed..");
+                return castFromH2InMemoryDatabase(average);
+            }
+        }
+
     }
 
     private static String castFromPostgresSqlDatabase(Object queryResultObject) {
@@ -41,18 +48,29 @@ public class QueryResultsMappingUtils {
     public static ClassWithListedStudentsDTO buildClassWithListedStudents(Object[] queryResult) {
         long studentCount = (long) queryResult[0];
         String className = (String) queryResult[1];
-        List<String> studentNames;
+        List<String> students;
         if (queryResult[2] == null) {
-            studentNames = Collections.emptyList();
+            students = Collections.emptyList();
         } else {
-            studentNames = Arrays.asList(((String) queryResult[2]).split(","));
+            students = Arrays.asList(((String) queryResult[2]).split(","));
         }
-        return new ClassWithListedStudentsDTO(studentCount, className, studentNames);
+        return new ClassWithListedStudentsDTO(studentCount, className, students);
     }
 
-    public static ClassWithStudentCountDto buildClassWithStudentCount(Object[] queryResult) {
-        long classId = (long) queryResult[0];
-        long studentCount = (long) queryResult[1];
-        return new ClassWithStudentCountDto(classId, studentCount);
+    public static SubjectsWithGrades prepareGradesForSingleStudent(Object[] result) {
+        long subjectId = (long) result[0];
+        String subject = (String) result[1];
+        String grades = checkForEmptyGrades(result[2]);
+        String average = castAverage((result[3]));
+
+        return new SubjectsWithGrades(subjectId, subject, grades, average);
+    }
+
+    private static String checkForEmptyGrades(Object grades) {
+        if (grades == null) {
+            return "- - - No grades yet - - -";
+        } else {
+            return (String) grades;
+        }
     }
 }

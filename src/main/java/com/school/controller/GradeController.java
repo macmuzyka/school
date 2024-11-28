@@ -1,7 +1,7 @@
 package com.school.controller;
 
+import com.school.model.OptionalRequestParams;
 import com.school.service.GradeService;
-import com.schoolmodel.model.entity.Grade;
 import com.schoolmodel.model.dto.GradeDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,33 +17,18 @@ public class GradeController {
     }
 
     @PostMapping("/add-grade")
-    public ResponseEntity<?> addGrade(@RequestBody Grade grade) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(gradeService.addGrade(grade));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
-    @PostMapping("/add-raw-grade")
     public ResponseEntity<?> addRawGrade(@RequestBody GradeDTO grade) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(gradeService.addGrade(
-                    grade.getValue(),
-                    grade.getSubject(),
-                    grade.getStudentCode())
-            );
+            return ResponseEntity.status(HttpStatus.CREATED).body(gradeService.addGrade(grade.getValue(), grade.getSubjectId(), grade.getStudentId()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @GetMapping("/get-subject-grades")
-    public ResponseEntity<?> addStudents(
-            @RequestParam(value = "studentId", required = false) Long studentId,
-            @RequestParam(value = "subjectName", required = false) String subjectName) {
+    public ResponseEntity<?> addStudents(@RequestBody OptionalRequestParams params) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(gradeService.getSubjectGradesForStudent(studentId, subjectName));
+            return ResponseEntity.status(HttpStatus.CREATED).body(gradeService.getSubjectGradesForStudents(params));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

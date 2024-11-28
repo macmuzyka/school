@@ -13,11 +13,11 @@ import java.util.Optional;
 @Repository
 public interface SchoolClassRepository extends JpaRepository<SchoolClass, Long> {
     @Query(value =
-            "SELECT count(s.name) as number_of_students, sc.name, string_agg(s.name || ' ' || s.surname, ',')" +
+            "SELECT count(s.name) as number_of_students, sc.name, string_agg(s.id || ' ' || s.name || ' ' || s.surname || ' [' || s.identifier || ']', ',')" +
                     "FROM student s " +
                     "RIGHT JOIN school_class sc ON s.school_class_id = sc.id " +
                     "GROUP BY sc.name " +
-                    "ORDER BY count(s.name) ",
+                    "ORDER BY sc.name ",
             nativeQuery = true)
     List<Object[]> findListedStudentsGroupedIntoClasses();
 

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Grade to Student</title>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1 class="header">
+        <span class="title">Search for a student</span>
+        <button class="redirect-icon previous-page-icon"
+                onclick="window.location.href='http://localhost:9000/view/grades-entry-point'"
+                title="Go back">
+            <i class="fa-solid fa-circle-arrow-left"></i>
+        </button>
+    </h1>
+    <div class="container">
+        <form th:action="@{/view/find}" method="GET" id="filterForm" onsubmit="return submitForm()">
+            <div class="form-group">
+                <label for="studentId">ID:</label>
+                <input type="text" id="studentId" name="id" th:value="${id}" placeholder="Enter Student ID"
+                       oninput="debounceSubmit()">
+            </div>
+            <div class="form-group">
+                <label for="studentName">Name:</label>
+                <input type="text" id="studentName" name="name" th:value="${name}" placeholder="Enter Student Name"
+                       oninput="debounceSubmit()">
+            </div>
+            <div class="form-group">
+                <label for="studentSurname">Surname:</label>
+                <input type="text" id="studentSurname" name="surname" th:value="${surname}"
+                       placeholder="Enter Student Surname" oninput="debounceSubmit()">
+            </div>
+            <div class="form-group">
+                <label for="studentIdentifier">Identifier:</label>
+                <input type="text" id="studentIdentifier" name="identifier" th:value="${identifier}"
+                       placeholder="Enter Student Identifier" oninput="debounceSubmit()">
+            </div>
+            <div class="submit-form-buttons">
+                <button class="filter-button" type="submit" title="Look for student">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <button class="clear-filters-button" onclick="clearFilters()" title="Look for student">
+                    <i class="fa-solid fa-filter-circle-xmark"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Identifier</th>
+            <th>Birth Date</th>
+            <th>Add Grade</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student : ${studentsFound}" th:data="${student.id}"
+            onclick="redirectToDetails(this.getAttribute('data'))"
+            style="cursor: pointer;">
+            <td th:text="${student.id}"></td>
+            <td th:text="${student.name}"></td>
+            <td th:text="${student.surname}"></td>
+            <td th:text="${student.identifier}"></td>
+            <td th:text="${student.birthDate}"></td>
+            <td>
+                <button class="student-folder-button" th:data="${student.id}"
+                        onclick="redirectToDetails(this.getAttribute('data'));"
+                        title="Go to student folder">
+                    <i class="fa-regular fa-folder-open"></i>
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+<script>
+    let debounceTimer; // Variable to store the timeout ID
+
+    function debounceSubmit() {
+        // Clear the previous timer if there was one
+        clearTimeout(debounceTimer);
+
+        // Set a new timer to submit the form after 2 seconds of inactivity
+        debounceTimer = setTimeout(() => {
+            submitForm(); // Trigger form submission after delay
+        }, 2000); // 2000ms (2 seconds)
+    }
+
+    function submitForm() {
+        document.getElementById('filterForm').submit(); // Submit the form
+    }
+
+    function redirectToDetails(studentId) {
+        window.location.href = `/view/student-details?id=` + studentId;
+    }
+
+    function clearFilters() {
+        const filterForm = document.getElementById('filterForm');
+        const inputs = filterForm.querySelectorAll('input');
+        inputs.forEach(input => input.value = '');
+        submitForm()
+    }
+</script>
+</html>

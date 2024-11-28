@@ -1,12 +1,12 @@
 package com.school.controller;
 
+import com.school.model.FileToImport;
+import com.school.model.OptionalRequestParams;
 import com.school.service.FileProviderService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/file")
@@ -17,12 +17,13 @@ public class FileController {
         this.fileProviderService = fileProviderService;
     }
 
-    @GetMapping("/produce")
-    public ResponseEntity<?> getCsvFile(@RequestParam String fileType,
-                                        @RequestParam(value = "studentId", required = false, defaultValue = "0") String studentId,
-                                        @RequestParam(value = "subjectName", required = false) String subjectName) {
+    @PostMapping("/produce")
+    public ResponseEntity<?> getFileWithGrades(@RequestBody OptionalRequestParams params) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(fileProviderService.produceFile(fileType, studentId, subjectName));
+            FileToImport toImport = fileProviderService.produceFile(params);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + toImport.getFileName() + "\"")
+                    .body(toImport.getFileToImport());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

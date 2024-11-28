@@ -51,6 +51,6 @@ public class KafkaConsumerConfig {
     @KafkaListener(topics = {"math-grade-supplier", "history-grade-supplier", "english-grade-supplier", "art-grade-supplier"}, groupId = "grades")
     public void listenGroupGrades(GradeDTO grade) {
         log.info("Received Message in group grades: " + grade);
-        gradeService.addGrade(grade.getValue(), grade.getSubject(), grade.getStudentCode());
+        gradeService.addGrade(grade.getValue(), grade.getSubjectId(), grade.getStudentId());
     }
 }

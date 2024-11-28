@@ -15,7 +15,7 @@ import java.io.FileInputStream
 
 
 @SpringBootTest
-@ActiveProfiles(profiles = ["prod"])
+@ActiveProfiles(profiles = ["devel"])
 class PerformanceTests(@Autowired
                        private val inputStudentsFromTextFileService: InputStudentsFromTextFileService,
                        @Autowired

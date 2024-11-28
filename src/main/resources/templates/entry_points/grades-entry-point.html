@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1 class="header">
+        <span class="title">Grades management</span>
+        <button class="redirect-icon previous-page-icon" onclick="window.location.href='http://localhost:9000/view'"
+                title="Go back">
+            <i class="fa-solid fa-circle-arrow-left"></i>
+        </button>
+    </h1>
+
+    <div class="button-container">
+        <button class="student-grades-by-student"
+                onclick="window.location.href='http://localhost:9000/view/add-student-grade'">Add
+            Grade [Student]
+        </button>
+        <button class="student-grades-by-class"
+                onclick="window.location.href='http://localhost:9000/view/classes?recordsWithRedirect=true'">Add
+            Grade [Class]
+        </button>
+        <button onclick="window.location.href='http://localhost:9000/view/subject-grades'">Show Grades</button>
+    </div>
+</div>
+</body>
+</html>
