@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Student List</title>
-    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <link rel="stylesheet" type="text/css" href="/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/css/buttons.css">
+    <link rel="stylesheet" type="text/css" href="/css/icons.css">
+    <link rel="stylesheet" type="text/css" href="/css/forms.css">
+    <link rel="stylesheet" type="text/css" href="/css/notification.css">
+    <script src="/js/notification.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -64,8 +69,6 @@
 
             </td>
         </tr>
-
-
     </table>
 
     <div id="popupContainer" style="display: none;">
@@ -104,24 +107,13 @@
     }
 
     function redirectToEditForm(button) {
-        console.log("th:data value")
         let underscoreStudentString = button.getAttribute('data')
         console.log(underscoreStudentString)
         let [id, identifier, name, surname, birthDate] = underscoreStudentString.split('_')
-        console.log("id")
-        console.log(id)
         document.getElementById("currentId").textContent = id
-        console.log("identifier")
-        console.log(identifier)
         document.getElementById("studentIdentifier").value = identifier
-        console.log("name")
-        console.log(name)
         document.getElementById("studentName").value = name
-        console.log("surname")
-        console.log(surname)
         document.getElementById("studentSurname").value = surname
-        console.log("birthDate")
-        console.log(birthDate)
         document.getElementById("studentBirthDate").value = birthDate
         document.getElementById("popupContainer").style.display = "block";
     }
