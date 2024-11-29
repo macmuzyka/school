@@ -1,0 +1,116 @@
+.submit-button {
+    background-color: #4d8a02;
+}
+
+.cancel-submit-button {
+    background-color: rgb(189, 172, 0);
+}
+
+.insert-errors-button {
+    background-color: red;
+    color: white;
+}
+
+.warning-button {
+    background-color: #e58a14;
+    color: white;
+}
+
+.add-things-button-light-green {
+    background-color: #87e514;
+    color: white;
+}
+
+.student-grades-by-student {
+    background-color: #37cb05;
+    color: white;
+}
+
+.student-grades-by-class {
+    background-color: #de9222;
+    color: white;
+}
+
+.student-folder-button {
+    background-color: transparent;
+    color: #4d8a02;
+    box-shadow: 0 4px 8px rgb(74, 144, 226, 0.3);
+}
+
+.grade-button {
+    background-color: #c50e37;
+    color: white;
+}
+
+.todo-button {
+    background-color: #a4a4a4;
+    color: white;
+}
+
+.green-button {
+    background-color: green;
+    box-shadow: 0 4px 8px rgb(74, 144, 226, 0.3);
+}
+
+.green-correct-button {
+    background-color: transparent;
+    color: green;
+    box-shadow: 0 4px 8px rgb(74, 144, 226, 0.3);
+}
+
+.blue-edit-button {
+    background-color: transparent;
+    color: #004680;
+    box-shadow: 0 4px 8px rgb(74, 144, 226, 0.3);
+}
+
+.blue-button {
+    background-color: #4a90e2;
+    box-shadow: 0 4px 8px rgb(74, 144, 226, 0.3);
+}
+
+.red-button {
+    background-color: transparent;
+    color: #a62929;
+    box-shadow: 0 4px 8px rgb(74, 144, 226, 0.3);
+}
+
+.red-remove-button {
+    background-color: red;
+    box-shadow: 0 4px 8px rgb(74, 144, 226, 0.3);
+}
+
+.filter-button {
+    background-color: transparent;
+    color: rgb(74, 144, 226);
+    box-shadow: 0 4px 8px rgb(74, 144, 226);
+    padding: 15px;
+    font-size: 24px;
+}
+
+.clear-filters-button {
+    background-color: transparent;
+    color: rgb(226, 102, 74);
+    box-shadow: 0 4px 8px rgb(74, 144, 226);
+    padding: 15px;
+    font-size: 24px;
+}
+
+.import-button {
+    background-color: transparent;
+    padding: 15px;
+    font-size: 24px;
+    box-shadow: 0 4px 8px rgb(74, 144, 226);
+}
+
+.import-button.csv {
+    color: rgb(189, 172, 0);
+}
+
+.import-button.xls {
+    color: rgb(17, 131, 0);
+}
+
+.import-button.pdf {
+    color: rgb(215, 19, 19);
+}
