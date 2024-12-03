@@ -18,10 +18,13 @@ class PseudoRoadMapService {
                         "Weighted grades (some grades are worth more than others, thus counting average grade will be different)"
                 ),
                 "Frontend" to listOf(
+                        "All notification popups to be send to frontend via web-socket",
+                        "GUI for adding class & adding student to a class",
                         "Draggable students among classes to assign students to different class",
                         "When hovered over grade it shows more details & information about the grade, when it was added, what grade relates to etc"
                 ),
                 "Backend + Frontend verification" to listOf(
+                        "Application configuration via GUI, config like available grades, subjects, class size etc",
                         "Implement logging with visibility scope (teacher, student, legal guardian)",
                         "Legal guardian entity with assigned student (visible grades of student that is associated with guardian)"
                 ),

@@ -1,7 +1,7 @@
 package com.school.service
 
 import com.school.repository.StudentDuplicateErrorRepository
-import com.schoolmodel.model.dto.StudentDTO
+import com.school.model.dto.StudentDTO
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 

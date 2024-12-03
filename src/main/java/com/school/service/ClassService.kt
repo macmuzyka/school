@@ -6,11 +6,11 @@ import com.school.repository.SchoolRepository
 import com.school.repository.StudentRepository
 import com.school.repository.SubjectRepository
 import com.school.service.utils.mapper.QueryResultsMappingUtils
-import com.schoolmodel.model.dto.*
-import com.schoolmodel.model.entity.SchoolClass
-import com.schoolmodel.model.entity.Student
-import com.schoolmodel.model.entity.Subject
-import com.schoolmodel.model.enums.ClassAction
+import com.school.model.dto.*
+import com.school.model.entity.SchoolClass
+import com.school.model.entity.Student
+import com.school.model.entity.Subject
+import com.school.model.enums.ClassAction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service

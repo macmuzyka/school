@@ -8,7 +8,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
+import com.school.model.dto.StudentSubjectGradesDTO;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

@@ -2,9 +2,9 @@ package com.school.service
 
 import com.school.repository.StudentInsertErrorRepository
 import com.school.repository.StudentRepository
-import com.schoolmodel.model.dto.StudentDTO
-import com.schoolmodel.model.entity.Student
-import com.schoolmodel.model.entity.StudentInsertError
+import com.school.model.dto.StudentDTO
+import com.school.model.entity.Student
+import com.school.model.entity.StudentInsertError
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*

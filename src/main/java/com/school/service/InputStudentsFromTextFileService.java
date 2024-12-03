@@ -2,9 +2,9 @@ package com.school.service;
 
 import com.school.configuration.ApplicationConfig;
 import com.school.repository.*;
-import com.schoolmodel.model.dto.StudentDTO;
-import com.schoolmodel.model.entity.*;
-import com.schoolmodel.model.enums.InsertStatus;
+import com.school.model.dto.StudentDTO;
+import com.school.model.entity.*;
+import com.school.model.enums.InsertStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

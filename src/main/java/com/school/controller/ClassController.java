@@ -1,8 +1,8 @@
 package com.school.controller;
 
+import com.school.model.dto.ExistingStudentToClassDTO;
+import com.school.model.dto.NewClassDTO;
 import com.school.service.ClassService;
-import com.schoolmodel.model.dto.ExistingStudentToClassDTO;
-import com.schoolmodel.model.dto.NewClassDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

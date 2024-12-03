@@ -3,10 +3,10 @@ package com.school.controller;
 import com.school.configuration.ApplicationConfig;
 import com.school.model.OptionalRequestParams;
 import com.school.model.SubjectsWithGrades;
+import com.school.model.dto.ClassWithListedStudentsDTO;
+import com.school.model.dto.StudentDTO;
+import com.school.model.dto.StudentSubjectGradesDTO;
 import com.school.service.*;
-import com.schoolmodel.model.dto.ClassWithListedStudentsDTO;
-import com.schoolmodel.model.dto.StudentDTO;
-import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +25,7 @@ public class ModelViewController {
     private final StudentService studentService;
     private final DuplicatedStudentService duplicatedStudentService;
     private final InsertErrorStudentService insertErrorStudentService;
+//    private final GradeService gradeService;
     private final GradeService gradeService;
     private final PseudoRoadMapService pseudoRoadMapService;
     private final ApplicationConfig applicationConfig;
@@ -35,6 +36,7 @@ public class ModelViewController {
         this.duplicatedStudentService = duplicatedStudentService;
         this.insertErrorStudentService = insertErrorStudentService;
         this.gradeService = gradeService;
+//        this.gradeService = gradeService;
         this.pseudoRoadMapService = pseudoRoadMapService;
         this.applicationConfig = applicationConfig;
     }
@@ -93,6 +95,7 @@ public class ModelViewController {
                                    @RequestParam(required = false) String subject) {
         try {
             OptionalRequestParams params = prepareOptionalRequestParams(null, id, name, surname, identifier, subject);
+//            List<StudentSubjectGradesDTO> grades = gradeService.getSubjectGradesForStudents(params);
             List<StudentSubjectGradesDTO> grades = gradeService.getSubjectGradesForStudents(params);
 
             model.addAttribute("grades", grades);
