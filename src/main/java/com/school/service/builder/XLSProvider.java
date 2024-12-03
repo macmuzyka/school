@@ -2,9 +2,9 @@ package com.school.service.builder;
 
 import com.school.configuration.FileConfig;
 import com.school.model.*;
-import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
-import com.schoolmodel.model.response.FileProviderResponse;
-import com.schoolmodel.model.enums.FileStatus;
+import com.school.model.dto.StudentSubjectGradesDTO;
+import com.school.model.response.FileProviderResponse;
+import com.school.model.enums.FileStatus;
 import com.school.service.utils.filetype.XLSUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;

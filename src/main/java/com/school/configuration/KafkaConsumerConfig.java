@@ -1,16 +1,12 @@
 package com.school.configuration;
 
-import com.school.service.GradeService;
-import com.schoolmodel.model.dto.GradeDTO;
+import com.school.model.dto.GradeDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -24,12 +20,6 @@ import java.util.Map;
 public class KafkaConsumerConfig {
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
-    private static final Logger log = LoggerFactory.getLogger(KafkaConsumerConfig.class);
-    private final GradeService gradeService;
-
-    public KafkaConsumerConfig(GradeService service) {
-        this.gradeService = service;
-    }
 
     @Bean
     public ConsumerFactory<String, GradeDTO> gradeConsumerFactory() {
@@ -46,11 +36,5 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, GradeDTO> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(gradeConsumerFactory());
         return factory;
-    }
-
-    @KafkaListener(topics = {"math-grade-supplier", "history-grade-supplier", "english-grade-supplier", "art-grade-supplier"}, groupId = "grades")
-    public void listenGroupGrades(GradeDTO grade) {
-        log.info("Received Message in group grades: " + grade);
-        gradeService.addGrade(grade.getValue(), grade.getSubjectId(), grade.getStudentId());
     }
 }

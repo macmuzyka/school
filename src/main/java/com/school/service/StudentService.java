@@ -2,12 +2,12 @@ package com.school.service;
 
 import com.school.configuration.ApplicationConfig;
 import com.school.model.OptionalRequestParams;
-import com.schoolmodel.model.dto.NewStudentWithClassDTO;
+import com.school.model.dto.NewStudentWithClassDTO;
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.StudentRepository;
-import com.schoolmodel.model.dto.StudentDTO;
-import com.schoolmodel.model.entity.SchoolClass;
-import com.schoolmodel.model.entity.Student;
+import com.school.model.dto.StudentDTO;
+import com.school.model.entity.SchoolClass;
+import com.school.model.entity.Student;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

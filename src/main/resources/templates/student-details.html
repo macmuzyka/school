@@ -94,8 +94,34 @@
     </div>
 </div>
 <div id="notification" class="notification hidden">Sliding notification</div>
+<div id="errorNotification" class="notification hidden">Sliding notification</div>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </body>
 <script>
+
+    const socket = new SockJS('http://localhost:9000/websocket-endpoint');
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+
+        stompClient.subscribe('/topic/message-consume-status', function (message) {
+            console.log("Received message: " + message.body)
+            const notificationMessage = message.body
+            if (notificationMessage === "OK") {
+                console.log("equaled OK")
+                successNotification("Grade added")
+            } else {
+                console.log("equaled NOT OK")
+                successNotification("Error adding grade")
+            }
+
+        });
+    });
+
+
     function openAddGradePopup(button) {
         console.log("Opening popup")
         const subjectId = button.getAttribute('data-subjectId');
@@ -148,7 +174,6 @@
             })
             .then(data => {
                 console.log('Success:', data);
-                successNotification("Grade successfully added")
             })
             .catch(error => {
                 console.error('Error:', error);

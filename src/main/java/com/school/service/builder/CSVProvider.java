@@ -5,10 +5,10 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.school.configuration.FileConfig;
 import com.school.model.FileResource;
-import com.schoolmodel.model.response.FileProviderResponse;
-import com.schoolmodel.model.enums.FileStatus;
-import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
 import com.school.model.FileProvider;
+import com.school.model.dto.StudentSubjectGradesDTO;
+import com.school.model.enums.FileStatus;
+import com.school.model.response.FileProviderResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -8,6 +8,8 @@ class EnvironmentService(
 ) {
 
     fun profileOtherThanDefaultIsActive() = environment.activeProfiles.isNotEmpty()
+    fun currentProfileOtherThanDevel() = !environment.activeProfiles.contains("devel")
+    fun currentProfileIsDevel() = environment.activeProfiles.contains("devel")
     fun resolveCurrentDataBase(): String {
         return if (environment.activeProfiles.contains("devel")) {
             "h2"

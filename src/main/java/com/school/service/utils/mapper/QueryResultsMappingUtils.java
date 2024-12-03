@@ -1,8 +1,8 @@
 package com.school.service.utils.mapper;
 
 import com.school.model.SubjectsWithGrades;
-import com.schoolmodel.model.dto.ClassWithListedStudentsDTO;
-import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
+import com.school.model.dto.ClassWithListedStudentsDTO;
+import com.school.model.dto.StudentSubjectGradesDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,5 +72,9 @@ public class QueryResultsMappingUtils {
         } else {
             return (String) grades;
         }
+    }
+    //TODO: do the same for students list
+    public static List<StudentSubjectGradesDTO> getEmptyGradesListIndicator() {
+        return List.of(new StudentSubjectGradesDTO("No", "grades", "to", "display"));
     }
 }

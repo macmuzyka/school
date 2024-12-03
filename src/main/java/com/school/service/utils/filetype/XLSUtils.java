@@ -1,6 +1,6 @@
 package com.school.service.utils.filetype;
 
-import com.schoolmodel.model.dto.StudentSubjectGradesDTO;
+import com.school.model.dto.StudentSubjectGradesDTO;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;

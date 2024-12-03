@@ -1,6 +1,6 @@
 package com.school.configuration;
 
-import com.schoolmodel.model.enums.FileType;
+import com.school.model.enums.FileType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "config.file")

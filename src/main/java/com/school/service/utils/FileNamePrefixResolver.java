@@ -1,7 +1,7 @@
 package com.school.service.utils;
 
-import com.schoolmodel.model.entity.Student;
-import com.schoolmodel.model.entity.Subject;
+import com.school.model.entity.Student;
+import com.school.model.entity.Subject;
 
 public class FileNamePrefixResolver {
     private static final String SEPARATOR = "_";

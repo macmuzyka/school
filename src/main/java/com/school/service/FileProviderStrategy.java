@@ -7,6 +7,8 @@ import com.school.service.builder.PDFProvider;
 import com.school.service.builder.XLSProvider;
 import org.springframework.stereotype.Service;
 
+import static com.school.model.enums.FileType.*;
+
 @Service
 public class FileProviderStrategy {
     private static final String csvExtension = ".csv";
