@@ -24,6 +24,9 @@ class PseudoRoadMapService {
                         "When hovered over grade it shows more details & information about the grade, when it was added, what grade relates to etc"
                 ),
                 "Backend + Frontend verification" to listOf(
+                        "Feedback collecting via form in GUI send to prepared mail",
+                        "Upon insertion student list showing up records that error occurred",
+                        "Better navigation to previous page",
                         "Application configuration via GUI, config like available grades, subjects, class size etc",
                         "Implement logging with visibility scope (teacher, student, legal guardian)",
                         "Legal guardian entity with assigned student (visible grades of student that is associated with guardian)"
