@@ -203,4 +203,9 @@ public class ModelViewController {
         model.addAttribute("thingsTodo", thingsTodo);
         return "todo-list";
     }
+
+    @GetMapping("/feedback")
+    public String getFeedbackPage() {
+        return "feedback";
+    }
 }

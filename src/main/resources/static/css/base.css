@@ -50,6 +50,15 @@ input {
     gap: 20px;
 }
 
+.feedback-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
+    gap: 20px;
+}
+
 .header .title {
     flex-grow: 1;
     text-align: center;
@@ -57,9 +66,10 @@ input {
 }
 
 .header .subtitle {
-    flex-grow: 1;
+    flex-grow: 0.4;
     text-align: center;
-    font-size: 0.75em;
+    font-size: 0.4em;
+    color: black;
 }
 
 h1 {
