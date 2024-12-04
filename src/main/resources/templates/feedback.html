@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feedback</title>
+    <link rel="stylesheet" type="text/css" href="/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/css/buttons.css">
+    <link rel="stylesheet" type="text/css" href="/css/icons.css">
+    <link rel="stylesheet" type="text/css" href="/css/forms.css">
+    <link rel="stylesheet" type="text/css" href="/css/notification.css">
+    <script src="/js/notification.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="feedback-container">
+    <div class="feedback-header">
+        <h1>Give Us Feedback</h1>
+        <h1>
+            <button class="redirect-icon previous-page-icon"
+                    onclick="window.location.href='http://localhost:9000/view'" title="Go back">
+                <i class="fa-solid fa-circle-arrow-left"></i>
+            </button>
+        </h1>
+    </div>
+    <div class="feedback-header">
+        <p>We are looking to improve our application, and we would like to hear feedback from you. Tell us what can be
+            improved and what new functionalities should be added!</p>
+    </div>
+    <form id="feedbackForm" onsubmit="saveFeedback()">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Your Name" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Your Email" required>
+        </div>
+        <div class="form-group">
+            <label for="message">Feedback:</label>
+            <textarea id="message" name="message" rows="5" placeholder="Your feedback" required></textarea>
+        </div>
+        <button class="submit-button">Submit Feedback</button>
+    </form>
+</div>
+</body>
+<script>
+    function saveFeedback() {
+        let providerName = document.getElementById("name").value
+        let providerMail = document.getElementById("email").value
+        let feedbackContent = document.getElementById("message").value
+
+        let feedbackObject = {
+            name: providerName,
+            mail: providerMail,
+            feedbackContent: feedbackContent
+        }
+        console.log("Feedback object to save: " + feedbackObject)
+
+        fetch('/feedback/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(feedbackObject)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                successNotification('Feedback saved');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to submit feedback.');
+            });
+    }
+</script>
+</html>

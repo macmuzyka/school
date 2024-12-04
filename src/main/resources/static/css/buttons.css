@@ -47,6 +47,11 @@
     color: white;
 }
 
+.feedback-button {
+    background-color: #1eafac;
+    color: white;
+}
+
 .green-button {
     background-color: green;
     box-shadow: 0 4px 8px rgb(74, 144, 226, 0.3);

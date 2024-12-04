@@ -38,3 +38,55 @@
 #correctionForm input {
     width: 250px;
 }
+
+.feedback-container {
+    width: 90%;
+    margin: 0 auto;
+    max-width: 550px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.feedback-header {
+    margin-bottom: 20px;
+}
+
+.feedback-header h1 {
+    margin: 0;
+    font-size: 1.8em;
+    color: #0056d6;
+}
+
+.feedback-header p {
+    margin: 5px 0;
+    font-size: 1.2em;
+    line-height: 1.4;
+    color: #666;
+}
+
+.form-group input,
+.form-group textarea {
+    max-width: 600px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    color: #333;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #0056d6;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 86, 214, 0.2);
+}
