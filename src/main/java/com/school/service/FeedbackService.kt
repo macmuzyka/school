@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service
 class FeedbackService(
         private val feedbackMaileSenderService: FeedbackMailSenderService
 ) {
-    private val log = LoggerFactory.getLogger(FeedbackService::class.java)
     fun propagateFeedback(feedback: FeedbackDTO): MailResponse {
         return feedbackMaileSenderService.sendMailWithFeedback(feedback)
     }
