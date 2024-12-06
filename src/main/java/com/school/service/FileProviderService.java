@@ -38,7 +38,7 @@ public class FileProviderService {
         this.fileConfig = fileConfig;
     }
 
-    public FileToImport produceFile(OptionalRequestParams params) throws InterruptedException {
+    public FileToImport produceFile(OptionalRequestParams params) {
         try {
             clearTemporaryDirectoryFromPreviousFiles();
             prepareFileTypeAndNamePrefix(params.getFileType(), params);
