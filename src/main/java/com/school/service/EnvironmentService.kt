@@ -1,10 +1,11 @@
 package com.school.service
 
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 
 @Service
 class EnvironmentService(
-        private val environment: org.springframework.core.env.Environment
+        private val environment: Environment
 ) {
 
     fun profileOtherThanDefaultIsActive() = environment.activeProfiles.isNotEmpty()

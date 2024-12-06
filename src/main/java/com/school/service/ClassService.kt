@@ -5,7 +5,7 @@ import com.school.repository.SchoolClassRepository
 import com.school.repository.SchoolRepository
 import com.school.repository.StudentRepository
 import com.school.repository.SubjectRepository
-import com.school.service.utils.mapper.QueryResultsMappingUtils
+import com.school.service.utils.mapper.QueryResultsMapper
 import com.school.model.dto.*
 import com.school.model.entity.SchoolClass
 import com.school.model.entity.Student
@@ -28,7 +28,7 @@ class ClassService(
     fun getClassesWithStudents(): List<ClassWithListedStudentsDTO> {
         return try {
             schoolClassRepository.findListedStudentsGroupedIntoClasses()
-                    .map { QueryResultsMappingUtils.buildClassWithListedStudents(it) }
+                    .map { QueryResultsMapper.buildClassWithListedStudents(it) }
                     .toList()
         } catch (e: Exception) {
             log.error(e.message)
