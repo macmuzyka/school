@@ -12,7 +12,7 @@ import com.school.model.enums.FileType;
 import com.school.model.response.FileProviderResponse;
 import com.school.model.entity.Student;
 import com.school.repository.GradeRepository;
-import com.school.service.utils.mapper.QueryResultsMappingUtils;
+import com.school.service.utils.mapper.QueryResultsMapper;
 import com.school.model.dto.StudentSubjectGradesDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public class FileProviderService {
         this.fileConfig = fileConfig;
     }
 
-    public FileToImport produceFile(OptionalRequestParams params) throws InterruptedException {
+    public FileToImport produceFile(OptionalRequestParams params) {
         try {
             clearTemporaryDirectoryFromPreviousFiles();
             prepareFileTypeAndNamePrefix(params.getFileType(), params);
@@ -114,7 +114,7 @@ public class FileProviderService {
                         params.getSurname(),
                         params.getIdentifier())
                 .stream()
-                .map(QueryResultsMappingUtils::buildStudentSubjectGradesObject)
+                .map(QueryResultsMapper::buildStudentSubjectGradesObject)
                 .toList();
     }
 

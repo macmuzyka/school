@@ -9,7 +9,7 @@ import com.school.model.entity.Grade
 import com.school.repository.GradeRepository
 import com.school.repository.StudentRepository
 import com.school.repository.SubjectRepository
-import com.school.service.utils.mapper.QueryResultsMappingUtils.*
+import com.school.service.utils.mapper.QueryResultsMapper.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 

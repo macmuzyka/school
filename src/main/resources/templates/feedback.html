@@ -51,7 +51,7 @@
 
         let feedbackObject = {
             name: providerName,
-            mail: providerMail,
+            email: providerMail,
             feedbackContent: feedbackContent
         }
         console.log("Feedback object to save: " + feedbackObject)
@@ -72,11 +72,16 @@
             .then(data => {
                 console.log('Success:', data);
                 successNotification('Feedback saved');
+                // refreshForm()
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('Failed to submit feedback.');
             });
+    }
+
+    function refreshForm() {
+        setTimeout(() => window.location.href='http://localhost:9000/view/feedback', 2000)
     }
 </script>
 </html>

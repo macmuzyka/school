@@ -9,13 +9,13 @@ class FeedbackResponseProvider {
         }
 
         fun prepareFeedbackProviderMailSubject(from: String): String {
-            return "Thank you for submitting you feedback $from \uD83D\uDE0E"
+            return "Thank you for submitting your feedback $from \uD83D\uDE09"
         }
 
         fun prepareFeedbackProviderMailMessage(): String {
-            return "This application is under constant development process and we are always looking for a ways to improve it!\n" +
-                    "Thank you again for providing feedback, we are looking into it\n." +
-                    "Have a nice day ☺\uFE0F\n\n" +
+            return "Application is under constant development process and we are always looking for a ways to improve it!\n" +
+                    "Thank you again for providing feedback, we will take it under consideration.\n" +
+                    "Have a nice day \uD83D\uDE0E\n\n" +
                     "[This is auto generated message, do not reply]"
         }
 

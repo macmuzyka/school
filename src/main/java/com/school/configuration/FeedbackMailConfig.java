@@ -1,6 +1,9 @@
 package com.school.configuration;
 
+import com.itextpdf.kernel.xmp.impl.Base64;
 import com.school.service.EnvironmentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +17,7 @@ public class FeedbackMailConfig {
     private final EnvironmentService environmentService;
     @Value("${spring.email.password}")
     private String emailPassword;
+    private final Logger log = LoggerFactory.getLogger(FeedbackMailConfig.class);
 
     public FeedbackMailConfig(EnvironmentService environmentService) {
         this.environmentService = environmentService;
@@ -26,7 +30,7 @@ public class FeedbackMailConfig {
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
         mailSender.setUsername("baseschoolinformer@gmail.com");
-        mailSender.setPassword(emailPassword);
+        mailSender.setPassword(Base64.decode(emailPassword));
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");

@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class QueryResultsMappingUtils {
-    private static final Logger log = LoggerFactory.getLogger(QueryResultsMappingUtils.class);
+public class QueryResultsMapper {
+    private static final Logger log = LoggerFactory.getLogger(QueryResultsMapper.class);
 
     public static StudentSubjectGradesDTO buildStudentSubjectGradesObject(Object[] queryResult) {
         String name = (String) queryResult[0];
