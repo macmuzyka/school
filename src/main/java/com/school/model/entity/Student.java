@@ -10,12 +10,20 @@ import java.util.List;
 @Table(name = "student")
 @EntityListeners(AuditingEntityListener.class)
 public class Student extends AbstractStudentEntity {
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "student_id")
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Grade> studentGrades;
+
+    @ManyToOne
+    @JoinColumn(name = "school_class_id")
+    private SchoolClass schoolClass;
 
     public List<Grade> getStudentGrades() {
         return studentGrades;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 
     public Student(String name, String surname, String identifier, String code, LocalDate birthDate, boolean assigned) {
@@ -28,4 +36,14 @@ public class Student extends AbstractStudentEntity {
     public void setStudentGrades(List<Grade> studentGrades) {
         this.studentGrades = studentGrades;
     }
+
+    public SchoolClass getSchoolClass() {
+        return schoolClass;
+    }
+
+    public void setSchoolClass(SchoolClass schoolClass) {
+        this.schoolClass = schoolClass;
+    }
+
+
 }

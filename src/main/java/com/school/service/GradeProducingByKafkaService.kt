@@ -2,36 +2,41 @@ package com.school.service
 
 import com.school.model.dto.GradeDTO
 import com.school.repository.SubjectRepository
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Profile
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 
 @Service
-@Profile("default", "prod")
 class GradeProducingByKafkaService(
         private val subjectRepository: SubjectRepository,
         private val kafkaTemplate: KafkaTemplate<String, GradeDTO>,
         @Value("\${app.config.grade-topic}")
-        private val kafkaTopic: String
+        private val kafkaGradeSupplierTopic: String
 
 ) {
-    fun produceGradeAndSendViaKafka(grade: GradeDTO): String {
+    private val log = LoggerFactory.getLogger(GradeProducingByKafkaService::class.java)
+    fun produceGradeAndSendViaKafka(grade: GradeDTO): Boolean {
         try {
             val topicPrefix = resolvePrefixValue(grade.subjectId)
             topicPrefix?.run {
-                val fullTopicName = topicPrefix + kafkaTopic
+                val fullTopicName = topicPrefix + kafkaGradeSupplierTopic
+                log.info("Sending grade $grade via kafka topic $fullTopicName")
                 kafkaTemplate.send(fullTopicName, grade)
-            } ?: throw IllegalArgumentException("Could not resolve topic prefix grade should be produced to!")
-            return "OK"
+                return true
+            } ?: throw IllegalArgumentException("Could not resolve topic prefix grade should be produced & sent to!")
         } catch (e: Exception) {
-            return e.message ?: "Error while sending"
+            log.error(e.message ?: "Error while sending")
+            throw RuntimeException(e)
         }
     }
 
     private fun resolvePrefixValue(subjectId: Long?): String? {
         subjectId?.let {
-            return subjectRepository.findById(subjectId).takeIf { it.isPresent }?.get()?.name?.lowercase()
+            return subjectRepository.findById(subjectId)
+                    .takeIf { it.isPresent }
+                    ?.get()
+                    ?.name?.lowercase()
         } ?: throw IllegalArgumentException("Subject id in incoming grade object was null!")
     }
 }

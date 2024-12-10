@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service
 @Service
 @Profile("default", "prod")
 class GradeConsumingByKafkaService(
-        private val frontendNotificationSenderService: FrontendNotificationSenderService,
         private val gradeService: GradeService
 ) {
     private val log = LoggerFactory.getLogger(GradeConsumingByKafkaService::class.java)
@@ -24,14 +23,9 @@ class GradeConsumingByKafkaService(
     ],
             groupId = "grades")
     fun consumeGradeFromGradesGroupId(grade: GradeDTO) {
-        log.debug("[KAFKA LISTENER] -> received message in [grades] group ID")
-        log.info("Incoming object: {}", grade)
-        val savedGrade = gradeService.addGrade(grade)
-        savedGrade?.let { sendNotificationToFrontend("OK") } ?: sendNotificationToFrontend("ERROR")
-    }
-
-    private fun sendNotificationToFrontend(notificationMessage: String) {
-        frontendNotificationSenderService.notifyFrontendAboutGradeMessageConsumed(notificationMessage)
+        log.info("[KAFKA LISTENER] -> received message in [grades] group ID")
+        log.info("[Received object] -> {}", grade)
+        gradeService.addGrade(grade).also { log.info("Saved grade: $it") }
     }
 }
 

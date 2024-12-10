@@ -52,7 +52,7 @@
             <td>
                 <div class="button-container">
                     <button class="student-folder-button" th:data="${student.id}"
-                            onclick="redirectToDetails(this.getAttribute('data'));"
+                            onclick="redirectToDetails(this);"
                             title="Go to student folder">
                         <i class="fa-regular fa-folder-open"></i>
                     </button>
@@ -61,7 +61,7 @@
                             onclick=redirectToEditForm(this)>
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="red-button"
+                    <button class="red-button" th:data="${student.id}"
                             onclick=removeStudent(this)>
                         <i class="fas fa-trash"></i>
                     </button>
@@ -101,22 +101,28 @@
         </form>
     </div>
 </div>
+<div id="notification" class="notification hidden">Sliding notification</div>
 </body>
 <script>
-    function redirectToDetails(studentId) {
+    function redirectToDetails(button) {
+        let studentId = button.getAttribute('data')
         window.location.href = `/view/student-details?id=` + studentId;
     }
 
     function redirectToEditForm(button) {
         let underscoreStudentString = button.getAttribute('data')
         console.log(underscoreStudentString)
+        prefillEditFormWithCurrentData(underscoreStudentString)
+        document.getElementById("popupContainer").style.display = "block";
+    }
+
+    function prefillEditFormWithCurrentData(underscoreStudentString) {
         let [id, identifier, name, surname, birthDate] = underscoreStudentString.split('_')
         document.getElementById("currentId").textContent = id
         document.getElementById("studentIdentifier").value = identifier
         document.getElementById("studentName").value = name
         document.getElementById("studentSurname").value = surname
         document.getElementById("studentBirthDate").value = birthDate
-        document.getElementById("popupContainer").style.display = "block";
     }
 
     function sendEditedStudent() {
@@ -145,7 +151,7 @@
         console.log(updatedStudent)
 
         fetch('/student/update', {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -182,7 +188,7 @@
         let studentId = button.getAttribute('data')
         console.log("ID of student to be removed: " + studentId)
         if (confirm('Are you sure you want to remove this student?')) {
-            fetch('/student/delete' + button.innerText, {
+            fetch('/student/delete?studentId=' + studentId, {
                 method: 'DELETE'
             }).then(response => {
                 if (response.ok) {

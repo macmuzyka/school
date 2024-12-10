@@ -85,19 +85,19 @@ public class StudentService {
         return new Student(student.getName(), student.getSurname(), student.getIdentifier(), UUID.randomUUID().toString(), student.getBirthDate(), false);
     }
 
-    public String deleteStudent(long id) {
+    public String deleteStudent(Long id) {
         Optional<Student> studentToDelete = studentRepository.findById(id);
         if (studentToDelete.isPresent()) {
-            Student student = studentToDelete.get();
-            log.info("Student {} {} with id [{}] to delete found:", student.getName(), student.getSurname(), student.getId());
-            studentRepository.delete(studentToDelete.get());
-            return "Student with id: " + student.getId() + " deleted!";
+            studentRepository.deleteById(id);
+            return "Student with id " + id + " removed";
         } else {
             return "Student with id: " + id + " to delete not found!";
         }
+
     }
 
-    public Student updateStudent(StudentDTO updatedStudent) {
+    public StudentDTO updateStudent(StudentDTO updatedStudent) {
+        //TODO: fix form size
         Optional<Student> studentToUpdate = studentRepository.findById(updatedStudent.getId());
         if (studentToUpdate.isPresent()) {
             Student toSave = studentToUpdate.get();
@@ -106,7 +106,7 @@ public class StudentService {
             toSave.setSurname(updatedStudent.getSurname());
             Student savedStudent = studentRepository.save(toSave);
             log.info("Student after update: {}", savedStudent);
-            return savedStudent;
+            return new StudentDTO(savedStudent);
         } else {
             throw new IllegalArgumentException("Student with id: " + updatedStudent.getId() + " does not exist!");
         }
