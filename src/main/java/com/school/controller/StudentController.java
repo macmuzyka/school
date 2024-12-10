@@ -53,7 +53,7 @@ public class StudentController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteStudent(@RequestParam(value = "studentId") long id) {
+    public ResponseEntity<?> deleteStudent(@RequestParam(value = "studentId") Long id) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(studentService.deleteStudent(id));
         } catch (Exception e) {

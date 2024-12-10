@@ -52,13 +52,13 @@ public class InputStudentsFromTextFileService {
         this.environmentService = environmentService;
     }
 
-    public List<Student> addStudents(MultipartFile studentsFile) {
+    public List<StudentDTO> addStudents(MultipartFile studentsFile) {
         log.info("Adding students from file..");
         initializeAuxiliaryMap();
         readAndSaveStudentsFromFile(studentsFile);
-        populateStudentsWithGradesIfProfileIsActive();
+        populateStudentsWithGradesIfDevelProfileIsActive();
         clearAuxiliaryMap();
-        return studentRepository.findAll();
+        return studentRepository.findAll().stream().map(StudentDTO::new).toList();
     }
 
     private void readAndSaveStudentsFromFile(MultipartFile studentsFile) {
@@ -69,8 +69,12 @@ public class InputStudentsFromTextFileService {
 
                 if (lineHasProperNumberOfTags(parts)) {
                     Student currentStudent = buildStudentFromReaderLine(parts);
-                    SchoolClass currentRandomClass = classService.assignStudentToFirstOpenClass(currentStudent);
-                    schoolClassRepository.save(currentRandomClass);
+                    if (currentStudent != null) {
+                        SchoolClass currentRandomClass = classService.assignStudentToFirstOpenClass(currentStudent);
+                        schoolClassRepository.save(currentRandomClass);
+                    } else {
+                        log.warn("Improper student record thus skipping assigning it to school class");
+                    }
                 } else {
                     log.warn("Improper student record format, error line: {}", line);
                     StudentInsertError errorStudent = buildStudentFromImproperReadLine(parts);
@@ -123,7 +127,7 @@ public class InputStudentsFromTextFileService {
         }
     }
 
-    private void populateStudentsWithGradesIfProfileIsActive() {
+    private void populateStudentsWithGradesIfDevelProfileIsActive() {
         if (databaseShouldBeSeeded()) {
             log.info("Condition to seed randomized grades among student met, proceeding to populate");
             seedMockGradesService.seedStudentsWithRandomizedGrades();
@@ -133,8 +137,6 @@ public class InputStudentsFromTextFileService {
     }
 
     private boolean databaseShouldBeSeeded() {
-        log.info("environmentService.profileOtherThanDefaultIsActive(): {}", environmentService.profileOtherThanDefaultIsActive());
-        log.info("seedMockGradesService.wasAlreadyPopulated(): {}", seedMockGradesService.notPopulatedYet());
         return environmentService.profileOtherThanDefaultIsActive() && seedMockGradesService.notPopulatedYet();
     }
 

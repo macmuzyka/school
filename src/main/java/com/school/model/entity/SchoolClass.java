@@ -13,11 +13,9 @@ public class SchoolClass {
     private long id;
     @Column(unique = true)
     private String name;
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "school_class_id")
+    @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Student> classStudents;
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "school_class_id")
+    @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subject> classSubjects;
 
     public SchoolClass(String name, List<Subject> classSubjects) {
@@ -28,8 +26,8 @@ public class SchoolClass {
 
     public SchoolClass() {}
 
-    public boolean assignStudent2Class(Student student) {
-        return classStudents.add(student);
+    public SchoolClass(String name) {
+        this.name = name;
     }
 
     @Override
@@ -37,8 +35,6 @@ public class SchoolClass {
         return "SchoolClass{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", classStudents=" + classStudents +
-                ", classSubjects=" + classSubjects +
                 '}';
     }
 
@@ -71,6 +67,9 @@ public class SchoolClass {
     }
 
     public List<Student> getClassStudents() {
+        if (classStudents == null) {
+            return new ArrayList<>();
+        }
         return classStudents;
     }
 

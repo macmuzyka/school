@@ -22,11 +22,9 @@ public abstract class AbstractStudentEntity {
     private boolean assigned;
     @Column(nullable = false)
     private LocalDate birthDate;
-
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
-
     @LastModifiedDate
     private LocalDateTime lastUpdatedAt;
 
@@ -39,18 +37,18 @@ public abstract class AbstractStudentEntity {
         this.assigned = assigned;
     }
 
-    public AbstractStudentEntity() {
-    }
+    public AbstractStudentEntity() {}
 
     @Override
     public String toString() {
-        return "Student{" +
+        return "StudentEntity{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
-                ", code='" + code + '\'' +
                 ", identifier='" + identifier + '\'' +
+                ", code='" + code + '\'' +
                 ", assigned=" + assigned +
+                ", birthDate=" + birthDate +
                 '}';
     }
 

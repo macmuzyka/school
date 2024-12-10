@@ -36,7 +36,7 @@ public interface SchoolClassRepository extends JpaRepository<SchoolClass, Long> 
             value = "SELECT sc.id FROM school_class sc " +
                     "LEFT JOIN student s ON s.school_class_id = sc.id " +
                     "GROUP BY sc.id " +
-                    "HAVING count(s.id) < 10\n" +
+                    "HAVING count(s.id) < :maxClassSize " +
                     "ORDER BY count(s.id) ",
             nativeQuery = true
     )

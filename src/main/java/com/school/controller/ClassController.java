@@ -1,7 +1,6 @@
 package com.school.controller;
 
 import com.school.model.dto.ExistingStudentToClassDTO;
-import com.school.model.dto.NewClassDTO;
 import com.school.service.ClassService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,9 +35,9 @@ public class ClassController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createClass(@RequestBody NewClassDTO newClassDto) {
+    public ResponseEntity<?> createClass() {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(classService.createClass(newClassDto));
+            return ResponseEntity.status(HttpStatus.OK).body(classService.createNewClass());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

@@ -17,7 +17,7 @@ public class Grade {
     private long id;
     private Integer gradeValue;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
     @JsonIgnore
     private Student student;
@@ -52,8 +52,8 @@ public class Grade {
         return "Grade{" +
                 "id=" + id +
                 ", gradeValue=" + gradeValue +
-                ", student=" + student +
-                ", subject=" + subject +
+                ", studentId=" + student.getId() +
+                ", subjectId=" + subject.getId() +
                 '}';
     }
 

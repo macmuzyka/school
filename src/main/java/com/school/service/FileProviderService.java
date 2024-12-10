@@ -121,7 +121,7 @@ public class FileProviderService {
     private FileToImport produceFileAndGetResponse(List<StudentSubjectGradesDTO> records) {
         FileProvider fileProvider = FileProviderStrategy.resolve(fileConfig);
         FileProviderResponse response = fileProvider.build(records);
-        log.info("Response from creating file : {}", response);
+        log.info("Response from creating file: {}", response);
         return recentlyProducedFile();
     }
 
@@ -134,8 +134,7 @@ public class FileProviderService {
 
         try {
             FileSystemResource resource = new FileSystemResource(fileToReturn);
-            log.info("fileToReturn.getName()");
-            log.info(fileToReturn.getName());
+            log.info("File to return name: {}", fileToReturn.getName());
             return new FileToImport(resource, fileToReturn.getName());
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving the file: " + e.getMessage());

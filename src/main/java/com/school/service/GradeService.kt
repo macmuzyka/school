@@ -3,6 +3,7 @@ package com.school.service
 import com.school.configuration.ApplicationConfig
 import com.school.controller.FrontendNotificationSenderService
 import com.school.model.OptionalRequestParams
+import com.school.model.SubjectsWithGrades
 import com.school.model.dto.GradeDTO
 import com.school.model.dto.StudentSubjectGradesDTO
 import com.school.model.entity.Grade
@@ -24,16 +25,20 @@ class GradeService(
 ) {
 
     private val log = LoggerFactory.getLogger(GradeService::class.java)
-    //TODO: consider moving notifying frontend via web-socket from GradeConsumingByKafkaService to this class
-    fun addGrade(grade: GradeDTO): Grade? {
+
+    fun addGrade(grade: GradeDTO): GradeDTO? {
         return try {
-            return gradeRepository.save(buildGradeWithCoupledEntityObjects(grade)).also {
-                if (!environmentService.currentProfileOtherThanDevel()) {
-                    frontendNotificationSenderService.notifyFrontendAboutGradeMessageConsumed("OK")
-                }
-            }
+            GradeDTO(gradeRepository.save(buildGradeWithCoupledEntityObjects(grade)))
+                    .also { sendNotificationAboutGradeAdded() }
         } catch (e: Exception) {
-            null
+            log.error(e.message)
+            throw RuntimeException(e)
+        }
+    }
+
+    private fun sendNotificationAboutGradeAdded() {
+        if (!environmentService.currentProfileOtherThanDevel()) {
+            frontendNotificationSenderService.notifyFrontendAboutGradeMessageConsumed("OK")
         }
     }
 
@@ -80,7 +85,9 @@ class GradeService(
         }
     }
 
-    fun getSubjectGradesForStudent(studentId: Long) = gradeRepository.findAllGradesGroupedBySubjectForSingleStudent(studentId)
-            .map { result -> prepareGradesForSingleStudent(result) }
-            .toList()
+    fun getSubjectGradesForStudent(studentId: Long): List<SubjectsWithGrades> {
+        return gradeRepository.findAllGradesGroupedBySubjectForSingleStudent(studentId)
+                .map { result -> prepareGradesForSingleStudent(result) }
+                .toList()
+    }
 }

@@ -37,6 +37,7 @@ class ClassService(
         }
     }
 
+    //TODO: separate each action to each controller method
     fun studentToClassAction(existingStudentToClassDTO: ExistingStudentToClassDTO): ClassDTO {
         val (studentCode, schoolClassId, action) = existingStudentToClassDTO
 
@@ -68,6 +69,10 @@ class ClassService(
         }
     }
 
+    private fun isAssigned(student: Student, schoolClass: SchoolClass): Boolean {
+        return schoolClass.classStudents.contains(student)
+    }
+
     private fun moveStudentToOtherClass(student: Student, destinationClass: SchoolClass): ClassDTO {
         if (isAssigned(student, destinationClass)) {
             throw IllegalArgumentException("Attempting to move student $student to the same class!")
@@ -93,45 +98,55 @@ class ClassService(
         return ClassDTO(updatedClass)
     }
 
-    private fun isAssigned(student: Student, schoolClass: SchoolClass): Boolean {
-        return schoolClass.classStudents.contains(student)
+    fun assignStudentToFirstOpenClass(student: Student): SchoolClass {
+        val openClassId = schoolClassRepository
+                .findSchoolClassesIdsWithStudentCountLessThanMaxClassSize(applicationConfig.classMaxSize)
+                .firstOrNull()
+                .also { log.debug("Open class id found: $it") }
+
+        val openClassFound = openClassId?.let { openClassIdFound ->
+            schoolClassRepository
+                    .findById(openClassIdFound).orElse(null)
+                    .also { log.info("Open class found: ${it.name}") }
+        } ?: createNewClass()
+                .also { log.info("Needed to create new class: ${it.name}") }
+
+        return openClassFound.apply {
+            classStudents.add(student)
+            student.isAssigned = true
+            student.schoolClass = this
+        }
     }
 
-    private fun createNewClass(): SchoolClass {
-        val resolvedNextClassNumber = findNextClassNumber()
-        val newSchoolClass = schoolClassRepository.save(
-                SchoolClass("Class $resolvedNextClassNumber", applicationConfig.availableSubjects
-                        .map { subject -> subjectRepository.save(Subject(subject)) }
-                        .toList()
-                )
-        )
+    fun createNewClass(): SchoolClass {
+        val newSchoolClass = createNewClassWithAssignedSubjects()
+        schoolClassRepository.save(newSchoolClass)
 
-        val school = schoolRepository.findById(1L).takeIf { it.isPresent }?.get()
+        val school = schoolRepository
+                .findAll()
+                .firstOrNull()
                 ?: throw IllegalStateException("No school to assign class to! This should be done upon application warmup!")
         school.schoolClasses.add(newSchoolClass)
         schoolRepository.save(school)
+
+        return newSchoolClass
+    }
+
+    fun createNewClassWithAssignedSubjects(): SchoolClass {
+        val newSchoolClass = schoolClassRepository.save(SchoolClass("Class ${findNextClassNumber()}"))
+        val newClassSubjects = applicationConfig.availableSubjects
+                .map { subject -> subjectRepository.save(Subject(subject, newSchoolClass)) }
+                .toList()
+        newSchoolClass.classSubjects = newClassSubjects
         return newSchoolClass
     }
 
     private fun findNextClassNumber(): Int {
-        val maxClassNumber = schoolClassRepository.findAll()
-                .map { schoolClass -> Integer.valueOf(schoolClass.name.substringAfter(" ")) }
-                .maxOf { it }
-        return maxClassNumber + 1
-    }
-
-    fun createClass(newClassDto: NewClassDTO): SchoolClass = schoolClassRepository.save(
-            SchoolClass(
-                    newClassDto.name,
-                    applicationConfig.availableSubjects
-                            .map { sub -> subjectRepository.save(Subject(sub)) }
-                            .toList()
-            )
-    )
-
-    fun assignStudentToFirstOpenClass(student: Student?): SchoolClass {
-        val openClassId = schoolClassRepository.findSchoolClassesIdsWithStudentCountLessThanMaxClassSize(applicationConfig.classMaxSize).firstOrNull()
-        val foundOpenClass = openClassId?.let { schoolClassRepository.findById(it).orElse(null) } ?: createNewClass()
-        return student?.let { foundOpenClass.apply { classStudents.add(student) }.also { student.isAssigned = true } } ?: foundOpenClass
+        val nextClassNumber = schoolClassRepository.findAll()
+                .takeIf { it.isNotEmpty() }
+                ?.map { schoolClass -> Integer.valueOf(schoolClass.name.substringAfter(" ")) }
+                ?.maxOf { it + 1 }
+                ?.also { log.debug("Next class number resolved: $it") } ?: 1
+        return nextClassNumber
     }
 }

@@ -6,7 +6,7 @@ import com.school.repository.SchoolRepository;
 import com.school.repository.SubjectRepository;
 import com.school.model.entity.School;
 import com.school.model.entity.SchoolClass;
-import com.school.model.entity.Subject;
+import com.school.service.ClassService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -20,14 +20,12 @@ public class WarmupDatabasePopulation implements ApplicationListener<Application
     private static final Logger log = LoggerFactory.getLogger(WarmupDatabasePopulation.class);
     private final SchoolRepository schoolRepository;
     private final SchoolClassRepository schoolClassRepository;
-    private final SubjectRepository subjectRepository;
-    private final ApplicationConfig applicationConfig;
+    private final ClassService classService;
 
-    public WarmupDatabasePopulation(SchoolRepository schoolRepository, SchoolClassRepository schoolClassRepository, SubjectRepository subjectRepository, ApplicationConfig applicationConfig) {
+    public WarmupDatabasePopulation(SchoolRepository schoolRepository, SchoolClassRepository schoolClassRepository, ClassService classService) {
         this.schoolRepository = schoolRepository;
         this.schoolClassRepository = schoolClassRepository;
-        this.subjectRepository = subjectRepository;
-        this.applicationConfig = applicationConfig;
+        this.classService = classService;
     }
 
     @Override
@@ -50,11 +48,6 @@ public class WarmupDatabasePopulation implements ApplicationListener<Application
     }
 
     private SchoolClass firstWarmupClass() {
-        return schoolClassRepository.save(
-                new SchoolClass("Class 1", applicationConfig.getAvailableSubjects().stream()
-                        .map(sub -> subjectRepository.save(new Subject(sub)))
-                        .toList()
-                )
-        );
+        return schoolClassRepository.save(classService.createNewClassWithAssignedSubjects());
     }
 }
