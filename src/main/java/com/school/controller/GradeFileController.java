@@ -2,7 +2,7 @@ package com.school.controller;
 
 import com.school.model.FileToImport;
 import com.school.model.OptionalRequestParams;
-import com.school.service.GradeFileProviderService;
+import com.school.service.fileproducers.GradeFileProviderService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class GradeFileController {
     @PostMapping("/produce")
     public ResponseEntity<?> getFileWithGrades(@RequestBody OptionalRequestParams params) {
         try {
-            FileToImport toImport = gradeFileProviderService.getFile(params);
+            FileToImport toImport = gradeFileProviderService.importFile(params);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + toImport.getFileName() + "\"")
                     .body(toImport.getFileToImport());

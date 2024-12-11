@@ -9,6 +9,7 @@ import com.school.repository.StudentRepository;
 import com.school.model.dto.StudentDTO;
 import com.school.model.entity.SchoolClass;
 import com.school.model.entity.Student;
+import com.school.service.fileproducers.StudentsListFileProviderService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +134,7 @@ public class StudentService {
         return studentsFound;
     }
 
-    public FileToImport getFile() {
-        return studentsListFileProviderService.getFile();
+    public FileToImport importFile() {
+        return studentsListFileProviderService.importFile(null);
     }
 }

@@ -75,7 +75,7 @@ public class StudentController {
     @GetMapping("/import-students-list-file")
     public ResponseEntity<?> importStudentsListFile() {
         try {
-            FileToImport toImport = studentService.getFile();
+            FileToImport toImport = studentService.importFile();
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + toImport.getFileName() + "\"")
                     .body(toImport.getFileToImport());
