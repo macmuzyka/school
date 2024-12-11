@@ -2,6 +2,7 @@ package com.school.model;
 
 import com.school.configuration.FileConfig;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -18,7 +19,8 @@ public abstract class FileResource {
         this.fileName = fileConfig.getName();
         this.fileDirectory = fileConfig.getDirectory();
         this.fileExtension = fileExtension;
-        this.fullPathWithoutExtension = this.getFileDirectory() +
+        this.fullPathWithoutExtension = this.getFileDirectory() + File.separator +
+                fileConfig.getStudentsGradesSubdirectory() + File.separator +
                 fileConfig.getOptionalNamePrefix() +
                 LocalDateTime.now().format(this.getFormatter()) +
                 "_" +

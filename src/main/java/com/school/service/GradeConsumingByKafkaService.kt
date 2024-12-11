@@ -1,6 +1,5 @@
 package com.school.service
 
-import com.school.controller.FrontendNotificationSenderService
 import com.school.model.dto.GradeDTO
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile

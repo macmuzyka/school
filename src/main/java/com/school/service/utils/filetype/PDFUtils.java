@@ -31,7 +31,7 @@ public class PDFUtils {
     private static Table prepareHeaderTable() {
         Table headerTable = new Table(1);
         Cell headerCell = new Cell();
-        headerCell.add(new Paragraph("Student grades Grouped by Subject"));
+        headerCell.add(new Paragraph("Student grades Grouped by Subject [O.n] -> Ordinal number"));
         headerCell.setBackgroundColor(ColorConstants.LIGHT_GRAY);
         headerCell.setFontColor(ColorConstants.BLACK);
         headerTable.addCell(headerCell);
@@ -42,7 +42,7 @@ public class PDFUtils {
         //TODO: add row numbers
         Table recordsTable = new Table(5);
         Cell ordinalNumberCell = new Cell();
-        ordinalNumberCell.add(new Paragraph("Ordinal Number"));
+        ordinalNumberCell.add(new Paragraph("O.n."));
 
         Cell studentNameCell = new Cell();
         studentNameCell.add(new Paragraph("Student Name"));

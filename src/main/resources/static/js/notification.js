@@ -12,5 +12,5 @@ function successNotification(message) {
     setTimeout(() => {
         notification.classList.remove("visible");
         notification.classList.add("hidden");
-    }, 2500);
+    }, 15000);
 }

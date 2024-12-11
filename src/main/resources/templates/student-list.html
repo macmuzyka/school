@@ -21,6 +21,10 @@
             <i class="fa-solid fa-plus"></i>
         </button>
         <button class="redirect-icon previous-page-icon"
+                onclick="importStudentsListFile()" title="Import students list file">
+            <i class="fa-regular fa-address-book"></i>
+        </button>
+        <button class="redirect-icon previous-page-icon"
                 onclick="window.location.href='http://localhost:9000/view/student-entry-point'" title="Go back">
             <i class="fa-solid fa-circle-arrow-left"></i>
         </button>
@@ -104,6 +108,45 @@
 <div id="notification" class="notification hidden">Sliding notification</div>
 </body>
 <script>
+    async function importStudentsListFile() {
+        console.log("Importing students list file")
+        try {
+            const response = await fetch('/student/import-students-list-file', {
+                method: 'GET',
+            })
+
+            if (response.status === 404) {
+                console.error("Directory does not exist.");
+                return;
+            }
+
+            if (response.status === 204) {
+                console.warn("No files available.");
+                return;
+            }
+
+            if (!response.ok) {
+                new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const contentDisposition = response.headers.get('Content-Disposition');
+            const fileName = contentDisposition
+                ? contentDisposition.split('filename=')[1]?.replace(/"/g, '')
+                : 'downloaded_file';
+
+            const blob = await response.blob();
+            const downloadLink = document.createElement('a');
+            downloadLink.href = window.URL.createObjectURL(blob);
+            downloadLink.download = fileName;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            console.log(`${fileName} downloaded successfully.`);
+        } catch (error) {
+            console.error('Error fetching file:', error.message);
+        }
+    }
+
     function redirectToDetails(button) {
         let studentId = button.getAttribute('data')
         window.location.href = `/view/student-details?id=` + studentId;
