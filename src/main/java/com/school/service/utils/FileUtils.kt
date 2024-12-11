@@ -1,4 +1,4 @@
-package com.school.service.fileproducers
+package com.school.service.utils
 
 import com.school.model.FileToImport
 import org.slf4j.LoggerFactory
@@ -11,8 +11,8 @@ class FileUtils {
 
         @JvmStatic
         fun validateAndPrepareFile(directory: File): FileToImport {
-            checkIfFileExists(directory);
-            val file = getFileIfExists(directory);
+            checkIfFileExists(directory)
+            val file = getFileIfExists(directory)
             try {
                 val fileSystemResource = FileSystemResource(file)
                 return FileToImport(fileSystemResource, file.name)

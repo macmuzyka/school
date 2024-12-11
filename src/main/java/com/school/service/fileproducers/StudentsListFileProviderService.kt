@@ -5,9 +5,10 @@ import com.school.model.FileToImport
 import com.school.model.OptionalRequestParams
 import com.school.model.dto.StudentForListDTO
 import com.school.model.dto.StudentForListDTO.Companion.asSingleRow
+import com.school.model.exception.ErrorCreatingFileException
 import com.school.repository.StudentRepository
-import com.school.service.fileproducers.FileUtils.Companion.purifyDirectoryFromAllPreviousFiles
-import com.school.service.fileproducers.FileUtils.Companion.validateAndPrepareFile
+import com.school.service.utils.FileUtils.Companion.purifyDirectoryFromAllPreviousFiles
+import com.school.service.utils.FileUtils.Companion.validateAndPrepareFile
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.io.BufferedWriter

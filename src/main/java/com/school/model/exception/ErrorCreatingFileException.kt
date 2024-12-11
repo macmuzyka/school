@@ -1,3 +1,3 @@
-package com.school.service.fileproducers
+package com.school.model.exception
 
 class ErrorCreatingFileException(message: String): RuntimeException(message)

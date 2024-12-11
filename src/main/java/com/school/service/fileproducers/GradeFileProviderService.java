@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.school.service.fileproducers.FileUtils.*;
+import static com.school.service.utils.FileUtils.*;
 
 @Service
 public class GradeFileProviderService implements RecentlyProducedFile {
