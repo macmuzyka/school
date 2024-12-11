@@ -1,6 +1,7 @@
 package com.school.service;
 
 import com.school.configuration.ApplicationConfig;
+import com.school.model.FileToImport;
 import com.school.model.OptionalRequestParams;
 import com.school.model.dto.NewStudentWithClassDTO;
 import com.school.repository.SchoolClassRepository;
@@ -23,11 +24,13 @@ public class StudentService {
     private final Logger log = LoggerFactory.getLogger(StudentService.class);
     private final StudentRepository studentRepository;
     private final SchoolClassRepository schoolClassRepository;
+    private final StudentsListFileProviderService studentsListFileProviderService;
     private final ApplicationConfig applicationConfig;
 
-    public StudentService(StudentRepository studentRepository, SchoolClassRepository schoolClassRepository, ApplicationConfig applicationConfig) {
+    public StudentService(StudentRepository studentRepository, SchoolClassRepository schoolClassRepository, StudentsListFileProviderService studentsListFileProviderService, ApplicationConfig applicationConfig) {
         this.studentRepository = studentRepository;
         this.schoolClassRepository = schoolClassRepository;
+        this.studentsListFileProviderService = studentsListFileProviderService;
         this.applicationConfig = applicationConfig;
     }
 
@@ -128,5 +131,9 @@ public class StudentService {
                 .map(StudentDTO::new).toList();
         log.info("Retrieved students: {}", studentsFound);
         return studentsFound;
+    }
+
+    public FileToImport getFile() {
+        return studentsListFileProviderService.getFile();
     }
 }

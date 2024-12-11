@@ -18,7 +18,8 @@ public abstract class FileResource {
         this.fileName = fileConfig.getName();
         this.fileDirectory = fileConfig.getDirectory();
         this.fileExtension = fileExtension;
-        this.fullPathWithoutExtension = this.getFileDirectory() +
+        //TODO:make it better
+        this.fullPathWithoutExtension = this.getFileDirectory() + fileConfig.getStudentsGradesSubdirectory() +
                 fileConfig.getOptionalNamePrefix() +
                 LocalDateTime.now().format(this.getFormatter()) +
                 "_" +

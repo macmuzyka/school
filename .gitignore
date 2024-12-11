@@ -3,7 +3,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-produced_files/*
+produced_files/students_grades/*
+produced_files/students_list/*
 seed_performance/*
 src/main/resources/application-secrets.properties
 

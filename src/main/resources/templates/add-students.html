@@ -71,8 +71,46 @@
 <div id="loadingSpinner" style="display: none;">
     <i class="fa fa-spinner fa-spin"></i> Uploading...
 </div>
-<div id="notification" class="notification hidden">Sliding notification</div>
+<div class="notification-container" id="notification-container">
+    <div id="notification" class="notification success hidden">Sliding notification</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script>
+    const socket = new SockJS('http://localhost:9000/websocket-endpoint');
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+
+        stompClient.subscribe('/topic/student-duplicate', function (message) {
+            console.log("Received message: " + message.body)
+            showNotification(message.body, 'duplicate')
+        });
+
+        stompClient.subscribe('/topic/student-insert-error', function (message) {
+            console.log("Received message: " + message.body)
+            showNotification(message.body, 'insert-error')
+        });
+    });
+
+    const notificationContainer = document.getElementById('notification-container')
+    function showNotification(message, type, duration = 15000) {
+        const notification = document.createElement('div');
+        notification.className = `notification ` + type;
+        notification.innerText = message;
+
+        notificationContainer.appendChild(notification);
+
+        setTimeout(() => notification.classList.add('visible'), 100);
+
+        setTimeout(() => {
+            notification.classList.remove('visible');
+            setTimeout(() => notification.remove(), 1000);
+        }, duration);
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const dropArea = document.getElementById('drop-area');
         const fileInput = document.getElementById('file-input');

@@ -1,7 +1,6 @@
 package com.school.service
 
 import com.school.configuration.ApplicationConfig
-import com.school.controller.FrontendNotificationSenderService
 import com.school.model.OptionalRequestParams
 import com.school.model.SubjectsWithGrades
 import com.school.model.dto.GradeDTO
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Service
 class GradeService(
         private val subjectRepository: SubjectRepository,
         private val studentRepository: StudentRepository,
-        private val frontendNotificationSenderService: FrontendNotificationSenderService,
+        private val frontendNotificationService: FrontendNotificationService,
         private val gradeRepository: GradeRepository,
         private val environmentService: EnvironmentService,
         private val applicationConfig: ApplicationConfig
@@ -38,7 +37,7 @@ class GradeService(
 
     private fun sendNotificationAboutGradeAdded() {
         if (!environmentService.currentProfileOtherThanDevel()) {
-            frontendNotificationSenderService.notifyFrontendAboutGradeMessageConsumed("OK")
+            frontendNotificationService.notifyFrontendAboutGradeMessageConsumed("OK")
         }
     }
 

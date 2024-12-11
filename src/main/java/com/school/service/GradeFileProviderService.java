@@ -1,9 +1,7 @@
 package com.school.service;
 
 import com.school.configuration.FileConfig;
-import com.school.model.FileProvider;
-import com.school.model.FileToImport;
-import com.school.model.OptionalRequestParams;
+import com.school.model.*;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
 import com.school.service.utils.FileNamePrefixResolver;
@@ -24,26 +22,30 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class FileProviderService {
-    private final Logger log = LoggerFactory.getLogger(FileProviderService.class);
+public class GradeFileProviderService extends RecentlyProducedFileChecker implements RecentlyProducedFile {
+    private final Logger log = LoggerFactory.getLogger(GradeFileProviderService.class);
     private final GradeRepository gradeRepository;
     private final StudentRepository studentRepository;
     private final SubjectRepository subjectRepository;
+    private final DirectoryPurifierService directoryPurifierService;
     private final FileConfig fileConfig;
 
-    public FileProviderService(GradeRepository gradeRepository, StudentRepository studentRepository, SubjectRepository subjectRepository, FileConfig fileConfig) {
+    public GradeFileProviderService(GradeRepository gradeRepository, StudentRepository studentRepository, SubjectRepository subjectRepository, DirectoryPurifierService directoryPurifierService, FileConfig fileConfig) {
         this.gradeRepository = gradeRepository;
         this.studentRepository = studentRepository;
         this.subjectRepository = subjectRepository;
+        this.directoryPurifierService = directoryPurifierService;
         this.fileConfig = fileConfig;
     }
 
-    public FileToImport produceFile(OptionalRequestParams params) {
+    public FileToImport getFile(OptionalRequestParams params) {
         try {
-            clearTemporaryDirectoryFromPreviousFiles();
+            File directory = new File(fileConfig.getDirectory() + fileConfig.getStudentsGradesSubdirectory());
+            directoryPurifierService.purifyDirectoryFromAllPreviousFiles(directory);
+//            clearTemporaryDirectoryFromPreviousFiles();
             prepareFileTypeAndNamePrefix(params.getFileType(), params);
             List<StudentSubjectGradesDTO> records = getRecordsFromDatabase(params);
-            return produceFileAndGetResponse(records);
+            return produceAndReturnFile(directory, records);
         } catch (Exception e) {
             log.error(e.getMessage());
             e.printStackTrace();
@@ -51,30 +53,30 @@ public class FileProviderService {
         }
     }
 
-    private void clearTemporaryDirectoryFromPreviousFiles() {
-        File directory = new File(fileConfig.getDirectory());
-        checkIfDirectoryExists(directory);
-        File[] files = directory.listFiles();
-        if (files != null) {
-            deleteAllPreviousFiles(files);
-        } else {
-            log.info("No files to delete from temporary directory");
-        }
-    }
+//    private void clearTemporaryDirectoryFromPreviousFiles() {
+//        File directory = new File();
+////        checkIfDirectoryExists(directory);
+//        File[] files = directory.listFiles();
+//        if (files != null) {
+//            deleteAllPreviousFiles(files);
+//        } else {
+//            log.info("No files to delete from temporary directory");
+//        }
+//    }
 
-    private void checkIfDirectoryExists(File directory) {
-        if (!directory.exists() || !directory.isDirectory()) {
-            throw new RuntimeException("Directory does not exist.");
-        }
-    }
+//    private void checkIfDirectoryExists(File directory) {
+//        if (!directory.exists() || !directory.isDirectory()) {
+//            throw new RuntimeException("Directory does not exist.");
+//        }
+//    }
 
-    private void deleteAllPreviousFiles(File[] files) {
-        for (File f : files) {
-            if (f.delete()) {
-                log.info("Deleted {} file", f.getName());
-            }
-        }
-    }
+//    private void deleteAllPreviousFiles(File[] files) {
+//        for (File f : files) {
+//            if (f.delete()) {
+//                log.info("Deleted {} file", f.getName());
+//            }
+//        }
+//    }
 
     private void prepareFileTypeAndNamePrefix(String fileType, OptionalRequestParams params) {
         resolveFileType(fileType);
@@ -118,19 +120,18 @@ public class FileProviderService {
                 .toList();
     }
 
-    private FileToImport produceFileAndGetResponse(List<StudentSubjectGradesDTO> records) {
+    private FileToImport produceAndReturnFile(File directory, List<StudentSubjectGradesDTO> records) {
         FileProvider fileProvider = FileProviderStrategy.resolve(fileConfig);
         FileProviderResponse response = fileProvider.build(records);
         log.info("Response from creating file: {}", response);
-        return recentlyProducedFile();
+//        return recentlyProducedFile();
+        return getRecentlyProducedFile(directory);
     }
 
-    private FileToImport recentlyProducedFile() {
-        File directory = new File(fileConfig.getDirectory());
-
-        checkIfDirectoryExists(directory);
-        File[] files = getFileIfExists(directory);
-        File fileToReturn = files[0];
+    @Override
+    public FileToImport getRecentlyProducedFile(File directory) {
+        checkIfFileExists(directory);
+        File fileToReturn = getFileIfExists(directory);
 
         try {
             FileSystemResource resource = new FileSystemResource(fileToReturn);
@@ -141,11 +142,28 @@ public class FileProviderService {
         }
     }
 
-    private File[] getFileIfExists(File directory) {
-        File[] files = directory.listFiles();
-        if (files == null || files.length == 0) {
-            throw new RuntimeException("No files available.");
-        }
-        return files;
-    }
+
+//    private FileToImport recentlyProducedFile() {
+//        File directory = new File(fileConfig.getDirectory());
+//
+////        checkIfDirectoryExists(directory);
+//        File[] files = getFileIfExists(directory);
+//        File fileToReturn = files[0];
+//
+//        try {
+//            FileSystemResource resource = new FileSystemResource(fileToReturn);
+//            log.info("File to return name: {}", fileToReturn.getName());
+//            return new FileToImport(resource, fileToReturn.getName());
+//        } catch (Exception e) {
+//            throw new RuntimeException("Error retrieving the file: " + e.getMessage());
+//        }
+//    }
+
+//    private File[] getFileIfExists(File directory) {
+//        File[] files = directory.listFiles();
+//        if (files == null || files.length == 0) {
+//            throw new RuntimeException("No files available.");
+//        }
+//        return files;
+//    }
 }
