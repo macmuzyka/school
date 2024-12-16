@@ -1,0 +1,79 @@
+.popup-form-group {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.popup-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.popup-form-group select {
+    flex: 1;
+    padding: 8px;
+    font-size: 1rem;
+}
+
+textarea {
+    width: 100%;
+    resize: none;
+}
+
+.popup-button-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.popup-form-group select.form-control {
+    width: 50px;
+    padding: 4px;
+    font-size: 0.9em;
+}
+
+.popup-submit-form-buttons {
+    grid-column: span 2;
+    text-align: left;
+    margin-top: 10px;
+}
+
+#correctionForm {
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 700px;
+}
+
+#correctionForm input {
+    width: 250px;
+}
+
+.popup-form-group input,
+.popup-form-group textarea {
+    max-width: 600px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    color: #333;
+    resize: vertical;
+}
+
+.popup-form-group input:focus,
+.popup-form-group textarea:focus {
+    border-color: #0056d6;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 86, 214, 0.2);
+}
+
+.note-select {
+    min-width: 50%;
+    max-width: 75%;
+}

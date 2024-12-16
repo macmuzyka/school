@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="/css/icons.css">
     <link rel="stylesheet" type="text/css" href="/css/forms.css">
     <link rel="stylesheet" type="text/css" href="/css/notification.css">
+    <link rel="stylesheet" type="text/css" href="/css/popup-form.css">
     <script src="/js/notification.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -82,19 +83,19 @@
                 <span style="align-content: center; width: fit-content" id="currentId"></span>
             </div>
             <div class="form-group">
-                <label for="studentName">Correct Student Name:</label>
+                <label for="studentName">Name:</label>
                 <input type="text" id="studentName" name="studentName" required>
             </div>
             <div class="form-group">
-                <label for="studentSurname">Correct Student Surname:</label>
+                <label for="studentSurname">Surname:</label>
                 <input type="text" id="studentSurname" name="studentSurname" required>
             </div>
             <div class="form-group">
-                <label for="studentIdentifier">Correct Student Identifier:</label>
+                <label for="studentIdentifier">Identifier:</label>
                 <input type="text" id="studentIdentifier" name="studentIdentifier" required>
             </div>
             <div class="form-group">
-                <label for="studentBirthDate">Correct Student Birth Date:</label>
+                <label for="studentBirthDate">Birth Date:</label>
                 <input type="date" id="studentBirthDate" name="studentBirthDate" required>
             </div>
             <div class="submit-form-buttons">
@@ -107,7 +108,35 @@
 </div>
 <div id="notification" class="notification hidden">Sliding notification</div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script>
+
+    const socket = new SockJS('http://localhost:9000/websocket-endpoint');
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+
+        stompClient.subscribe('/topic/student-update-status', function (message) {
+            console.log("Received message: " + message.body)
+            const notificationMessage = message.body
+            studentNotification(notificationMessage, 'student-update')
+        });
+
+        stompClient.subscribe('/topic/student-removal-status', function (message) {
+            console.log("Received message: " + message.body)
+            const notificationMessage = message.body
+            studentNotification(notificationMessage, 'student-delete')
+        });
+
+        stompClient.subscribe('/topic/student-removal-status', function (message) {
+            console.log("Received message: " + message.body)
+            const notificationMessage = message.body
+            studentNotification(notificationMessage, 'student-delete')
+        });
+    });
     async function importStudentsListFile() {
         console.log("Importing students list file")
         try {
@@ -208,7 +237,7 @@
             })
             .then(data => {
                 console.log('Success:', data);
-                successNotification('Student corrected');
+                studentNotification('Student updated');
             })
             .catch(error => {
                 console.error('Error:', error);

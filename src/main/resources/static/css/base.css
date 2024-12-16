@@ -224,3 +224,7 @@ button:disabled {
     width: 12px;
     height: 12px;
 }
+
+.dropdown {
+    margin-top: 10px;
+}

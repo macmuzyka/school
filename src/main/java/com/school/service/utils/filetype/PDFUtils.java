@@ -69,7 +69,7 @@ public class PDFUtils {
             recordsTable.addCell(studentCell);
 
             recordsTable.addCell(record.getSubject());
-            recordsTable.addCell(record.getGrades());
+            recordsTable.addCell(record.getExamGrades().toString());
 
             Cell averageGradeCell = new Cell();
             averageGradeCell.add(new Paragraph(String.valueOf(record.getAverageGrade()))).setBackgroundColor(new DeviceRgb(220, 220, 220));

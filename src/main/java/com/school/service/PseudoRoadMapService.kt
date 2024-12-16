@@ -26,6 +26,7 @@ class PseudoRoadMapService {
                 "Backend + Frontend verification" to listOf(
                         "Feedback collecting via form in GUI send to prepared mail",
                         "Upon insertion student list showing up records that error occurred",
+                        "Database backup & restore via GUI",
                         "Better navigation to previous page",
                         "Application configuration via GUI, config like available grades, subjects, class size etc",
                         "Implement logging with visibility scope (teacher, student, legal guardian)",

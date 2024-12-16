@@ -26,6 +26,10 @@ public class Grade {
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
+    private String note;
+
+    private String gradeType;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -39,10 +43,12 @@ public class Grade {
         this.gradeValue = gradeValue;
     }
 
-    public Grade(Integer gradeValue, Student student, Subject subject) {
+    public Grade(Integer gradeValue, Student student, Subject subject, String note, String gradeType) {
         this.gradeValue = gradeValue;
         this.student = student;
         this.subject = subject;
+        this.note = note;
+        this.gradeType = gradeType;
     }
 
     public Grade() {}
@@ -87,6 +93,22 @@ public class Grade {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public String getGradeType() {
+        return gradeType;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public void setGradeType(String gradeType) {
+        this.gradeType = gradeType;
     }
 
     public LocalDateTime getCreatedAt() {

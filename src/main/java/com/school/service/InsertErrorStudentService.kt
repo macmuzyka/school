@@ -12,16 +12,23 @@ import java.util.*
 @Service
 class InsertErrorStudentService(
         private val studentInsertErrorRepository: StudentInsertErrorRepository,
-        private val studentRepository: StudentRepository
+        private val studentRepository: StudentRepository,
+        private val sendNotificationToFrontendService: SendNotificationToFrontendService
 ) {
     private val log = LoggerFactory.getLogger(InsertErrorStudentService::class.java)
 
-    fun correctStudent(correctedStudent: StudentDTO): Student {
-        log.info("correctedStudent: $correctedStudent")
-        studentInsertErrorRepository.findById(correctedStudent.id).takeIf { it.isPresent }?.get()?.let { toRemove ->
-            val corrected = prepareStudent(correctedStudent)
-            return saveCorrectedAndRemoveStudentInsertError(corrected, toRemove)
-        } ?: throw IllegalArgumentException("Error record student with id " + correctedStudent.id + " not found!")
+    fun correctStudent(correctedStudent: StudentDTO): StudentDTO {
+        log.info("Corrected student: $correctedStudent")
+        studentInsertErrorRepository.findStudentInsertErrorByIdentifier(correctedStudent.code)
+                .takeIf { it.isPresent }
+                ?.get()
+                ?.let { toRemove ->
+                    val corrected = prepareStudent(correctedStudent)
+                    return StudentDTO(saveCorrectedAndRemoveStudentInsertError(corrected, toRemove))
+                            .also { sendNotificationToFrontendService.notifyFrontendAboutStudentInsertErrorCorrection("OK") }
+                }
+                ?: throw IllegalArgumentException("Error record student with id " + correctedStudent.id + " not found!")
+                        .also { sendNotificationToFrontendService.notifyFrontendAboutStudentInsertErrorCorrection("Error removing insert error record with id ${correctedStudent.id}") }
     }
 
     private fun prepareStudent(correctedStudent: StudentDTO): Student {
@@ -47,11 +54,23 @@ class InsertErrorStudentService(
         return studentInsertErrorRepository.findAll().map { StudentDTO(it) }.toList()
     }
 
-    fun delete(studentId: Long) {
-        log.info("Deleting insert error student records with id $studentId")
-        studentInsertErrorRepository.deleteById(studentId)
-        log.info("Deleting insert error student records with id $studentId DONE")
+    fun delete(errorRecordId: Long) {
+        log.info("Deleting insert error student records with id $errorRecordId")
+        studentInsertErrorRepository.findById(errorRecordId)
+                .takeIf { it.isPresent }
+                ?.get()
+                ?.let {
+                    studentInsertErrorRepository.deleteById(errorRecordId).also {
+                        log.info("Deleting insert error student records with id $errorRecordId DONE")
+                        sendNotificationToFrontendService.notifyFrontendAboutStudentInsertErrorRemoval("OK")
+                    }
+                } ?: {
+            val message = "Could not find insert error record with id $errorRecordId"
+            throw IllegalArgumentException(message)
+                    .also { sendNotificationToFrontendService.notifyFrontendAboutStudentInsertErrorRemoval(message) }
+        }
     }
+
 
     fun getInputErrorStudent(studentId: Long): StudentDTO {
         return studentInsertErrorRepository.findById(studentId).takeIf { it.isPresent }?.get()?.let { StudentDTO(it) }

@@ -25,11 +25,6 @@ class DuplicatedStudentController(
         return ResponseEntity.status(HttpStatus.OK).body(duplicatedStudentService.deleteStudent(studentId))
     }
 
-    @DeleteMapping("/delete-all")
-    fun deleteDuplicatedStudents(): ResponseEntity<Any> {
-        return ResponseEntity.status(HttpStatus.OK).body(duplicatedStudentService.deleteAll())
-    }
-
     @DeleteMapping("/delete-selected")
     fun removeSelectedDuplicatedStudents(@RequestBody idsToRemove: List<Long>): ResponseEntity<Any> {
         return ResponseEntity.status(HttpStatus.OK).body(duplicatedStudentService.deleteDuplicatedStudentsWithIds(idsToRemove))

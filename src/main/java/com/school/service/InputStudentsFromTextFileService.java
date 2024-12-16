@@ -14,17 +14,20 @@ public class InputStudentsFromTextFileService {
     private final StudentRepository studentRepository;
     private final SeedMockGradesService seedMockGradesService;
     private final StudentsFromListBuilderService studentsFromListBuilderService;
+    private final SendNotificationToFrontendService sendNotificationToFrontendService;
     private final EnvironmentService environmentService;
     private static final Logger log = LoggerFactory.getLogger(InputStudentsFromTextFileService.class);
 
     public InputStudentsFromTextFileService(StudentRepository studentRepository,
                                             SeedMockGradesService seedMockGradesService,
                                             StudentsFromListBuilderService studentsFromListBuilderService,
+                                            SendNotificationToFrontendService sendNotificationToFrontendService,
                                             EnvironmentService environmentService
     ) {
         this.studentRepository = studentRepository;
         this.seedMockGradesService = seedMockGradesService;
         this.studentsFromListBuilderService = studentsFromListBuilderService;
+        this.sendNotificationToFrontendService = sendNotificationToFrontendService;
         this.environmentService = environmentService;
     }
 
@@ -36,7 +39,8 @@ public class InputStudentsFromTextFileService {
     }
 
     private void saveStudentsFromFile(MultipartFile studentsFile) {
-        studentsFromListBuilderService.saveStudentsFromFile(studentsFile);
+        String result = studentsFromListBuilderService.saveStudentsFromFile(studentsFile);
+        sendNotificationToFrontendService.notifyFrontendAboutUploadingFileStatus(result);
     }
 
     private void populateStudentsWithGradesIfDevelProfileIsActive() {

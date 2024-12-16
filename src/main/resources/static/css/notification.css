@@ -3,10 +3,14 @@
     top: 20px;
     left: 20px;
     z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
 }
 
 .notification {
-    margin-bottom: 10px;
+    display: inline-block;
     padding: 10px 20px;
     color: white;
     border-radius: 5px;
@@ -14,18 +18,61 @@
     transition: transform 0.5s ease, opacity 0.5s ease;
     transform: translateX(-100%);
     opacity: 0;
+    background-color: #007bff;
+    word-wrap: break-word;
+}
+
+.notification.student-added {
+    background-color: limegreen;
+}
+
+.notification.student-update {
+    background-color: royalblue;
+}
+
+.notification.student-update-error {
+    background-color: orangered;
+}
+
+.notification.student-delete {
+    background-color: grey;
+}
+
+.notification.student-delete-error {
+    background-color: red;
 }
 
 .notification.insert-error {
-    background-color: #a62929;
+    background-color: red;
 }
 
 .notification.duplicate {
-    background-color: #e55314;
+    background-color: yellow;
+    color: black;
 }
 
-.notification.success {
-    background-color: #4caf50;
+.notification.file-upload-success {
+    background-color: limegreen;
+}
+
+.notification.file-upload-error {
+    background-color: red;
+}
+
+.notification.seeding-grades {
+    background-color: royalblue;
+}
+
+.notification.grade-success {
+    background-color: limegreen;
+}
+
+.notification.grade-error {
+    background-color: red;
+}
+
+.notification.feedback-consumed {
+    background-color: purple;
 }
 
 .notification.hidden {

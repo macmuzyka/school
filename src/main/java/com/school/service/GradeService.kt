@@ -17,9 +17,8 @@ import org.springframework.stereotype.Service
 class GradeService(
         private val subjectRepository: SubjectRepository,
         private val studentRepository: StudentRepository,
-        private val frontendNotificationService: FrontendNotificationService,
+        private val sendNotificationToFrontendService: SendNotificationToFrontendService,
         private val gradeRepository: GradeRepository,
-        private val environmentService: EnvironmentService,
         private val applicationConfig: ApplicationConfig
 ) {
 
@@ -27,17 +26,13 @@ class GradeService(
 
     fun addGrade(grade: GradeDTO): GradeDTO? {
         return try {
+            log.info("GradeDTO to be saved: $grade")
             GradeDTO(gradeRepository.save(buildGradeWithCoupledEntityObjects(grade)))
-                    .also { sendNotificationAboutGradeAdded() }
+                    .also { sendNotificationAboutGradeInsertStatus("OK") }
         } catch (e: Exception) {
+            sendNotificationAboutGradeInsertStatus(e.message ?: "No grade added")
             log.error(e.message)
             throw RuntimeException(e)
-        }
-    }
-
-    private fun sendNotificationAboutGradeAdded() {
-        if (!environmentService.currentProfileOtherThanDevel()) {
-            frontendNotificationService.notifyFrontendAboutGradeMessageConsumed("OK")
         }
     }
 
@@ -47,6 +42,8 @@ class GradeService(
                 gradeValue = validateGrade(grade.value)
                 student = findStudentFromPassedGrade(grade.studentId)
                 subject = findSubjectFromPassedGrade(grade.subjectId)
+                note = grade.note
+                gradeType = grade.gradeType
             }
         } catch (e: Exception) {
             throw IllegalArgumentException(e)
@@ -61,6 +58,10 @@ class GradeService(
 
     private fun findSubjectFromPassedGrade(subjectId: Long) = subjectRepository.findById(subjectId).takeIf { it.isPresent }?.get()
             ?: throw IllegalArgumentException("Cannot fund subject with id $subjectId")
+
+    private fun sendNotificationAboutGradeInsertStatus(message: String) {
+        sendNotificationToFrontendService.notifyFrontendAboutGradeConsumptionStatus(message)
+    }
 
     fun getSubjectGradesForStudents(params: OptionalRequestParams): List<StudentSubjectGradesDTO> {
         log.info("Params: {}", params)
@@ -88,5 +89,13 @@ class GradeService(
         return gradeRepository.findAllGradesGroupedBySubjectForSingleStudent(studentId)
                 .map { result -> prepareGradesForSingleStudent(result) }
                 .toList()
+    }
+
+    fun getGradeDetails(id: Long): GradeDTO {
+        return gradeRepository.findById(id).also { log.info("Fetching grade details...") }
+                .takeIf { it.isPresent }
+                ?.get().also { log.info("Grade details found $it") }
+                ?.let { GradeDTO(it) }
+                ?: throw IllegalArgumentException("Could not find grade with ID $id")
     }
 }

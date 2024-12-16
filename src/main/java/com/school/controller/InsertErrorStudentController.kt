@@ -14,7 +14,7 @@ class InsertErrorStudentController(
     @PostMapping("/correct")
     fun correctStudent(@RequestBody updatedStudent: StudentDTO): ResponseEntity<*> {
         return try {
-            ResponseEntity.status(HttpStatus.OK).body(insertErrorStudentService.correctStudent(updatedStudent))
+            ResponseEntity.status(HttpStatus.CREATED).body(insertErrorStudentService.correctStudent(updatedStudent))
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
         }

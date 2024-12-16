@@ -3,7 +3,6 @@ package com.school.service;
 import com.school.configuration.ApplicationConfig;
 import com.school.model.statistics.ProgressRecord;
 import com.school.repository.GradeRepository;
-import com.school.repository.SchoolClassRepository;
 import com.school.repository.StudentRepository;
 import com.school.repository.SubjectRepository;
 import com.school.model.entity.Grade;
@@ -22,25 +21,25 @@ import static com.school.service.ProgressRecordExportService.recordsReadyToExpor
 public class SeedMockGradesService {
     private final StudentRepository studentRepository;
     private final SubjectRepository subjectRepository;
-    private final SchoolClassRepository schoolClassRepository;
     private final GradeRepository gradeRepository;
+    private final SendNotificationToFrontendService sendNotificationToFrontendService;
     private final ApplicationConfig applicationConfig;
     private final Random randomizer = new Random();
     private final Logger log = LoggerFactory.getLogger(SeedMockGradesService.class);
 
-    //TODO: think about rewriting this class to kotlin service just to simplify and reduce code
-    public SeedMockGradesService(StudentRepository studentRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository, GradeRepository gradeRepository, ApplicationConfig applicationConfig) {
+    public SeedMockGradesService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SendNotificationToFrontendService sendNotificationToFrontendService, ApplicationConfig applicationConfig) {
         this.studentRepository = studentRepository;
         this.subjectRepository = subjectRepository;
-        this.schoolClassRepository = schoolClassRepository;
         this.gradeRepository = gradeRepository;
+        this.sendNotificationToFrontendService = sendNotificationToFrontendService;
         this.applicationConfig = applicationConfig;
     }
 
     public void seedStudentsWithRandomizedGrades() {
         int totalGrades = applicationConfig.getGradesToAdd();
         log.info("Populating students with {} example grades by random..", totalGrades);
-
+        sendNotificationToFrontendService.notifyFrontendAboutSeedingGradesStatus("Seeding " + totalGrades + " grades randomly " +
+                "among added students, this might take a while");
         seedGradesAmongStudents(totalGrades);
     }
 
@@ -55,6 +54,7 @@ public class SeedMockGradesService {
             saveRandomGradeForRandomStudent();
         }
         log.info("Populating with random grades done");
+        sendNotificationToFrontendService.notifyFrontendAboutSeedingGradesStatus("Seeding Done!");
         recordsReadyToExport = true;
     }
 
@@ -119,7 +119,9 @@ public class SeedMockGradesService {
                 gradeRepository.save(new Grade(
                                 availableGrades.get(randomizer.nextInt(availableGrades.size())),
                                 randomStudent,
-                                randomStudentSubject
+                                randomStudentSubject,
+                                "Created randomly by seeder",
+                                randomGradeType()
                         )
                 );
             } else {
@@ -129,6 +131,11 @@ public class SeedMockGradesService {
             e.printStackTrace();
             log.error(e.getMessage());
         }
+    }
+
+    private String randomGradeType() {
+        List<String> gradeTypes = applicationConfig.getGradeTypes().stream().toList();
+        return gradeTypes.get(randomizer.nextInt(gradeTypes.size()));
     }
 
     private Student findRandomStudent(Long random) {
