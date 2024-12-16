@@ -43,7 +43,22 @@
     </form>
 </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script>
+    const socket = new SockJS('http://localhost:9000/websocket-endpoint');
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+
+        stompClient.subscribe('/topic/feedback-consume-status', function (message) {
+            console.log("Received message: " + message.body)
+            const notificationMessage = message.body
+            feedbackNotification(notificationMessage)
+        });
+    });
     function saveFeedback() {
         let providerName = document.getElementById("name").value
         let providerMail = document.getElementById("email").value
@@ -71,7 +86,7 @@
             })
             .then(data => {
                 console.log('Success:', data);
-                successNotification('Feedback saved');
+                feedbackNotification('Feedback saved');
                 // refreshForm()
             })
             .catch(error => {

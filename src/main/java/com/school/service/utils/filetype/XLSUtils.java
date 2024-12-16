@@ -24,7 +24,7 @@ public class XLSUtils {
             Row row = sheet.createRow(currentRow++);
             row.createCell(0).setCellValue(record.getStudentName());
             row.createCell(1).setCellValue(record.getSubject());
-            row.createCell(2).setCellValue(record.getGrades());
+            row.createCell(2).setCellValue((Double.valueOf(record.getExamGrades().toString())));
             row.createCell(3).setCellValue(Double.parseDouble(String.valueOf(record.getAverageGrade())));
         }
     }

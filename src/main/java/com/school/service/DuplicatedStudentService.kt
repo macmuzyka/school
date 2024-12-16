@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class DuplicatedStudentService(
-        private val studentDuplicateErrorRepository: StudentDuplicateErrorRepository
+        private val studentDuplicateErrorRepository: StudentDuplicateErrorRepository,
+        private val sendNotificationToFrontendService: SendNotificationToFrontendService
 ) {
     private val log = LoggerFactory.getLogger(DuplicatedStudentService::class.java)
     fun getAllDuplicatedStudents(): List<StudentDTO> = studentDuplicateErrorRepository.findAll().map { StudentDTO(it) }.toList()
@@ -16,13 +17,13 @@ class DuplicatedStudentService(
         log.info("Passed student id to remove $studentId")
         studentDuplicateErrorRepository.deleteById(studentId)
         log.info("Removing duplicated student with id $studentId DONE")
+        sendNotificationToFrontendService.notifyFrontendAboutStudentDuplicateRemoval("OK")
     }
-
-    fun deleteAll() = studentDuplicateErrorRepository.deleteAll()
 
     fun deleteDuplicatedStudentsWithIds(ids: List<Long>) {
         log.info("Student duplicated IDs passed to be removed: $ids")
         studentDuplicateErrorRepository.deleteAllById(ids)
         log.info("Deleting of duplicated students with IDs $ids DONE")
+        sendNotificationToFrontendService.notifyFrontendAboutStudentDuplicateRemoval("OK")
     }
 }

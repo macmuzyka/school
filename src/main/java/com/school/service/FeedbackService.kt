@@ -8,12 +8,17 @@ import org.springframework.stereotype.Service
 @Service
 class FeedbackService(
         private val feedbackMaileSenderService: FeedbackMailSenderService,
-        private val centralRegistryService: CentralRegistryService
+        private val centralRegistryService: CentralRegistryService,
+        private val sendNotificationToFrontendService: SendNotificationToFrontendService
 ) {
     private val log = LoggerFactory.getLogger(FeedbackService::class.java)
     fun propagateFeedback(feedback: FeedbackDTO): FeedbackPropagationResponse {
         val mailResponse = feedbackMaileSenderService.sendMailWithFeedback(feedback)
         val centralRegistryResponse = centralRegistryService.deliverFeedback(feedback)
-        return FeedbackPropagationResponse(mailResponse, centralRegistryResponse).also { log.info(it.toString()) }
+        return FeedbackPropagationResponse(mailResponse, centralRegistryResponse)
+                .also {
+                    log.info(it.toString())
+                    sendNotificationToFrontendService.notifyFrontendAboutFeedbackConsumeStatus("OK")
+                }
     }
 }

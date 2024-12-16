@@ -13,12 +13,17 @@ import java.util.List;
 public interface GradeRepository extends JpaRepository<Grade, Long> {
     @Query(value =
             "SELECT s.name, s.surname, sub.name AS subject, " +
-                    "string_agg(g.grade_value::text, ', ') AS grades," +
+                    "string_agg(CASE WHEN g.grade_type = 'EXAM' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS exam_grades, " +
+                    "string_agg(CASE WHEN g.grade_type = 'TEST' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS test_grades, " +
+                    "string_agg(CASE WHEN g.grade_type = 'QUIZ' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS quizz_grades, " +
+                    "string_agg(CASE WHEN g.grade_type = 'QUESTIONING' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS question_grades, " +
+                    "string_agg(CASE WHEN g.grade_type = 'HOMEWORK' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS homework_grades, " +
+                    "string_agg(CASE WHEN g.grade_type = 'OTHER' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS other_grades, " +
                     "ROUND(AVG(g.grade_value), 2) AS average " +
             "FROM grade g " +
             "INNER JOIN student s ON g.student_id = s.id " +
             "INNER JOIN subject sub ON g.subject_id = sub.id " +
-            "WHERE " +
+                    "WHERE " +
                     "(CAST(:studentId AS INT) IS NULL OR s.id = :studentId) AND " +
                     "(CAST(:subjectName AS TEXT) IS NULL OR sub.name ILIKE '%' || :subjectName || '%') AND " +
                     "(CAST(:studentName AS TEXT) IS NULL OR s.name ILIKE '%' || :studentName || '%') AND " +
@@ -38,12 +43,16 @@ public interface GradeRepository extends JpaRepository<Grade, Long> {
     @Query(value =
             "SELECT sub.id AS subject_id, " +
                     "sub.name AS subject, " +
-                    "string_agg(CASE WHEN s.id = :studentId THEN g.grade_value::text END, ', ') AS grades," +
-                    "ROUND(AVG(CASE WHEN s.id = :studentId THEN g.grade_value END), 2) AS average " +
+                    "string_agg(CASE WHEN g.grade_type = 'EXAM' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS exam_grades, " +
+                    "string_agg(CASE WHEN g.grade_type = 'TEST' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS test_grades, " +
+                    "string_agg(CASE WHEN g.grade_type = 'QUIZ' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS quizz_grades, " +
+                    "string_agg(CASE WHEN g.grade_type = 'QUESTIONING' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS question_grades, " +
+                    "string_agg(CASE WHEN g.grade_type = 'HOMEWORK' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS homework_grades, " +
+                    "string_agg(CASE WHEN g.grade_type = 'OTHER' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS other_grades, " +
+                    "ROUND(AVG(CASE WHEN g.student_id = :studentId THEN g.grade_value END), 2) AS average " +
             "FROM school_class sc " +
             "JOIN subject sub ON sc.id = sub.school_class_id " +
-            "LEFT JOIN grade g ON g.subject_id = sub.id " +
-            "LEFT JOIN student s ON g.student_id = s.id " +
+            "LEFT JOIN grade g ON g.subject_id = sub.id AND g.student_id = :studentId " +
             "WHERE sc.id IN (" +
                     "SELECT DISTINCT sc.id  " +
                     "FROM school_class sc " +
@@ -51,7 +60,7 @@ public interface GradeRepository extends JpaRepository<Grade, Long> {
                     "WHERE s.id = :studentId " +
                     ") " +
             "GROUP BY sc.id, sub.id, sub.name " +
-            "ORDER BY average DESC;",
+            "ORDER BY average DESC ",
             nativeQuery = true
     )
     List<Object[]> findAllGradesGroupedBySubjectForSingleStudent(@Param("studentId") Long studentId);

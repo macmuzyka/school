@@ -21,7 +21,7 @@ public class StudentController {
     @PostMapping("/add")
     public ResponseEntity<?> addStudent(@RequestBody StudentDTO student) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(studentService.addStudent(student));
+            return ResponseEntity.status(HttpStatus.CREATED).body(studentService.addStudent(student));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

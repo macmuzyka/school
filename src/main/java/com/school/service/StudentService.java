@@ -26,12 +26,19 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final SchoolClassRepository schoolClassRepository;
     private final StudentsListFileProviderService studentsListFileProviderService;
+    private final SendNotificationToFrontendService sendNotificationToFrontendService;
     private final ApplicationConfig applicationConfig;
 
-    public StudentService(StudentRepository studentRepository, SchoolClassRepository schoolClassRepository, StudentsListFileProviderService studentsListFileProviderService, ApplicationConfig applicationConfig) {
+    public StudentService(StudentRepository studentRepository,
+                          SchoolClassRepository schoolClassRepository,
+                          StudentsListFileProviderService studentsListFileProviderService,
+                          SendNotificationToFrontendService sendNotificationToFrontendService,
+                          ApplicationConfig applicationConfig
+    ) {
         this.studentRepository = studentRepository;
         this.schoolClassRepository = schoolClassRepository;
         this.studentsListFileProviderService = studentsListFileProviderService;
+        this.sendNotificationToFrontendService = sendNotificationToFrontendService;
         this.applicationConfig = applicationConfig;
     }
 
@@ -79,13 +86,22 @@ public class StudentService {
         return savedStudent;
     }
 
-    public Student addStudent(StudentDTO student) {
-        Student properStudentObject = prepareStudentFromDTO(student);
-        log.info("Adding student: [{}]", properStudentObject);
-        return studentRepository.save(properStudentObject);
+    public Student addStudent(StudentDTO studentDTO) {
+        try {
+            log.info("Adding student: [{}]", studentDTO);
+            Student student = prepareEntityObjectFromDTO(studentDTO);
+            Student saved = studentRepository.save(student);
+            log.info("Saved student: {}", saved);
+            sendNotificationToFrontendService.notifyFrontendAboutAddedStudent("OK");
+            return saved;
+        } catch (Exception e) {
+            String message = e.getMessage();
+            sendNotificationToFrontendService.notifyFrontendAboutAddedStudent("Error adding student");
+            throw new IllegalArgumentException(message);
+        }
     }
 
-    private Student prepareStudentFromDTO(StudentDTO student) {
+    private Student prepareEntityObjectFromDTO(StudentDTO student) {
         return new Student(student.getName(), student.getSurname(), student.getIdentifier(), UUID.randomUUID().toString(), student.getBirthDate(), false);
     }
 
@@ -93,8 +109,10 @@ public class StudentService {
         Optional<Student> studentToDelete = studentRepository.findById(id);
         if (studentToDelete.isPresent()) {
             studentRepository.deleteById(id);
+            sendNotificationToFrontendService.notifyFrontendAboutStudentRemovalStatus("OK");
             return "Student with id " + id + " removed";
         } else {
+            sendNotificationToFrontendService.notifyFrontendAboutStudentRemovalStatus("Student with id: " + id + " to delete not found!");
             return "Student with id: " + id + " to delete not found!";
         }
 
@@ -110,9 +128,12 @@ public class StudentService {
             toSave.setSurname(updatedStudent.getSurname());
             Student savedStudent = studentRepository.save(toSave);
             log.info("Student after update: {}", savedStudent);
+            sendNotificationToFrontendService.notifyFrontendAboutStudentUpdateStatus("OK");
             return new StudentDTO(savedStudent);
         } else {
-            throw new IllegalArgumentException("Student with id: " + updatedStudent.getId() + " does not exist!");
+            String message = "Student with id: " + updatedStudent.getId() + " does not exist!";
+            sendNotificationToFrontendService.notifyFrontendAboutStudentUpdateStatus(message);
+            throw new IllegalArgumentException(message);
         }
     }
 

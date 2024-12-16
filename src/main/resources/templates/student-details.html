@@ -8,8 +8,11 @@
     <link rel="stylesheet" type="text/css" href="/css/icons.css">
     <link rel="stylesheet" type="text/css" href="/css/forms.css">
     <link rel="stylesheet" type="text/css" href="/css/notification.css">
+    <link rel="stylesheet" type="text/css" href="/css/popup-form.css">
+    <link rel="stylesheet" type="text/css" href="/css/grade.css">
     <script src="/js/notification.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat&family=Patrick+Hand&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="container">
@@ -44,7 +47,13 @@
         <tr>
             <th>Subject id</th>
             <th>Subject</th>
-            <th>Grades</th>
+            <th>Student Name</th>
+            <th>Exam</th>
+            <th>Test</th>
+            <th>Quiz</th>
+            <th>Questioning</th>
+            <th>Homework</th>
+            <th>Other</th>
             <th>Average Grade</th>
             <th>Add Grade</th>
         </tr>
@@ -53,7 +62,86 @@
         <tr th:each="subject : ${subjectsGrades}">
             <td th:text="${subject.getSubjectId()}"></td>
             <td th:text="${subject.getSubject()}"></td>
-            <td th:text="${subject.getGrades()}"></td>
+            <td th:text="${student.name}"></td>
+            <td>
+                <ul>
+                    <span th:each="examGrade : ${subject.getExamGrades()}">
+                        <span class="grade"
+                              th:style="'color: ' + ${examGrade.color}"
+                              th:data-id="${examGrade.id}"
+                              th:data-grade="${examGrade.grade}"
+                              th:text="${examGrade.grade}">
+                        </span>
+                        <div th:id="'grade-info-' + ${examGrade.id}" class="grade-hovering"></div>
+                    </span>
+
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <span th:each="testGrade : ${subject.getTestGrades()}">
+                        <span class="grade"
+                              th:style="'color: ' + ${testGrade.color}"
+                              th:data-id="${testGrade.id}"
+                              th:data-grade="${testGrade.grade}"
+                              th:text="${testGrade.grade}">
+                        </span>
+                        <div th:id="'grade-info-' + ${testGrade.id}" class="grade-hovering"></div>
+                    </span>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <span th:each="quizGrade : ${subject.getQuizGrades()}">
+                        <span class="grade"
+                              th:style="'color: ' + ${quizGrade.color}"
+                              th:data-id="${quizGrade.id}"
+                              th:data-grade="${quizGrade.grade}"
+                              th:text="${quizGrade.grade}">
+                        </span>
+                        <div th:id="'grade-info-' + ${quizGrade.id}" class="grade-hovering"></div>
+                    </span>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <span th:each="questionGrade : ${subject.getQuestioningGrades()}">
+                        <span class="grade"
+                              th:style="'color: ' + ${questionGrade.color}"
+                              th:data-id="${questionGrade.id}"
+                              th:data-grade="${questionGrade.grade}"
+                              th:text="${questionGrade.grade}">
+                        </span>
+                        <div th:id="'grade-info-' + ${questionGrade.id}" class="grade-hovering"></div>
+                    </span>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <span th:each="homeworkGrade : ${subject.getHomeworkGrades()}">
+                        <span class="grade"
+                              th:style="'color: ' + ${homeworkGrade.color}"
+                              th:data-id="${homeworkGrade.id}"
+                              th:data-grade="${homeworkGrade.grade}"
+                              th:text="${homeworkGrade.grade}">
+                        </span>
+                        <div th:id="'grade-info-' + ${homeworkGrade.id}" class="grade-hovering"></div>
+                    </span>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <span th:each="otherGrade : ${subject.getOtherGrades()}">
+                        <span class="grade"
+                              th:style="'color: ' + ${otherGrade.color}"
+                              th:data-id="${otherGrade.id}"
+                              th:data-grade="${otherGrade.grade}"
+                              th:text="${otherGrade.grade}">
+                        </span>
+                        <div th:id="'grade-info-' + ${otherGrade.id}" class="grade-hovering"></div>
+                    </span>
+                </ul>
+            </td>
             <td th:text="${subject.getAverageGrade()}"></td>
             <td>
                 <button id="openingButton" class="green-correct-button"
@@ -70,37 +158,64 @@
     </table>
 
     <div id="popupContainer" style="display: none;">
-        <form id="sendGradeForm">
+        <form id="sendGradeForm" class="popup-form">
             <h3 id="subjectName">Insert grade to </h3>
             <h3 style="display: none" id="subjectId"></h3>
-            <label style="display: none" for="gradePicker"></label>
-            <select id="gradePicker" name="gradePicker" class="form-control" required>
-                <option value="" disabled selected>Pick grade</option>
-                <option th:each="grade : ${grades}"
-                        th:value="${grade}"
-                        th:text="${grade}">
-                </option>
-            </select>
-            <div>
+
+            <div class="popup-form-group">
+                <label style="display: none" for="gradePicker"></label>
+                <select id="gradePicker" name="gradePicker" class="form-control" required>
+                    <option value="" disabled selected>Choose grade</option>
+                    <option th:each="grade : ${grades}"
+                            th:value="${grade}"
+                            th:text="${grade}">
+                    </option>
+                </select>
+            </div>
+            <div class="popup-form-group">
+                <label style="display: none" for="gradeTypePicker"></label>
+                <select id="gradeTypePicker" name="gradeTypePicker" class="form-control" required>
+                    <option value="" disabled selected>Choose type</option>
+                    <option th:each="type : ${gradeTypes}"
+                            th:value="${type}"
+                            th:text="${type}">
+                    </option>
+                </select>
+            </div>
+
+            <label for="note">Grade note:</label>
+            <textarea id="note" name="note" rows="4" cols="50" placeholder=" Note about added grade"
+                      required></textarea>
+            <button id="saveButton" onclick="saveDescription()" type="button">Save grade note</button>
+
+            <div class="dropdown">
+                <label for="previousInputs">Previous Notes:</label>
+                <select class="note-select" onselect="takeDescription()" id="previousInputs">
+                    <option value="" disabled selected>[Choose from recent notes]</option>
+                </select>
+            </div>
+
+            <div class="popup-button-group">
                 <button id="submitButton" class="add-things-button-light-green" onclick="prepareGradeToBeSent()"
                         type="button">
-                    <i class="fa-solid fa-plus"></i>
+                    <i class="fa-solid fa-plus"></i> Grade
                 </button>
                 <button class="red-button" type="button" onclick="closeGradePopup()">
-                    <i class="fa-solid fa-xmark"></i>
+                    <i class="fa-solid fa-xmark"></i> Exit
                 </button>
             </div>
         </form>
     </div>
 </div>
-<div class="notification-container">
-    <div id="notification" class="notification success hidden">Sliding notification</div>
+<div id="notification-container" class="notification-container">
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </body>
 <script>
+    const inputArea = document.getElementById("note");
+    const previousInputs = document.getElementById("previousInputs");
 
     const socket = new SockJS('http://localhost:9000/websocket-endpoint');
     const stompClient = Stomp.over(socket);
@@ -108,29 +223,206 @@
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
 
-        stompClient.subscribe('/topic/message-consume-status', function (message) {
+        stompClient.subscribe('/topic/grade-consume-status', function (message) {
             console.log("Received message: " + message.body)
             const notificationMessage = message.body
-            if (notificationMessage === "OK") {
-                console.log("equaled OK")
-                successNotification("Grade added")
-            } else {
-                console.log("equaled NOT OK")
-                successNotification("Error adding grade")
-            }
-
+            gradeNotification(notificationMessage)
         });
     });
 
+    previousInputs.addEventListener("change", () => {
+        inputArea.value = previousInputs.options[previousInputs.options.selectedIndex].textContent;
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.grade').forEach(span => {
+            span.addEventListener('mouseenter', function () {
+                showDetails(this);
+            });
+
+            span.addEventListener('mouseleave', function () {
+                hideDetails(this);
+            });
+        });
+    });
+
+    function showDetails(span) {
+        console.log("Showing details...")
+        let gradeId = span.getAttribute('data-id')
+        let infoBox = document.getElementById('grade-info-' + gradeId)
+        infoBox.style.display = "block";
+        if (span.getAttribute('data-grade') !== '-') {
+            infoBox.innerHTML = generateDetailsInfoboxWithFetchingDataInfo()
+            console.log("Fetching grade details...")
+            fetch('/grade/details?id=' + gradeId, {
+                method: 'GET',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response
+                    } else {
+                        throw new Error('Network response was not ok');
+                    }
+
+                })
+                .then(response => response.json())
+                .then(json => {
+                    console.log('Success: ' + json);
+                    setTimeout(() => infoBox.innerHTML = generateFetchedDetailsInfobox(json), 1000)
+
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to fetch data');
+                });
+        } else {
+            console.log("No grades yet")
+            setTimeout(() => infoBox.innerHTML = generateFetchedDetailsInfoboxWithoutGrade(), 100)
+        }
+    }
+
+    function generateDetailsInfoboxWithFetchingDataInfo() {
+        return `<div class="sticky-note pre-fetch">
+                    <br/>
+                    <label class="handwritten">Fetching grade details...</label>
+                    <br/>
+                </div>
+                `;
+    }
+
+    function generateFetchedDetailsInfobox(json) {
+        return `<div class="sticky-note fetched">
+                    <strong class="handwritten">Grade: ${json.value}</strong><br/><br/>
+                    <strong class="handwritten">Added: ${json.createdAt}</strong><br/>
+                    <strong class="handwritten">Note: ${json.note}</strong><br/>
+<!--                    TODO: added by whom-->
+                </div>
+                `;
+
+    }
+
+    function generateFetchedDetailsInfoboxWithoutGrade() {
+        return `<div class="sticky-note no-grade">
+                    <strong class="handwritten">No grades in that section yet</strong><br/>
+                </div>
+                `;
+    }
+
+    function hideDetails(span) {
+        let infoBox = document.getElementById('grade-info-' + span.getAttribute('data-id'))
+        infoBox.style.display = "none";
+    }
+
+    function saveDescription() {
+        const subjectId = document.getElementById("subjectId").textContent
+        const inputValue = inputArea.value.trim();
+        const subjectName = document.getElementById("subjectName").textContent.split(" ")[3]
+
+        if (inputValue) {
+            if (previousInputs.childNodes.length > 5) {
+                removeLastNote()
+            }
+            addNoteToDropdownAfterHeader(inputValue)
+
+            let noteToSave = {
+                content: inputValue,
+                subjectId: subjectId,
+                subjectName: subjectName
+            }
+            console.log("Note to save:")
+            console.log(noteToSave)
+
+            fetch('/previous-note', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(noteToSave),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response
+                    } else {
+                        throw new Error('Network response was not ok');
+                    }
+
+                })
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to add grade');
+                });
+        }
+    }
+
+    function removeLastNote() {
+        const optionsAvailable = previousInputs.options
+        previousInputs.removeChild(optionsAvailable[optionsAvailable.length - 1])
+    }
+
+    function addNoteToDropdownAfterHeader(inputValue) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = inputValue;
+        previousInputs.add(option, 1)
+    }
+
+    function setPreviousInputs(json) {
+        console.log("Setting previous inputs upon popup open")
+        console.log("json value")
+        console.log(json)
+        previousInputs.innerHTML = `<option value="" disabled selected>Choose from recent inputs</option>`;
+        let accumulator = 0
+        json.forEach(record => {
+            accumulator++
+            const option = document.createElement("option");
+            option.value = accumulator;
+            option.textContent = record.content;
+            previousInputs.appendChild(option);
+        })
+    }
+
+    function takeDescription() {
+        inputArea.value = previousInputs.value
+    }
 
     function openAddGradePopup(button) {
         console.log("Opening popup")
         const subjectId = button.getAttribute('data-subjectId');
         const subjectName = button.getAttribute('data-subjectName');
-        let currentText = document.getElementById("subjectName").textContent
+        const currentText = document.getElementById("subjectName").textContent
+
+        populateWithPreviousNotes(subjectId)
+
         document.getElementById("subjectName").textContent = currentText + subjectName
         document.getElementById("subjectId").textContent = subjectId
         document.getElementById("popupContainer").style.display = "block";
+    }
+
+    function populateWithPreviousNotes(subjectId) {
+        console.log("Pre-populating previous notes..")
+        fetch('/previous-note?subjectId=' + subjectId, {
+            method: 'GET',
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+
+            })
+            .then(response => response.json())
+            .then(json => {
+                console.log('Success: ' + json);
+                setPreviousInputs(json);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to add grade');
+            });
     }
 
     function closeGradePopup() {
@@ -143,12 +435,15 @@
         const studentId = document.getElementById("openingButton").getAttribute('data-studentId');
         const subjectId = document.getElementById("subjectId").textContent
         const selectedGrade = document.getElementById("gradePicker").value
-
+        const selectedGradeType = document.getElementById("gradeTypePicker").value
+        const note = document.getElementById("note").value
 
         const grade = {
             value: selectedGrade,
             studentId: studentId,
             subjectId: subjectId,
+            gradeType: selectedGradeType,
+            note: note
         };
 
         send(grade);
@@ -181,11 +476,6 @@
                 alert('Failed to add grade');
             });
         closeGradePopup()
-        refreshPage()
-    }
-
-    function refreshPage() {
-        setTimeout(() => location.reload(), 5000)
     }
 </script>
 </html>

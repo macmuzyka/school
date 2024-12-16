@@ -16,7 +16,6 @@ import java.util.Map;
 
 import static com.school.service.utils.RequestParamValidator.prepareOptionalRequestParams;
 
-//TODO: should be moved to separate controller classes
 @Controller
 @RequestMapping("/view")
 public class ModelViewController {
@@ -25,18 +24,23 @@ public class ModelViewController {
     private final StudentService studentService;
     private final DuplicatedStudentService duplicatedStudentService;
     private final InsertErrorStudentService insertErrorStudentService;
-//    private final GradeService gradeService;
     private final GradeService gradeService;
     private final PseudoRoadMapService pseudoRoadMapService;
     private final ApplicationConfig applicationConfig;
 
-    public ModelViewController(ClassService classService, StudentService studentService, DuplicatedStudentService duplicatedStudentService, InsertErrorStudentService insertErrorStudentService, GradeService gradeService, PseudoRoadMapService pseudoRoadMapService, ApplicationConfig applicationConfig) {
+    public ModelViewController(ClassService classService,
+                               StudentService studentService,
+                               DuplicatedStudentService duplicatedStudentService,
+                               InsertErrorStudentService insertErrorStudentService,
+                               GradeService gradeService,
+                               PseudoRoadMapService pseudoRoadMapService,
+                               ApplicationConfig applicationConfig
+    ) {
         this.classService = classService;
         this.studentService = studentService;
         this.duplicatedStudentService = duplicatedStudentService;
         this.insertErrorStudentService = insertErrorStudentService;
         this.gradeService = gradeService;
-//        this.gradeService = gradeService;
         this.pseudoRoadMapService = pseudoRoadMapService;
         this.applicationConfig = applicationConfig;
     }
@@ -95,7 +99,6 @@ public class ModelViewController {
                                    @RequestParam(required = false) String subject) {
         try {
             OptionalRequestParams params = prepareOptionalRequestParams(null, id, name, surname, identifier, subject);
-//            List<StudentSubjectGradesDTO> grades = gradeService.getSubjectGradesForStudents(params);
             List<StudentSubjectGradesDTO> grades = gradeService.getSubjectGradesForStudents(params);
 
             model.addAttribute("grades", grades);
@@ -190,6 +193,7 @@ public class ModelViewController {
             model.addAttribute("student", foundStudent);
             model.addAttribute("subjectsGrades", subjectsGrades);
             model.addAttribute("grades", applicationConfig.getAvailableGrades());
+            model.addAttribute("gradeTypes", applicationConfig.getGradeTypes());
             return "student-details";
         } catch (Exception e) {
             e.printStackTrace();
