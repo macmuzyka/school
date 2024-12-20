@@ -18,8 +18,7 @@ public class InputStudentsFromTextFileService {
 
     public InputStudentsFromTextFileService(StudentRepository studentRepository,
                                             StudentsFromListBuilderService studentsFromListBuilderService,
-                                            SendNotificationToFrontendService sendNotificationToFrontendService,
-                                            EnvironmentService environmentService
+                                            SendNotificationToFrontendService sendNotificationToFrontendService
     ) {
         this.studentRepository = studentRepository;
         this.studentsFromListBuilderService = studentsFromListBuilderService;

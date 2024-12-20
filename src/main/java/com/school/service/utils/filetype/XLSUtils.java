@@ -1,7 +1,5 @@
 package com.school.service.utils.filetype;
 
-import com.itextpdf.kernel.colors.DeviceRgb;
-import com.school.model.dto.GradeDTO;
 import com.school.model.dto.GradeDisplayDTO;
 import com.school.model.dto.StudentSubjectGradesDTO;
 import org.apache.poi.ss.usermodel.Row;
