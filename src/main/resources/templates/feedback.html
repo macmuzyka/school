@@ -9,15 +9,22 @@
     <link rel="stylesheet" type="text/css" href="/css/forms.css">
     <link rel="stylesheet" type="text/css" href="/css/notification.css">
     <script src="/js/notification.js"></script>
+    <script src="/js/go-back.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="feedback-container">
     <div class="feedback-header">
+        <button class="redirect-icon go-up"
+                onclick="window.location.href='http://localhost:9000/view'"
+                title="Go to dashboard">
+            <i class="fa-solid fa-arrow-turn-up"></i>
+        </button>
         <h1>Give Us Feedback</h1>
         <h1>
             <button class="redirect-icon previous-page-icon"
-                    onclick="window.location.href='http://localhost:9000/view'" title="Go back">
+                    onclick="goBack()"
+                    title="Go back">
                 <i class="fa-solid fa-circle-arrow-left"></i>
             </button>
         </h1>
@@ -26,7 +33,7 @@
         <p>We are looking to improve our application, and we would like to hear feedback from you. Tell us what can be
             improved and what new functionalities should be added!</p>
     </div>
-    <form id="feedbackForm" onsubmit="saveFeedback()">
+    <form id="feedbackForm">
         <div class="form-group">
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" placeholder="Your Name" required>
@@ -39,11 +46,28 @@
             <label for="message">Feedback:</label>
             <textarea id="message" name="message" rows="5" placeholder="Your feedback" required></textarea>
         </div>
-        <button class="submit-button">Submit Feedback</button>
+        <button class="submit-button" type="button" onclick="saveFeedback()">Submit Feedback</button>
     </form>
 </div>
+<div id="notification-container" class="notification-container"></div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script>
+    const socket = new SockJS('http://localhost:9000/websocket-endpoint');
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+
+        stompClient.subscribe('/topic/feedback-consume-status', function (message) {
+            console.log("Received message: " + message.body)
+            const notificationMessage = message.body
+            feedbackNotification(notificationMessage)
+        });
+    });
+
     function saveFeedback() {
         let providerName = document.getElementById("name").value
         let providerMail = document.getElementById("email").value
@@ -71,12 +95,9 @@
             })
             .then(data => {
                 console.log('Success:', data);
-                successNotification('Feedback saved');
-                // refreshForm()
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Failed to submit feedback.');
             });
     }
 

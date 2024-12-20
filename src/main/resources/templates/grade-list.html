@@ -9,13 +9,20 @@
     <link rel="stylesheet" type="text/css" href="/css/forms.css">
     <link rel="stylesheet" type="text/css" href="/css/notification.css">
     <script src="/js/notification.js"></script>
+    <script src="/js/go-back.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
     <h1 class="header">
+        <button class="redirect-icon go-up"
+                onclick="window.location.href='http://localhost:9000/view/grades-entry-point'"
+                title="Go to grades">
+            <i class="fa-solid fa-arrow-turn-up"></i>
+        </button>
         <span class="title">Student Grades</span>
-        <button class="redirect-icon previous-page-icon" onclick="window.location.href='http://localhost:9000/view/grades-entry-point'"
+        <button class="redirect-icon previous-page-icon"
+                onclick="goBack()"
                 title="Go back">
             <i class="fa-solid fa-circle-arrow-left"></i>
         </button>
@@ -24,29 +31,35 @@
         <form th:action="@{/view/subject-grades}" method="GET" id="gradeForm" onsubmit="return submitForm()">
             <div class="form-group">
                 <label for="studentId">ID:</label>
-                <input type="text" id="studentId" name="id" th:value="${id}" placeholder="Enter Student ID" oninput="debounceSubmit()">
+                <input type="text" id="studentId" name="id" th:value="${id}" placeholder="Enter Student ID"
+                       oninput="debounceSubmit()">
             </div>
             <div class="form-group">
                 <label for="studentName">Name:</label>
-                <input type="text" id="studentName" name="name" th:value="${name}" placeholder="Enter Student Name" oninput="debounceSubmit()">
+                <input type="text" id="studentName" name="name" th:value="${name}"
+                       placeholder="Enter Student Name"
+                       oninput="debounceSubmit()">
             </div>
             <div class="form-group">
                 <label for="studentSurname">Surname:</label>
                 <input type="text" id="studentSurname" name="surname" th:value="${surname}"
-                       placeholder="Enter Student Surname" oninput="debounceSubmit()">
+                       placeholder="Enter Student Surname"
+                       oninput="debounceSubmit()">
             </div>
             <div class="form-group">
                 <label for="studentIdentifier">Identifier:</label>
                 <input type="text" id="studentIdentifier" name="identifier" th:value="${identifier}"
-                       placeholder="Enter Student Identifier" oninput="debounceSubmit()">
+                       placeholder="Enter Student Identifier"
+                       oninput="debounceSubmit()">
             </div>
             <div class="form-group">
                 <label for="subjectName">Subject:</label>
-                <select id="subjectName" name="subject" class="form-control">
-                    <option value="" disabled selected onselect="debounceSubmit()">Select a Subject</option>
-                    <option th:each="subject : ${subjects}"
-                            th:value="${subject}"
-                            th:text="${subject}">
+                <select id="subjectName" name="subject" onchange="debounceSubmit()" class="form-control">
+                    <option value="" th:selected="${subject == null}" disabled >Select a Subject</option>
+                    <option th:each="availableSubject : ${subjects}"
+                            th:value="${availableSubject}"
+                            th:text="${availableSubject}"
+                            th:selected="${availableSubject == subject}">
                     </option>
                 </select>
             </div>
@@ -78,7 +91,12 @@
         <tr>
             <th>Student Name</th>
             <th>Subject</th>
-            <th>Grades</th>
+            <th>Exam</th>
+            <th>Test</th>
+            <th>Quiz</th>
+            <th>Questioning</th>
+            <th>Homework</th>
+            <th>Other</th>
             <th>Average Grade</th>
         </tr>
         </thead>
@@ -86,7 +104,61 @@
         <tr th:each="gradeDTO : ${grades}">
             <td th:text="${gradeDTO.studentName}"></td>
             <td th:text="${gradeDTO.subject}"></td>
-            <td th:text="${gradeDTO.grades}"></td>
+            <td>
+                <ul>
+                    <span th:each="examGrade : ${gradeDTO.getExamGrades()}">
+                        <span class="grade" th:style="'color: ' + ${examGrade.color}" th:data-id="${examGrade.id}"
+                              th:data-grade="${examGrade.grade}"
+                              th:text="${examGrade.grade}"></span> <span style="display: none"
+                                                                         th:text="${examGrade.id}"></span>
+                    </span>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <span th:each="testGrade : ${gradeDTO.getTestGrades()}">
+                        <span class="grade" th:style="'color: ' + ${testGrade.color}" th:data-id="${testGrade.id}"
+                              th:data-grade="${testGrade.grade}"
+                              th:text="${testGrade.grade}"></span>
+                    </span>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <span th:each="quizGrade : ${gradeDTO.getQuizGrades()}">
+                        <span class="grade" th:style="'color: ' + ${quizGrade.color}" th:data-id="${quizGrade.id}"
+                              th:data-grade="${quizGrade.grade}"
+                              th:text="${quizGrade.grade}"></span>
+                    </span>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <span th:each="questionGrade : ${gradeDTO.getQuestioningGrades()}">
+                        <span class="grade" th:style="'color: ' + ${questionGrade.color}"
+                              th:data-id="${questionGrade.id}" th:data-grade="${questionGrade.grade}"
+                              th:text="${questionGrade.grade}"></span>
+                    </span>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <span th:each="homeworkGrade : ${gradeDTO.getHomeworkGrades()}">
+                        <span class="grade" th:style="'color: ' + ${homeworkGrade.color}"
+                              th:data-id="${homeworkGrade.id}" th:data-grade="${homeworkGrade.grade}"
+                              th:text="${homeworkGrade.grade}"></span>
+                    </span>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <span th:each="otherGrade : ${gradeDTO.getOtherGrades()}">
+                        <span class="grade" th:style="'color: ' + ${otherGrade.color}" th:data-id="${otherGrade.id}"
+                              th:data-grade="${otherGrade.grade}"
+                              th:text="${otherGrade.grade}"></span>
+                    </span>
+                </ul>
+            </td>
             <td th:text="${gradeDTO.averageGrade}"></td>
         </tr>
         </tbody>
@@ -100,16 +172,18 @@
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             submitForm();
-        }, 2000);
+        }, 1000);
     }
 
     function submitForm() {
         document.getElementById('gradeForm').submit();
     }
+
     function clearFilters() {
         const gradeForm = document.getElementById('gradeForm');
         const inputs = gradeForm.querySelectorAll('input');
         inputs.forEach(input => input.value = '');
+        document.getElementById('subjectName').value = '---'
     }
 
 

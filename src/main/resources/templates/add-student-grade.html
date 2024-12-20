@@ -9,14 +9,20 @@
     <link rel="stylesheet" type="text/css" href="/css/forms.css">
     <link rel="stylesheet" type="text/css" href="/css/notification.css">
     <script src="/js/notification.js"></script>
+    <script src="/js/go-back.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
     <h1 class="header">
+        <button class="redirect-icon go-up"
+                onclick="window.location.href='http://localhost:9000/view/grades-entry-point'"
+                title="Go to grades">
+            <i class="fa-solid fa-arrow-turn-up"></i>
+        </button>
         <span class="title">Search for a student</span>
         <button class="redirect-icon previous-page-icon"
-                onclick="window.location.href='http://localhost:9000/view/grades-entry-point'"
+                onclick="goBack()"
                 title="Go back">
             <i class="fa-solid fa-circle-arrow-left"></i>
         </button>
@@ -86,20 +92,18 @@
 </div>
 </body>
 <script>
-    let debounceTimer; // Variable to store the timeout ID
+    let debounceTimer;
 
     function debounceSubmit() {
-        // Clear the previous timer if there was one
         clearTimeout(debounceTimer);
 
-        // Set a new timer to submit the form after 2 seconds of inactivity
         debounceTimer = setTimeout(() => {
-            submitForm(); // Trigger form submission after delay
-        }, 2000); // 2000ms (2 seconds)
+            submitForm();
+        }, 2000);
     }
 
     function submitForm() {
-        document.getElementById('filterForm').submit(); // Submit the form
+        document.getElementById('filterForm').submit();
     }
 
     function redirectToDetails(studentId) {

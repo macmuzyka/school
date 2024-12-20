@@ -2,10 +2,12 @@ package com.school.service.utils.mapper;
 
 import com.school.model.SubjectsWithGrades;
 import com.school.model.dto.ClassWithListedStudentsDTO;
+import com.school.model.dto.GradeDisplayDTO;
 import com.school.model.dto.StudentSubjectGradesDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,10 +19,15 @@ public class QueryResultsMapper {
         String name = (String) queryResult[0];
         String surname = (String) queryResult[1];
         String subject = (String) queryResult[2];
-        String grades = (String) queryResult[3];
-        String average = castAverage(queryResult[4]);
+        List<GradeDisplayDTO> examGrades = checkForEmptyGrades(queryResult[3]);
+        List<GradeDisplayDTO> testGrades = checkForEmptyGrades(queryResult[4]);
+        List<GradeDisplayDTO> quizGrades = checkForEmptyGrades(queryResult[5]);
+        List<GradeDisplayDTO> questioningGrades = checkForEmptyGrades(queryResult[6]);
+        List<GradeDisplayDTO> homeworkGrades = checkForEmptyGrades(queryResult[7]);
+        List<GradeDisplayDTO> otherGrades = checkForEmptyGrades(queryResult[8]);
+        String average = castAverage(queryResult[9]);
 
-        return new StudentSubjectGradesDTO(name + " " + surname, subject, grades, average);
+        return new StudentSubjectGradesDTO(name + " " + surname, subject, examGrades, testGrades, quizGrades, questioningGrades, homeworkGrades, otherGrades, average);
     }
 
     private static String castAverage(Object average) {
@@ -60,21 +67,40 @@ public class QueryResultsMapper {
     public static SubjectsWithGrades prepareGradesForSingleStudent(Object[] result) {
         long subjectId = (long) result[0];
         String subject = (String) result[1];
-        String grades = checkForEmptyGrades(result[2]);
-        String average = castAverage((result[3]));
+        List<GradeDisplayDTO> examGrades = checkForEmptyGrades(result[2]);
+        List<GradeDisplayDTO> testGrades = checkForEmptyGrades(result[3]);
+        List<GradeDisplayDTO> quizGrades = checkForEmptyGrades(result[4]);
+        List<GradeDisplayDTO> questioningGrades = checkForEmptyGrades(result[5]);
+        List<GradeDisplayDTO> homeworkGrades = checkForEmptyGrades(result[6]);
+        List<GradeDisplayDTO> otherGrades = checkForEmptyGrades(result[7]);
+        String average = castAverage((result[8]));
 
-        return new SubjectsWithGrades(subjectId, subject, grades, average);
+        return new SubjectsWithGrades(subjectId, subject, examGrades, testGrades, quizGrades, questioningGrades, homeworkGrades, otherGrades, average);
     }
 
-    private static String checkForEmptyGrades(Object grades) {
+    private static List<GradeDisplayDTO> checkForEmptyGrades(Object grades) {
         if (grades == null) {
-            return "- - - No grades yet - - -";
+            List<GradeDisplayDTO> empty = new ArrayList<>();
+            empty.add(new GradeDisplayDTO("-", 0L, "black"));
+            return empty;
         } else {
-            return (String) grades;
+            return Arrays.stream(((String) grades).split(","))
+                    .map(dashSeparated -> new GradeDisplayDTO(dashSeparated.trim().split("\\^")))
+                    .toList();
         }
     }
+
     //TODO: do the same for students list
     public static List<StudentSubjectGradesDTO> getEmptyGradesListIndicator() {
-        return List.of(new StudentSubjectGradesDTO("No", "grades", "to", "display"));
+        return List.of(new StudentSubjectGradesDTO("---",
+                "---",
+                List.of(new GradeDisplayDTO("", 0L, "black")),
+                List.of(new GradeDisplayDTO("", 0L, "black")),
+                List.of(new GradeDisplayDTO("", 0L, "black")),
+                List.of(new GradeDisplayDTO("", 0L, "black")),
+                List.of(new GradeDisplayDTO("", 0L, "black")),
+                List.of(new GradeDisplayDTO("", 0L, "black")),
+                "---")
+        );
     }
 }

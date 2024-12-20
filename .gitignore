@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 produced_files/students_grades/*
+produced_files/roadmap/*
 produced_files/students_list/*
 seed_performance/*
 src/main/resources/application-secrets.properties

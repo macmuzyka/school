@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class FeedbackMailSenderService(
-        private val javaMailSender: JavaMailSender,
-        @Value("\${support-mail}")
-        private val supportMail: String
+    private val javaMailSender: JavaMailSender,
+    @Value("\${support-email}")
+    private val supportMail: String
 ) {
     private val log = LoggerFactory.getLogger(FeedbackMailSenderService::class.java)
 

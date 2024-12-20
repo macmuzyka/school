@@ -42,9 +42,11 @@ class StudentsListFileProviderService(
             val file = File(directoryPath + File.separator + "students-list_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss")) + ".txt")
             BufferedWriter(FileWriter(file))
                     .use { writer ->
+                        var studentNumber = 1
                         forListRecords.forEach { record ->
-                            writer.write(record.asSingleRow())
+                            writer.write(record.asSingleRow(studentNumber))
                             writer.newLine()
+                            studentNumber++
                         }
                     }
         } catch (e: Exception) {
