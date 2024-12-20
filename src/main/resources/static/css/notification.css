@@ -26,6 +26,10 @@
     background-color: limegreen;
 }
 
+.notification.student-added-error {
+    background-color: orangered;
+}
+
 .notification.student-update {
     background-color: royalblue;
 }

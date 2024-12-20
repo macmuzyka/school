@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 //TODO: clean & refactor code
@@ -89,15 +90,17 @@ public class StudentService {
     public Student addStudent(StudentDTO studentDTO) {
         try {
             log.info("Adding student: [{}]", studentDTO);
-            Student student = prepareEntityObjectFromDTO(studentDTO);
-            Student saved = studentRepository.save(student);
-            log.info("Saved student: {}", saved);
-            sendNotificationToFrontendService.notifyFrontendAboutAddedStudent("OK");
-            return saved;
+            if (identifierAlreadyExists(studentDTO.getIdentifier())) {
+                throw new IllegalArgumentException("Student with identifier " + studentDTO.getIdentifier() + " already exists!");
+            } else {
+                Student student = prepareEntityObjectFromDTO(studentDTO);
+                Student saved = studentRepository.save(student);
+                log.info("Saved student: {}", saved);
+                sendNotificationToFrontendService.notifyFrontendAboutAddedStudent("OK");
+                return saved;
+            }
         } catch (Exception e) {
-            String message = e.getMessage();
-            sendNotificationToFrontendService.notifyFrontendAboutAddedStudent("Error adding student");
-            throw new IllegalArgumentException(message);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -115,26 +118,39 @@ public class StudentService {
             sendNotificationToFrontendService.notifyFrontendAboutStudentRemovalStatus("Student with id: " + id + " to delete not found!");
             return "Student with id: " + id + " to delete not found!";
         }
-
     }
 
-    public StudentDTO updateStudent(StudentDTO updatedStudent) {
-        //TODO: fix form size
-        Optional<Student> studentToUpdate = studentRepository.findById(updatedStudent.getId());
+    public StudentDTO updateStudent(StudentDTO incomingUpdatedStudent) {
+        Optional<Student> studentToUpdate = studentRepository.findById(incomingUpdatedStudent.getId());
         if (studentToUpdate.isPresent()) {
-            Student toSave = studentToUpdate.get();
-            log.info("Student before update: {}", toSave);
-            toSave.setName(updatedStudent.getName());
-            toSave.setSurname(updatedStudent.getSurname());
-            Student savedStudent = studentRepository.save(toSave);
-            log.info("Student after update: {}", savedStudent);
-            sendNotificationToFrontendService.notifyFrontendAboutStudentUpdateStatus("OK");
-            return new StudentDTO(savedStudent);
+            Student foundStudentToUpdate = studentToUpdate.get();
+            String incomingIdentifier = incomingUpdatedStudent.getIdentifier().trim();
+            String existingIdentifier = foundStudentToUpdate.getIdentifier().trim();
+            if (identifierChanged(incomingIdentifier, existingIdentifier)
+                    && identifierAlreadyExists(incomingIdentifier)) {
+                throw new IllegalArgumentException("Student with identifier " + incomingUpdatedStudent.getIdentifier()
+                        + " already exists!");
+            } else {
+                log.info("Student before update: {}", foundStudentToUpdate);
+                foundStudentToUpdate.setName(incomingUpdatedStudent.getName());
+                foundStudentToUpdate.setSurname(incomingUpdatedStudent.getSurname());
+                Student savedStudent = studentRepository.save(foundStudentToUpdate);
+                log.info("Student after update: {}", savedStudent);
+                sendNotificationToFrontendService.notifyFrontendAboutStudentUpdateStatus("OK");
+                return new StudentDTO(savedStudent);
+            }
         } else {
-            String message = "Student with id: " + updatedStudent.getId() + " does not exist!";
-            sendNotificationToFrontendService.notifyFrontendAboutStudentUpdateStatus(message);
-            throw new IllegalArgumentException(message);
+            throw new IllegalArgumentException("Student with id: " + incomingUpdatedStudent.getId() + " does not exist!");
         }
+    }
+
+    private Boolean identifierChanged(String incomingValue, String existingValue) {
+        return !incomingValue.equals(existingValue);
+    }
+
+    private Boolean identifierAlreadyExists(String incomingIdentifier) {
+        return studentRepository.findAll().stream().map(Student::getIdentifier).collect(Collectors.toSet())
+                .contains(incomingIdentifier);
     }
 
     public Student getStudent(Long studentId) {
@@ -149,7 +165,8 @@ public class StudentService {
 
     public List<StudentDTO> findStudents(OptionalRequestParams params) {
         log.info("Received query params: {}", params);
-        List<StudentDTO> studentsFound = studentRepository.findAllStudentsByParams(params.getId(), params.getName(), params.getSurname(), params.getIdentifier()).stream()
+        List<StudentDTO> studentsFound = studentRepository
+                .findAllStudentsByParams(params.getId(), params.getName(), params.getSurname(), params.getIdentifier()).stream()
                 .map(StudentDTO::new).toList();
         log.info("Retrieved students: {}", studentsFound);
         return studentsFound;

@@ -18,20 +18,22 @@ import static com.school.service.ProgressRecordExportService.progressRecords;
 import static com.school.service.ProgressRecordExportService.recordsReadyToExport;
 
 @Service
-public class SeedMockGradesService {
+public class SeedGradesService {
     private final StudentRepository studentRepository;
     private final SubjectRepository subjectRepository;
     private final GradeRepository gradeRepository;
     private final SendNotificationToFrontendService sendNotificationToFrontendService;
+    private final EnvironmentService environmentService;
     private final ApplicationConfig applicationConfig;
     private final Random randomizer = new Random();
-    private final Logger log = LoggerFactory.getLogger(SeedMockGradesService.class);
+    private final Logger log = LoggerFactory.getLogger(SeedGradesService.class);
 
-    public SeedMockGradesService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SendNotificationToFrontendService sendNotificationToFrontendService, ApplicationConfig applicationConfig) {
+    public SeedGradesService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SendNotificationToFrontendService sendNotificationToFrontendService, final EnvironmentService environmentService, ApplicationConfig applicationConfig) {
         this.studentRepository = studentRepository;
         this.subjectRepository = subjectRepository;
         this.gradeRepository = gradeRepository;
         this.sendNotificationToFrontendService = sendNotificationToFrontendService;
+        this.environmentService = environmentService;
         this.applicationConfig = applicationConfig;
     }
 
@@ -43,7 +45,7 @@ public class SeedMockGradesService {
         seedGradesAmongStudents(totalGrades);
     }
 
-    public void seedGradesAmongStudents(int totalGrades) {
+    private void seedGradesAmongStudents(int totalGrades) {
         long tenthPartLoopTime = startNewLoopTime();
         for (int record = 0; record < totalGrades; record++) {
             if (progressIsTenthPart(record)) {
@@ -102,31 +104,37 @@ public class SeedMockGradesService {
 
     private void logProgressRecord(ProgressRecord currentProgressRecord) {
         log.info("Adding {}% of records took {}s", currentProgressRecord.getPercentageProgress(), currentProgressRecord.getDuration());
+        sendNotificationToFrontendService.notifyFrontendAboutSeedingProgress(currentProgressRecord);
     }
 
     private void saveRandomGradeForRandomStudent() {
         int randomStudentRange = studentRepository.findAll().size();
         try {
             Student randomStudent = findRandomStudent(zeroExclusiveRandomValueForId(randomStudentRange));
-            List<Subject> subjectsOfRandomStudent = randomStudent.getSchoolClass().getClassSubjects();
-            long randomlyChosenSubjectId = subjectsOfRandomStudent.get(randomizer.nextInt(subjectsOfRandomStudent.size())).getId();
+            if (randomStudent.getSchoolClass() != null) {
+                List<Subject> subjectsOfRandomStudent = randomStudent.getSchoolClass().getClassSubjects();
+                long randomlyChosenSubjectId = subjectsOfRandomStudent.get(randomizer.nextInt(subjectsOfRandomStudent.size())).getId();
 
-            List<Integer> availableGrades = applicationConfig.getAvailableGrades();
+                List<Integer> availableGrades = applicationConfig.getAvailableGrades();
 
-            Optional<Subject> optionalRandomStudentSubject = subjectRepository.findById(randomlyChosenSubjectId);
-            if (optionalRandomStudentSubject.isPresent()) {
-                Subject randomStudentSubject = optionalRandomStudentSubject.get();
-                gradeRepository.save(new Grade(
-                                availableGrades.get(randomizer.nextInt(availableGrades.size())),
-                                randomStudent,
-                                randomStudentSubject,
-                                "Created randomly by seeder",
-                                randomGradeType()
-                        )
-                );
+                Optional<Subject> optionalRandomStudentSubject = subjectRepository.findById(randomlyChosenSubjectId);
+                if (optionalRandomStudentSubject.isPresent()) {
+                    Subject randomStudentSubject = optionalRandomStudentSubject.get();
+                    gradeRepository.save(new Grade(
+                                    availableGrades.get(randomizer.nextInt(availableGrades.size())),
+                                    randomStudent,
+                                    randomStudentSubject,
+                                    "Created randomly by seeder",
+                                    randomGradeType()
+                            )
+                    );
+                } else {
+                    throw new IllegalArgumentException("No subjects found for student: " + randomStudent);
+                }
             } else {
-                throw new IllegalArgumentException("No subjects found for student: " + randomStudent);
+                log.info("Student with identifier {} unassigned, skipping seeding grade in this student record", randomStudent.getIdentifier());
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());
@@ -151,7 +159,11 @@ public class SeedMockGradesService {
         return randomizer.nextLong(range) + 1;
     }
 
-    public boolean notPopulatedYet() {
+    public boolean noGradesYet() {
         return gradeRepository.findAll().isEmpty();
+    }
+
+    public boolean databaseSeedCondition() {
+        return environmentService.profileOtherThanDefaultIsActive() && noGradesYet();
     }
 }

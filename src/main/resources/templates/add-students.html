@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Add students</title>
@@ -10,11 +10,17 @@
     <link rel="stylesheet" type="text/css" href="/css/popup-form.css">
     <link rel="stylesheet" type="text/css" href="/css/notification.css">
     <script src="/js/notification.js"></script>
+    <script src="/js/go-back.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
     <h1 class="header">
+        <button class="redirect-icon go-up"
+                onclick="window.location.href='http://localhost:9000/view/student-entry-point'"
+                title="Go to students">
+            <i class="fa-solid fa-arrow-turn-up"></i>
+        </button>
         <span class="title">Insert Students</span>
         <button class="redirect-icon show-students"
                 onclick="window.location.href='http://localhost:9000/view/students'"
@@ -22,13 +28,14 @@
             <i class="fa-solid fa-user-check"></i>
         </button>
         <button class="redirect-icon previous-page-icon"
-                onclick="window.location.href='http://localhost:9000/view/student-entry-point'"
+                onclick="goBack()"
                 title="Go back">
             <i class="fa-solid fa-circle-arrow-left"></i>
         </button>
     </h1>
 
     <h1 class="header">
+        <div></div>
         <button id="submitButton" class="green-button" onclick="redirectToSubmitForm()" type="button">+ Single Student
         </button>
         <div class="drop-area-raw" id="drop-area">
@@ -58,11 +65,31 @@
             <div class="form-group">
                 <label for="studentBirthDate">Birth Date:</label>
                 <input type="date" id="studentBirthDate" name="studentBirthDate" pattern="\d{4}-\d{2}-\d{2}"
-                      required>
+                       required>
             </div>
             <div class="submit-form-buttons">
-                <button id="submitNewStudentButton" class="submit-button" onclick="sendSubmittedStudent()" type="button">Submit</button>
+                <button id="submitNewStudentButton" class="submit-button" onclick="sendSubmittedStudent()"
+                        type="button">Submit
+                </button>
                 <button type="button" class="cancel-submit-button" onclick="closeSubmitPopup()">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="seedConfirmationContainer" style="display: none;">
+        <form id="seedConfirmationForm">
+            <div class="form-group">
+                <span>Seed random grades among students?</span>
+            </div>
+            <div class="submit-form-buttons">
+                <button class="submit-button"
+                        type="button"
+                        onclick="seedGrades()">Yes
+                </button>
+                <button class="cancel-submit-button"
+                        type="button"
+                        onclick="closeSeedConfirmationContainer()">Cancel
+                </button>
             </div>
         </form>
     </div>
@@ -70,6 +97,7 @@
 <div id="loadingSpinner" style="display: none;">
     <i class="fa fa-spinner fa-spin"></i> Uploading...
 </div>
+<div hidden id="seedPossible" th:data="${seedPossible}"></div>
 <div class="notification-container" id="notification-container"></div>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
@@ -126,6 +154,12 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log('File uploaded successfully:', data);
+                    const seed = document.getElementById('seedPossible').getAttribute('data')
+                    console.log('Should seed?', seed);
+                    if (seed === true || seed === 'true') {
+                        openSeedConfirmationContainer()
+                    }
+
                 })
                 .catch(error => {
                     console.error('Error uploading file:', error);
@@ -133,6 +167,7 @@
                 })
                 .finally(() => {
                     spinner.style.display = 'none';
+
                 });
         }
     });
@@ -145,12 +180,12 @@
 
         stompClient.subscribe('/topic/student-duplicate-detected', function (message) {
             console.log("Received message: " + message.body)
-            studentNotification(message.body, 'duplicate')
+            studentUponInsertNotificationNotification(message.body, 'duplicate')
         });
 
         stompClient.subscribe('/topic/student-insert-error-detected', function (message) {
             console.log("Received message: " + message.body)
-            studentNotification(message.body, 'insert-error')
+            studentUponInsertNotificationNotification(message.body, 'insert-error')
         });
 
         stompClient.subscribe('/topic/file-upload-status', function (message) {
@@ -167,11 +202,61 @@
             console.log("Received message: " + message.body)
             studentAddedNotification(message.body, 'student-added')
         });
+
+        stompClient.subscribe('/topic/seeding-progress', function (message) {
+            console.log("Received message: " + message.body)
+            seedingProgressNotification(message.body)
+        });
     });
 
     function redirectToSubmitForm() {
         document.getElementById("popupContainer").style.display = "block";
     }
+
+    function openSeedConfirmationContainer() {
+        document.getElementById("seedConfirmationContainer").style.display = "block";
+    }
+
+    function closeSeedConfirmationContainer() {
+        document.getElementById("seedConfirmationContainer").style.display = "none";
+    }
+
+
+    function seedGrades() {
+        const spinner = document.getElementById('loadingSpinner');
+            spinner.style.display = 'block';
+            spinner.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Seeding grades...`;
+
+        fetch('/seed/grades', {
+            method: 'POST',
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                    spinner.style.display = 'none';
+                    closeSeedConfirmationContainer()
+                    refreshPage()
+                });
+
+
+
+
+    }
+
+    function refreshPage() {
+        setTimeout(() => location.reload(), 20000)
+    }
+
 
     function closeSubmitPopup() {
         document.getElementById("popupContainer").style.display = "none";
@@ -218,7 +303,6 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Failed to add student');
             });
         closeSubmitPopup()
     }

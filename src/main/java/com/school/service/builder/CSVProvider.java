@@ -6,6 +6,7 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.school.configuration.FileConfig;
 import com.school.model.FileResource;
 import com.school.model.FileProvider;
+import com.school.model.dto.StudentSubjectGradesCsvBeanDTO;
 import com.school.model.dto.StudentSubjectGradesDTO;
 import com.school.model.enums.FileStatus;
 import com.school.model.response.FileProviderResponse;
@@ -26,18 +27,19 @@ public class CSVProvider extends FileResource implements FileProvider {
     @Override
     public FileProviderResponse build(List<StudentSubjectGradesDTO> records) {
         String resultMessage;
+        List<StudentSubjectGradesCsvBeanDTO> recordsAsCsvBeans = records.stream().map(StudentSubjectGradesCsvBeanDTO::new).toList();
         try (FileWriter writer = new FileWriter(this.getFullPathWithoutExtension())) {
-            StatefulBeanToCsv<StudentSubjectGradesDTO> beanToCsv =
-                    new StatefulBeanToCsvBuilder<StudentSubjectGradesDTO>(writer)
+            StatefulBeanToCsv<StudentSubjectGradesCsvBeanDTO> beanToCsv =
+                    new StatefulBeanToCsvBuilder<StudentSubjectGradesCsvBeanDTO>(writer)
                             .withQuotechar('\'')
                             .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
                             .build();
 
-            beanToCsv.write(records);
+            beanToCsv.write(recordsAsCsvBeans);
 
             resultMessage = "CSV file created successfully.";
             log.info(resultMessage);
-            return new FileProviderResponse(FileStatus.CREATED, records.size(), resultMessage);
+            return new FileProviderResponse(FileStatus.CREATED, recordsAsCsvBeans.size(), resultMessage);
         } catch (Exception e) {
             resultMessage = "CSV prepare -> Error while creating CSV file from student subject grades records!";
             log.error(resultMessage);

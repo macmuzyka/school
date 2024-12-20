@@ -11,15 +11,21 @@
     <link rel="stylesheet" type="text/css" href="/css/popup-form.css">
     <link rel="stylesheet" type="text/css" href="/css/grade.css">
     <script src="/js/notification.js"></script>
+    <script src="/js/go-back.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Caveat&family=Patrick+Hand&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="container">
     <h1 class="header">
+        <button class="redirect-icon go-up"
+                onclick="window.location.href='http://localhost:9000/view/students'"
+                title="Go to grades">
+            <i class="fa-solid fa-arrow-turn-up"></i>
+        </button>
         <span class="title">Grade Insertion</span>
         <button class="redirect-icon previous-page-icon"
-                onclick="window.location.href='http://localhost:9000/view/add-student-grade'"
+                onclick="goBack()"
                 title="Go back">
             <i class="fa-solid fa-circle-arrow-left"></i>
         </button>
@@ -207,8 +213,7 @@
         </form>
     </div>
 </div>
-<div id="notification-container" class="notification-container">
-</div>
+<div id="notification-container" class="notification-container"></div>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
@@ -268,7 +273,7 @@
                 .then(response => response.json())
                 .then(json => {
                     console.log('Success: ' + json);
-                    setTimeout(() => infoBox.innerHTML = generateFetchedDetailsInfobox(json), 1000)
+                    setTimeout(() => infoBox.innerHTML = generateFetchedDetailsInfobox(json, gradeId), 1000)
 
                 })
                 .catch(error => {
@@ -290,7 +295,7 @@
                 `;
     }
 
-    function generateFetchedDetailsInfobox(json) {
+    function generateFetchedDetailsInfobox(json, gradeId) {
         return `<div class="sticky-note fetched">
                     <strong class="handwritten">Grade: ${json.value}</strong><br/><br/>
                     <strong class="handwritten">Added: ${json.createdAt}</strong><br/>

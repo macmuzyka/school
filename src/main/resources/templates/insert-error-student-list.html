@@ -10,16 +10,23 @@
     <link rel="stylesheet" type="text/css" href="/css/popup-form.css">
     <link rel="stylesheet" type="text/css" href="/css/notification.css">
     <script src="/js/notification.js"></script>
+    <script src="/js/go-back.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
     <h1 class="header">
+        <button class="redirect-icon go-up"
+                onclick="window.location.href='http://localhost:9000/view/student-entry-point'"
+                title="Go to students">
+            <i class="fa-solid fa-arrow-turn-up"></i>
+        </button>
         <span class="title">
            Corrupted records
         </span>
         <button class="redirect-icon previous-page-icon"
-                onclick="window.location.href='http://localhost:9000/view/student-entry-point'" title="Go back">
+                onclick="goBack()"
+                title="Go back">
             <i class="fa-solid fa-circle-arrow-left"></i>
         </button>
     </h1>
@@ -46,7 +53,8 @@
                 <input type="date" id="studentBirthDate" name="studentBirthDate" required>
             </div>
             <div class="submit-form-buttons">
-                <button id="submitButton" class="submit-button" onclick="sendCorrectedStudent()" type="button">Submit</button>
+                <button id="submitButton" class="submit-button" onclick="sendCorrectedStudent()" type="button">Submit
+                </button>
                 <button type="button" class="cancel-submit-button" onclick="closeCorrectionPopup()">Cancel</button>
             </div>
         </form>

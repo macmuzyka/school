@@ -2,15 +2,19 @@ package com.school.controller;
 
 import com.school.configuration.ApplicationConfig;
 import com.school.model.OptionalRequestParams;
+import com.school.model.ProjectVersion;
 import com.school.model.SubjectsWithGrades;
 import com.school.model.dto.ClassWithListedStudentsDTO;
 import com.school.model.dto.StudentDTO;
 import com.school.model.dto.StudentSubjectGradesDTO;
 import com.school.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,15 +29,17 @@ public class ModelViewController {
     private final DuplicatedStudentService duplicatedStudentService;
     private final InsertErrorStudentService insertErrorStudentService;
     private final GradeService gradeService;
-    private final PseudoRoadMapService pseudoRoadMapService;
+    private final SeedGradesService seedGradesService;
+    private final RoadMapService roadMapService;
+    private final ProjectVersionService projectVersionService;
     private final ApplicationConfig applicationConfig;
 
     public ModelViewController(ClassService classService,
                                StudentService studentService,
                                DuplicatedStudentService duplicatedStudentService,
                                InsertErrorStudentService insertErrorStudentService,
-                               GradeService gradeService,
-                               PseudoRoadMapService pseudoRoadMapService,
+                               GradeService gradeService, final SeedGradesService seedGradesService,
+                               RoadMapService roadMapService, final ProjectVersionService projectVersionService,
                                ApplicationConfig applicationConfig
     ) {
         this.classService = classService;
@@ -41,9 +47,13 @@ public class ModelViewController {
         this.duplicatedStudentService = duplicatedStudentService;
         this.insertErrorStudentService = insertErrorStudentService;
         this.gradeService = gradeService;
-        this.pseudoRoadMapService = pseudoRoadMapService;
+        this.seedGradesService = seedGradesService;
+        this.roadMapService = roadMapService;
+        this.projectVersionService = projectVersionService;
         this.applicationConfig = applicationConfig;
     }
+
+    private final Logger log = LoggerFactory.getLogger(ModelViewController.class);
 
     @GetMapping("/students")
     public String getStudents(Model model,
@@ -79,10 +89,9 @@ public class ModelViewController {
     }
 
     @GetMapping("/classes")
-    public String getClassesWithStudents(Model model, @RequestParam(required = false) Boolean recordsWithRedirect) {
+    public String getClassesWithStudents(Model model) {
         try {
             List<ClassWithListedStudentsDTO> classes = classService.getClassesWithStudents();
-            model.addAttribute("show", recordsWithRedirect);
             model.addAttribute("classes", classes);
             return "class-list";
         } catch (Exception e) {
@@ -98,6 +107,9 @@ public class ModelViewController {
                                    @RequestParam(required = false) String identifier,
                                    @RequestParam(required = false) String subject) {
         try {
+            if (("---").equals(subject)) {
+                subject = null;
+            }
             OptionalRequestParams params = prepareOptionalRequestParams(null, id, name, surname, identifier, subject);
             List<StudentSubjectGradesDTO> grades = gradeService.getSubjectGradesForStudents(params);
 
@@ -107,7 +119,9 @@ public class ModelViewController {
             model.addAttribute("surname", surname);
             model.addAttribute("identifier", identifier);
             model.addAttribute("subject", subject);
-            model.addAttribute("subjects", applicationConfig.getAvailableSubjects());
+            List<String> subjectsWithClearParameter = new ArrayList<>(applicationConfig.getAvailableSubjects());
+            subjectsWithClearParameter.add("---");
+            model.addAttribute("subjects", subjectsWithClearParameter);
             return "grade-list";
         } catch (Exception e) {
             return e.getMessage();
@@ -137,8 +151,11 @@ public class ModelViewController {
     }
 
     @GetMapping("/add-students")
-    public String addStudents() {
+    public String addStudents(Model model) {
         try {
+            boolean seedPossible = seedGradesService.databaseSeedCondition();
+            log.info("seedPossible: {}", seedPossible);
+            model.addAttribute("seedPossible", seedPossible);
             return "add-students";
         } catch (Exception e) {
             return e.getMessage();
@@ -146,8 +163,10 @@ public class ModelViewController {
     }
 
     @GetMapping
-    public String entryPoint() {
+    public String entryPoint(Model model) {
         try {
+            ProjectVersion pv = projectVersionService.getCurrentProjectVersion();
+            model.addAttribute("projectVersion", pv);
             return "entry_points/entry-point";
         } catch (Exception e) {
             return e.getMessage();
@@ -203,7 +222,7 @@ public class ModelViewController {
 
     @GetMapping("/todo")
     public String getTodo(Model model) {
-        Map<String, List<String>> thingsTodo = pseudoRoadMapService.getCurrentTodos();
+        Map<String, List<String>> thingsTodo = roadMapService.getCurrentTodos();
         model.addAttribute("thingsTodo", thingsTodo);
         return "todo-list";
     }

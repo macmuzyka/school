@@ -1,6 +1,6 @@
 package com.school.service;
 
-import org.jetbrains.annotations.NotNull;
+import com.school.model.statistics.ProgressRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -73,6 +73,12 @@ public class SendNotificationToFrontendService {
     public void notifyFrontendAboutAddedStudent(String message) {
         logMessageSentViaWebsocket("new student added", message);
         messagingTemplate.convertAndSend("/topic/student-added", message);
+    }
+
+    public void notifyFrontendAboutSeedingProgress(final ProgressRecord currentProgressRecord) {
+        String message = "Seeding " + currentProgressRecord.getPercentageProgress() + "% took " + currentProgressRecord.getDuration() + "s";
+        logMessageSentViaWebsocket("seeding progress", message);
+        messagingTemplate.convertAndSend("/topic/seeding-progress", message);
     }
 
     private void logMessageSentViaWebsocket(String about, String message) {

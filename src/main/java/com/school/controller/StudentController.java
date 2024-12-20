@@ -3,6 +3,7 @@ package com.school.controller;
 import com.school.model.FileToImport;
 import com.school.model.dto.NewStudentWithClassDTO;
 import com.school.model.dto.StudentDTO;
+import com.school.service.SendNotificationToFrontendService;
 import com.school.service.StudentService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,16 +14,22 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/student")
 public class StudentController {
     private final StudentService studentService;
+    private final SendNotificationToFrontendService sendNotificationToFrontendService;
 
-    public StudentController(StudentService studentService) {
+    public StudentController(StudentService studentService, final SendNotificationToFrontendService sendNotificationToFrontendService) {
         this.studentService = studentService;
+        this.sendNotificationToFrontendService = sendNotificationToFrontendService;
     }
 
     @PostMapping("/add")
     public ResponseEntity<?> addStudent(@RequestBody StudentDTO student) {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(studentService.addStudent(student));
+        } catch (IllegalArgumentException iae) {
+            sendNotificationToFrontendService.notifyFrontendAboutAddedStudent(iae.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(iae.getMessage());
         } catch (Exception e) {
+            sendNotificationToFrontendService.notifyFrontendAboutAddedStudent(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -67,7 +74,11 @@ public class StudentController {
     public ResponseEntity<?> editStudent(@RequestBody StudentDTO updatedStudent) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(studentService.updateStudent(updatedStudent));
+        } catch (IllegalArgumentException iae) {
+            sendNotificationToFrontendService.notifyFrontendAboutStudentUpdateStatus(iae.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(iae.getMessage());
         } catch (Exception e) {
+            sendNotificationToFrontendService.notifyFrontendAboutStudentUpdateStatus(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

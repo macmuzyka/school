@@ -19,13 +19,13 @@ import java.util.*
 
 @Service
 class StudentsFromListBuilderService(
-        private val studentRepository: StudentRepository,
-        private val studentDuplicateErrorRepository: StudentDuplicateErrorRepository,
-        private val studentInsertErrorRepository: StudentInsertErrorRepository,
-        private val schoolClassRepository: SchoolClassRepository,
-        private val classService: ClassService,
-        private val sendNotificationToFrontendService: SendNotificationToFrontendService,
-        private val applicationConfig: ApplicationConfig
+    private val studentRepository: StudentRepository,
+    private val studentDuplicateErrorRepository: StudentDuplicateErrorRepository,
+    private val studentInsertErrorRepository: StudentInsertErrorRepository,
+    private val schoolClassRepository: SchoolClassRepository,
+    private val classService: ClassService,
+    private val sendNotificationToFrontendService: SendNotificationToFrontendService,
+    private val applicationConfig: ApplicationConfig
 ) {
     private val log = LoggerFactory.getLogger(StudentsFromListBuilderService::class.java)
     private val inserts: MutableMap<InsertStatus, MutableSet<StudentDTO>> = mutableMapOf()
@@ -43,11 +43,11 @@ class StudentsFromListBuilderService(
                 lines.forEach { line ->
                     val tagsFound = line.split(" ")
                     tagsFound.takeIf { lineHasProperNumberOFTags(it) }
-                            ?.let { values ->
-                                buildAndSaveStudentFromReaderLineParts(values)
-                                        ?.let { studentBuilt -> assignClass(studentBuilt) }
-                                        ?: handleDuplicateStudentRecord(values)
-                            } ?: buildAndSaveInsertErrorStudentRecord(tagsFound)
+                        ?.let { values ->
+                            buildAndSaveStudentFromReaderLineParts(values)
+                                ?.let { studentBuilt -> assignClass(studentBuilt) }
+                                ?: handleDuplicateStudentRecord(values)
+                        } ?: buildAndSaveInsertErrorStudentRecord(tagsFound)
                 }
             }
             "File uploaded successfully"
@@ -62,10 +62,12 @@ class StudentsFromListBuilderService(
     private fun initializeAuxiliaryMap() {
         inserts[InsertStatus.SUCCESS] = studentRepository.findAll().map { StudentDTO(it) }.toMutableSet()
         inserts[InsertStatus.ERROR] = studentInsertErrorRepository.findAll().map { StudentDTO(it) }.toMutableSet()
-        inserts[InsertStatus.DUPLICATED] = studentDuplicateErrorRepository.findAll().map { StudentDTO(it) }.toMutableSet()
+        inserts[InsertStatus.DUPLICATED] =
+            studentDuplicateErrorRepository.findAll().map { StudentDTO(it) }.toMutableSet()
     }
 
-    private fun lineHasProperNumberOFTags(lineParts: List<String>) = lineParts.size == applicationConfig.minimumStudentTags
+    private fun lineHasProperNumberOFTags(lineParts: List<String>) =
+        lineParts.size == applicationConfig.minimumStudentTags
 
     private fun buildAndSaveStudentFromReaderLineParts(tags: List<String>): Student? {
         val toSave = buildStudentFromTags(tags)
@@ -96,15 +98,15 @@ class StudentsFromListBuilderService(
 
     private fun handleDuplicateStudentRecord(values: List<String>) {
         val duplicate = StudentDuplicateError(
-                buildStudentFromTags(values),
-                "Duplicated Identifier",
-                "Insert error"
+            buildStudentFromTags(values),
+            "Duplicated Identifier",
+            "Insert error"
         )
         duplicatedInerts().add(StudentDTO(duplicate)).let { newDuplicate ->
             if (newDuplicate) {
                 studentDuplicateErrorRepository.save(duplicate)
-                        .also { log.info("Student with identifier ${it.identifier} saved as duplicate") }
-                        .also { sendNotificationToFrontendService.notifyFrontendAboutStudentDuplicateDetected("Student duplicate, identifier ${it.identifier} already exists") }
+                    .also { log.info("Student with identifier ${it.identifier} saved as duplicate") }
+                    .also { sendNotificationToFrontendService.notifyFrontendAboutStudentDuplicateDetected("Student duplicate, identifier ${it.identifier} already exists, please verify") }
             } else {
                 log.info("Duplicated identifier ${duplicate.identifier} already saved")
             }
@@ -114,20 +116,26 @@ class StudentsFromListBuilderService(
     private fun buildAndSaveInsertErrorStudentRecord(invalidTags: List<String>) {
         val pseudoIdentifier = invalidTags.joinToString("&")
         val studentInsertError = StudentInsertError(
-                Student(
-                        "",
-                        "",
-                        pseudoIdentifier,
-                        UUID.randomUUID().toString(),
-                        LocalDate.now(),
-                        false),
-                "Error line in file: $pseudoIdentifier",
-                "Bad record format in student file")
+            Student(
+                "",
+                "",
+                pseudoIdentifier,
+                UUID.randomUUID().toString(),
+                LocalDate.now(),
+                false
+            ),
+            "Error line in file: $pseudoIdentifier",
+            "Bad record format in student file"
+        )
         errorInserts().add(StudentDTO(studentInsertError)).let { added ->
             if (added) {
                 studentInsertErrorRepository.save(studentInsertError)
-                        .also { log.info("Student insert error record saved ${StudentDTO(it)}") }
-                        .also { sendNotificationToFrontendService.notifyFrontendAboutStudentInsertErrorDetected("Error inserting student $invalidTags invalid number of tags") }
+                    .also { log.info("Student insert error record saved ${StudentDTO(it)}") }
+                    .also {
+                        sendNotificationToFrontendService.notifyFrontendAboutStudentInsertErrorDetected(
+                            "Error inserting student $invalidTags invalid number of tags, please verify "
+                        )
+                    }
             } else {
                 log.info("Student insert error with pseudo identifier $pseudoIdentifier already saved")
             }

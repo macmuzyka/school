@@ -9,13 +9,20 @@
     <link rel="stylesheet" type="text/css" href="/css/forms.css">
     <link rel="stylesheet" type="text/css" href="/css/notification.css">
     <script src="/js/notification.js"></script>
+    <script src="/js/go-back.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
     <h1 class="header">
+        <button class="redirect-icon go-up"
+                onclick="window.location.href='http://localhost:9000/view'"
+                title="Go to dashboard">
+            <i class="fa-solid fa-arrow-turn-up"></i>
+        </button>
         <span class="title">Grades management</span>
-        <button class="redirect-icon previous-page-icon" onclick="window.location.href='http://localhost:9000/view'"
+        <button class="redirect-icon previous-page-icon"
+                onclick="goBack()"
                 title="Go back">
             <i class="fa-solid fa-circle-arrow-left"></i>
         </button>
@@ -27,7 +34,7 @@
             Grade [Student]
         </button>
         <button class="student-grades-by-class"
-                onclick="window.location.href='http://localhost:9000/view/classes?recordsWithRedirect=true'">Add
+                onclick="window.location.href='http://localhost:9000/view/classes'">Add
             Grade [Class]
         </button>
         <button onclick="window.location.href='http://localhost:9000/view/subject-grades'">Show Grades</button>

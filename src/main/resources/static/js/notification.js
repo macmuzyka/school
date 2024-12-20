@@ -43,7 +43,54 @@ function seedingGradesNotification(message, type, duration = 15000) {
     }, duration);
 }
 
-function studentNotification(message, type, duration = 15000) {
+function studentNotification(message, type, duration = 10000) {
+    const notificationContainer = getDocumentContainer()
+    const notification = document.createElement('div');
+
+
+    if (message !== "OK") {
+        notification.textContent = message;
+        notification.className = 'notification ' + type + '-error'
+    } else {
+        notification.textContent = "Student updated";
+        notification.className = 'notification ' + type
+    }
+
+    notificationContainer.appendChild(notification);
+
+    setTimeout(() => notification.classList.add('visible'), 100);
+
+    setTimeout(() => {
+        notification.classList.remove('visible');
+        setTimeout(() => notification.remove(), 1000);
+    }, duration);
+}
+
+function studentDeleteNotification(message, type, duration = 10000) {
+    const notificationContainer = getDocumentContainer()
+    const notification = document.createElement('div');
+
+
+    if (message !== "OK") {
+        notification.textContent = message;
+        notification.className = 'notification ' + type + '-error'
+    } else {
+        notification.textContent = "Student removed";
+        notification.className = 'notification ' + type
+    }
+
+    notificationContainer.appendChild(notification);
+
+    setTimeout(() => notification.classList.add('visible'), 100);
+
+    setTimeout(() => {
+        notification.classList.remove('visible');
+        setTimeout(() => notification.remove(), 1000);
+    }, duration);
+}
+
+
+function studentUponInsertNotificationNotification(message, type, duration = 15000) {
     const notificationContainer = getDocumentContainer()
     const notification = document.createElement('div');
 
@@ -66,10 +113,11 @@ function studentAddedNotification(message, type, duration = 15000) {
     const notificationContainer = getDocumentContainer()
     const notification = document.createElement('div');
 
-    notification.className = 'notification ' + type
     if (message === "OK") {
+        notification.className = 'notification ' + type
         notification.textContent = "New student added";
     } else {
+        notification.className = 'notification ' + type + '-error'
         notification.textContent = message;
     }
 
@@ -162,6 +210,22 @@ function feedbackNotification(message, duration = 15000) {
         notification.className = `notification grade-error`;
         notification.innerText = "Error adding grade: " + message;
     }
+
+    notificationContainer.appendChild(notification);
+    setTimeout(() => notification.classList.add('visible'), 100);
+
+    setTimeout(() => {
+        notification.classList.remove('visible');
+        setTimeout(() => notification.remove(), 1000);
+    }, duration);
+}
+
+function seedingProgressNotification(message, duration = 15000) {
+    const notificationContainer = getDocumentContainer()
+    const notification = document.createElement('div');
+
+    notification.className = `notification feedback-consumed`;
+    notification.innerText = message;
 
     notificationContainer.appendChild(notification);
     setTimeout(() => notification.classList.add('visible'), 100);

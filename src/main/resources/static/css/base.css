@@ -228,3 +228,28 @@ button:disabled {
 .dropdown {
     margin-top: 10px;
 }
+
+.bottom-right-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 12px;
+    color: black;
+    text-align: left;
+    background-color: #7f9394;
+    padding: 10px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+table.version-control-row th {
+    background-color: #7f9394;
+    color: black;
+}
+
+h1.version-control {
+    text-align: center;
+    color: black;
+    margin-bottom: 20px;
+}
