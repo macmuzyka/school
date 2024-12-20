@@ -8,11 +8,11 @@ class RoadMapService {
         return mutableMapOf(
             "Done" to listOf(
                 "Project current version displayed on dashboard",
-                "Seeding grade upon insertion from list is optional, but only available if there are not added grades",
+                "Seeding random grades upon insertion from list is optional, but only available if there are not any added grades",
                 "Better navigation to previous page (history based), but added button to go upper in page hierarchy",
                 "All notification popups sent from backend web-socket to be captured, consumed & displayed using frontend websocket",
                 "Feedback collecting via form in GUI & sent via prepared mail to project mailbox " +
-                        "& central registry to store feedback content & provider",
+                        "& central registry to store feedback content & feedback provider",
                 "Upon insertion student list errors inserts showing up in GUI via notification",
                 "Enriched grade entity with note & grade category",
                 "Last five hints about grade description (subject based) to be picked from dedicated toolbar",
@@ -32,6 +32,7 @@ class RoadMapService {
                 "Weighted grades (some grades are worth more than others, thus counting average grade will be different)"
             ),
             "Frontend" to listOf(
+                "If not application password for emailing service is set, show information about that in feedback section",
                 "Adjust timing of notification showing and page refreshing for all views",
                 "Redirection to proper pages upon detecting student duplicate & student insert error",
                 "Frontend for Road Map in school informer central registry for managing feedback and new version release propagation",
