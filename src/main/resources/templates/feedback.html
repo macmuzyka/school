@@ -49,6 +49,9 @@
         <button class="submit-button" type="button" onclick="saveFeedback()">Submit Feedback</button>
     </form>
 </div>
+<div id="loadingSpinner" style="display: none;">
+    <i class="fa fa-spinner fa-spin"></i> Submitting feedback...
+</div>
 <div id="notification-container" class="notification-container"></div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
@@ -72,6 +75,9 @@
         let providerName = document.getElementById("name").value
         let providerMail = document.getElementById("email").value
         let feedbackContent = document.getElementById("message").value
+
+        const spinner = document.getElementById('loadingSpinner');
+            spinner.style.display = 'block';
 
         let feedbackObject = {
             name: providerName,
@@ -98,6 +104,10 @@
             })
             .catch(error => {
                 console.error('Error:', error);
+            })
+            .finally(() => {
+                    spinner.style.display = 'none';
+
             });
     }
 

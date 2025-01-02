@@ -15,7 +15,7 @@ public interface GradeRepository extends JpaRepository<Grade, Long> {
             "SELECT s.name, s.surname, sub.name AS subject, " +
                     "string_agg(CASE WHEN g.grade_type = 'EXAM' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS exam_grades, " +
                     "string_agg(CASE WHEN g.grade_type = 'TEST' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS test_grades, " +
-                    "string_agg(CASE WHEN g.grade_type = 'QUIZ' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS quizz_grades, " +
+                    "string_agg(CASE WHEN g.grade_type = 'QUIZ' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS quiz_grades, " +
                     "string_agg(CASE WHEN g.grade_type = 'QUESTIONING' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS question_grades, " +
                     "string_agg(CASE WHEN g.grade_type = 'HOMEWORK' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS homework_grades, " +
                     "string_agg(CASE WHEN g.grade_type = 'OTHER' THEN (g.grade_value || '^' || g.id)::TEXT  END, ', ') AS other_grades, " +
