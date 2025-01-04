@@ -1,6 +1,7 @@
 package com.school.model.dto;
 
 import com.school.model.entity.Grade;
+import com.school.service.utils.TimestampUtils;
 
 import java.time.format.DateTimeFormatter;
 
@@ -28,7 +29,7 @@ public class GradeDTO {
         this.studentId = grade.getStudent().getId();
         this.note = grade.getNote();
         this.gradeType = grade.getGradeType();
-        this.createdAt = grade.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.createdAt = grade.getCreatedAt().format(DateTimeFormatter.ofPattern(TimestampUtils.toSecondDisplayFormat));
     }
 
     public GradeDTO() {

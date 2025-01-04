@@ -1,6 +1,7 @@
 package com.school.model;
 
 import com.school.configuration.FileConfig;
+import com.school.service.utils.TimestampUtils;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ public abstract class FileResource {
     private final String fullPathWithoutExtension;
     private final String fileExtension;
     private final FileConfig fileConfig;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TimestampUtils.toSecondFileFormat);
 
     public FileResource(String fileExtension, FileConfig fileConfig) {
         this.fileConfig = fileConfig;
