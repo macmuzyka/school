@@ -12,15 +12,17 @@
 <body>
 <div class="container">
     <h1 class="header">
-        <span>Given resource not found!</span>
-        <div></div>
-        <span th:text="${message}"></span>
+        <span>Bad argument exception!</span>
         <button class="redirect-icon previous-page-icon"
                 onclick="goBack()"
                 title="Go back">
             <i class="fa-solid fa-circle-arrow-left"></i>
         </button>
     </h1>
+    <h1 class="header">
+        <span th:text="${message}"></span>
+    </h1>
 </div>
 </body>
+
 </html>

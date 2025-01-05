@@ -216,7 +216,8 @@ public class ModelViewController {
             return "student-details";
         } catch (Exception e) {
             e.printStackTrace();
-            return e.getMessage();
+            throw e;
+//            return e.getMessage();
         }
     }
 
