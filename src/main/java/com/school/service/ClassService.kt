@@ -17,19 +17,19 @@ import org.springframework.stereotype.Service
 
 @Service
 class ClassService(
-        private val studentRepository: StudentRepository,
-        private val schoolClassRepository: SchoolClassRepository,
-        private val subjectRepository: SubjectRepository,
-        private val schoolRepository: SchoolRepository,
-        private val applicationConfig: ApplicationConfig,
+    private val studentRepository: StudentRepository,
+    private val schoolClassRepository: SchoolClassRepository,
+    private val subjectRepository: SubjectRepository,
+    private val schoolRepository: SchoolRepository,
+    private val applicationConfig: ApplicationConfig,
 ) {
     private val log: Logger = LoggerFactory.getLogger(ClassService::class.java)
 
     fun getClassesWithStudents(): List<ClassWithListedStudentsDTO> {
         return try {
             schoolClassRepository.findListedStudentsGroupedIntoClasses()
-                    .map { QueryResultsMapper.buildClassWithListedStudents(it) }
-                    .toList()
+                .map { QueryResultsMapper.buildClassWithListedStudents(it) }
+                .toList()
         } catch (e: Exception) {
             log.error(e.message)
             log.error(e.stackTrace.contentToString())
@@ -42,9 +42,9 @@ class ClassService(
         val (studentCode, schoolClassId, action) = existingStudentToClassDTO
 
         val foundStudent = studentRepository.findStudentByCode(studentCode).takeIf { it.isPresent }?.get()
-                ?: throw IllegalArgumentException("Student with code: $studentCode not found!")
+            ?: throw IllegalArgumentException("Student with code: $studentCode not found!")
         val foundSchoolClass = schoolClassRepository.findById(schoolClassId).takeIf { it.isPresent }?.get()
-                ?: throw IllegalArgumentException("School class with ID: $schoolClassId not found!")
+            ?: throw IllegalArgumentException("School class with ID: $schoolClassId not found!")
 
         return when (action) {
             ClassAction.ADD -> assignStudentToClass(foundStudent, foundSchoolClass)
@@ -100,16 +100,16 @@ class ClassService(
 
     fun assignStudentToFirstOpenClass(student: Student): SchoolClass {
         val openClassId = schoolClassRepository
-                .findSchoolClassesIdsWithStudentCountLessThanMaxClassSize(applicationConfig.classMaxSize)
-                .firstOrNull()
-                .also { log.debug("Open class id found: $it") }
+            .findSchoolClassesIdsWithStudentCountLessThanMaxClassSize(applicationConfig.classMaxSize)
+            .firstOrNull()
+            .also { log.debug("Open class id found: $it") }
 
         val openClassFound = openClassId?.let { openClassIdFound ->
             schoolClassRepository
-                    .findById(openClassIdFound).orElse(null)
-                    .also { log.info("Open class found: ${it.name}") }
+                .findById(openClassIdFound).orElse(null)
+                .also { log.info("Open class found: ${it.name}") }
         } ?: createNewClass()
-                .also { log.info("Needed to create new class: ${it.name}") }
+            .also { log.info("Needed to create new class: ${it.name}") }
 
         return openClassFound.apply {
             classStudents.add(student)
@@ -122,10 +122,9 @@ class ClassService(
         val newSchoolClass = createNewClassWithAssignedSubjects()
         schoolClassRepository.save(newSchoolClass)
 
-        val school = schoolRepository
-                .findAll()
-                .firstOrNull()
-                ?: throw IllegalStateException("No school to assign class to! This should be done upon application warmup!")
+        val school = schoolRepository.findAll()
+            .firstOrNull()
+            ?: throw IllegalStateException("No school to assign class to! This should be done upon application warmup!")
         school.schoolClasses.add(newSchoolClass)
         schoolRepository.save(school)
 
@@ -135,18 +134,18 @@ class ClassService(
     fun createNewClassWithAssignedSubjects(): SchoolClass {
         val newSchoolClass = schoolClassRepository.save(SchoolClass("Class ${findNextClassNumber()}"))
         val newClassSubjects = applicationConfig.availableSubjects
-                .map { subject -> subjectRepository.save(Subject(subject, newSchoolClass)) }
-                .toList()
+            .map { subject -> subjectRepository.save(Subject(subject, newSchoolClass)) }
+            .toList()
         newSchoolClass.classSubjects = newClassSubjects
         return newSchoolClass
     }
 
     private fun findNextClassNumber(): Int {
         val nextClassNumber = schoolClassRepository.findAll()
-                .takeIf { it.isNotEmpty() }
-                ?.map { schoolClass -> Integer.valueOf(schoolClass.name.substringAfter(" ")) }
-                ?.maxOf { it + 1 }
-                ?.also { log.debug("Next class number resolved: $it") } ?: 1
+            .takeIf { it.isNotEmpty() }
+            ?.map { schoolClass -> Integer.valueOf(schoolClass.name.substringAfter(" ")) }
+            ?.maxOf { it + 1 }
+            ?.also { log.debug("Next class number resolved: $it") } ?: 1
         return nextClassNumber
     }
 }

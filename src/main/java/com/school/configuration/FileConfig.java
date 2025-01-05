@@ -27,7 +27,6 @@ public class FileConfig {
         return directory;
     }
 
-
     public String getOptionalNamePrefix() {
         return optionalNamePrefix;
     }

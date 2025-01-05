@@ -9,13 +9,12 @@ import com.school.model.exception.ErrorCreatingFileException
 import com.school.repository.StudentRepository
 import com.school.service.utils.FileUtils.Companion.purifyDirectoryFromAllPreviousFiles
 import com.school.service.utils.FileUtils.Companion.validateAndPrepareFile
+import com.school.service.utils.TimestampUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Service
 class StudentsListFileProviderService(
@@ -39,7 +38,7 @@ class StudentsListFileProviderService(
     private fun createStudentListFile(directoryPath: String) {
         try {
             val forListRecords = studentRepository.findAll().map { StudentForListDTO(it) }
-            val file = File(directoryPath + File.separator + "students-list_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss")) + ".txt")
+            val file = File(directoryPath + File.separator + "students-list_" + TimestampUtils.toSecondFileTimestamp() + ".txt")
             BufferedWriter(FileWriter(file))
                     .use { writer ->
                         var studentNumber = 1
