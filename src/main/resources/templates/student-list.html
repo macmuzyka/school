@@ -17,13 +17,13 @@
 <div class="container">
     <h1 class="header">
         <button class="redirect-icon go-up"
-                onclick="window.location.href='http://localhost:9000/view/student-entry-point'"
+                onclick="window.location.href='http://localhost:9000/school/student-entry-point'"
                 title="Go to students">
             <i class="fa-solid fa-arrow-turn-up"></i>
         </button>
         <span class="title">Students</span>
         <button class="redirect-icon add-student"
-                onclick="window.location.href='http://localhost:9000/view/add-students'"
+                onclick="window.location.href='http://localhost:9000/school/add-students'"
                 title="Add students">
             <i class="fa-solid fa-plus"></i>
         </button>
@@ -171,7 +171,7 @@
 
     function redirectToDetails(button) {
         let studentId = button.getAttribute('data')
-        window.location.href = `/view/student-details?id=` + studentId;
+        window.location.href = `/school/student-details?id=` + studentId;
     }
 
     function redirectToEditForm(button) {

@@ -21,7 +21,7 @@ import java.util.Map;
 import static com.school.service.utils.RequestParamValidator.prepareOptionalRequestParams;
 
 @Controller
-@RequestMapping("/view")
+@RequestMapping("/school")
 public class ModelViewController {
 
     private final ClassService classService;
@@ -231,5 +231,10 @@ public class ModelViewController {
     @GetMapping("/feedback")
     public String getFeedbackPage() {
         return "feedback";
+    }
+
+    @GetMapping("/database-backup")
+    public String getBackup() {
+        return "backup";
     }
 }

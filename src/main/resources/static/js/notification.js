@@ -236,6 +236,26 @@ function seedingProgressNotification(message, duration = 15000) {
     }, duration);
 }
 
+function databaseRestoreNotification(message, duration = 15000) {
+    const notificationContainer = getDocumentContainer()
+    const notification = document.createElement('div');
+
+    notification.innerText = message;
+    if(message.startsWith("Database")) {
+        notification.className = `notification database-restore`;
+    } else {
+        notification.className = `notification database-restore-error`;
+    }
+
+    notificationContainer.appendChild(notification);
+    setTimeout(() => notification.classList.add('visible'), 100);
+
+    setTimeout(() => {
+        notification.classList.remove('visible');
+        setTimeout(() => notification.remove(), 1000);
+    }, duration);
+}
+
 //TODO:
 function alertNotification(message, duration = 15000) {
     const notificationContainer = getDocumentContainer()

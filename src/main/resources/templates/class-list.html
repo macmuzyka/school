@@ -16,7 +16,7 @@
 <div class="container">
     <h1 class="header">
         <button class="redirect-icon go-up"
-                onclick="window.location.href='http://localhost:9000/view'"
+                onclick="window.location.href='http://localhost:9000/school'"
                 title="Go to classes">
             <i class="fa-solid fa-arrow-turn-up"></i>
         </button>
@@ -59,7 +59,7 @@
 </body>
 <script>
     function redirectToDetails(studentString) {
-        window.location.href = `/view/student-details?id=` + studentString.at(0);
+        window.location.href = `/school/student-details?id=` + studentString.at(0);
     }
 </script>
 </html>

@@ -16,7 +16,7 @@
 <div class="container">
     <h1 class="header">
         <button class="redirect-icon go-up"
-                onclick="window.location.href='http://localhost:9000/view/grades-entry-point'"
+                onclick="window.location.href='http://localhost:9000/school/grades-entry-point'"
                 title="Go to grades">
             <i class="fa-solid fa-arrow-turn-up"></i>
         </button>
@@ -28,7 +28,7 @@
         </button>
     </h1>
     <div class="container">
-        <form th:action="@{/view/subject-grades}" method="GET" id="gradeForm" onsubmit="return submitForm()">
+        <form th:action="@{/school/subject-grades}" method="GET" id="gradeForm" onsubmit="return submitForm()">
             <div class="form-group">
                 <label for="studentId">ID:</label>
                 <input type="text" id="studentId" name="id" th:value="${id}" placeholder="Enter Student ID"

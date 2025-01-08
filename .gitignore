@@ -8,6 +8,7 @@ produced_files/roadmap/*
 produced_files/students_list/*
 seed_performance/*
 backup/*
+backup_scheduled/*
 src/main/resources/application-secrets.properties
 
 ### STS ###

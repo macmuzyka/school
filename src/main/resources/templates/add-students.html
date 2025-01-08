@@ -17,13 +17,13 @@
 <div class="container">
     <h1 class="header">
         <button class="redirect-icon go-up"
-                onclick="window.location.href='http://localhost:9000/view/student-entry-point'"
+                onclick="window.location.href='http://localhost:9000/school/student-entry-point'"
                 title="Go to students">
             <i class="fa-solid fa-arrow-turn-up"></i>
         </button>
         <span class="title">Insert Students</span>
         <button class="redirect-icon show-students"
-                onclick="window.location.href='http://localhost:9000/view/students'"
+                onclick="window.location.href='http://localhost:9000/school/students'"
                 title="Show students">
             <i class="fa-solid fa-user-check"></i>
         </button>
@@ -38,7 +38,7 @@
         <div></div>
         <button id="submitButton" class="green-button" onclick="redirectToSubmitForm()" type="button">+ Single Student
         </button>
-        <div class="drop-area-raw" id="drop-area">
+        <div class="drop-area" id="drop-area">
             Drag & drop a .txt file here or <a href="#" id="file-link">select a file</a>
             <input type="file" id="file-input" accept=".txt">
         </div>
