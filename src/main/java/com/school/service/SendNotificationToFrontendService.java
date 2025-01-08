@@ -1,5 +1,6 @@
 package com.school.service;
 
+import com.school.model.response.BackupResponse;
 import com.school.model.statistics.ProgressRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,10 +76,21 @@ public class SendNotificationToFrontendService {
         messagingTemplate.convertAndSend("/topic/student-added", message);
     }
 
-    public void notifyFrontendAboutSeedingProgress(final ProgressRecord currentProgressRecord) {
+    public void notifyFrontendAboutSeedingProgress(ProgressRecord currentProgressRecord) {
         String message = "Seeding " + currentProgressRecord.getPercentageProgress() + "% took " + currentProgressRecord.getDuration() + "s";
         logMessageSentViaWebsocket("seeding progress", message);
         messagingTemplate.convertAndSend("/topic/seeding-progress", message);
+    }
+
+    public void notifyFrontendAboutDatabaseRestoreResult(BackupResponse backupResponse) {
+        String message;
+        if (backupResponse.code() == 0) {
+            message = "Database restored successfully!";
+        } else {
+            message = "There was some errors while restoring database from backup file: \n" + backupResponse.message();
+        }
+        logMessageSentViaWebsocket("database restore", message);
+        messagingTemplate.convertAndSend("/topic/database-restore", message);
     }
 
     private void logMessageSentViaWebsocket(String about, String message) {

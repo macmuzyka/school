@@ -11,7 +11,7 @@ class FileUtils {
 
         @JvmStatic
         fun validateAndPrepareFile(directory: File): FileToImport {
-            checkIfFileExists(directory)
+            checkIfDirectoryExists(directory)
             val file = getFileIfExists(directory)
             try {
                 val fileSystemResource = FileSystemResource(file)
@@ -21,7 +21,7 @@ class FileUtils {
             }
         }
 
-        private fun checkIfFileExists(directory: File) {
+        private fun checkIfDirectoryExists(directory: File) {
             if (!directory.exists() || !directory.isDirectory) {
                 throw RuntimeException("Directory does not exist or is not a directory!")
             }

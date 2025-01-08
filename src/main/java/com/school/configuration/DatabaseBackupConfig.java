@@ -6,12 +6,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class DatabaseBackupConfig {
     private final String binDirectory;
     private final String backupName;
-    private final String backupFolder;
+    private final String temporaryBackupFolder;
+    private final String scheduledBackupFolder;
 
-    public DatabaseBackupConfig(final String binDirectory, final String backupName, final String backupFolder) {
+
+    public DatabaseBackupConfig(final String binDirectory, final String backupName, final String temporaryBackupFolder, final String scheduledBackupFolder) {
         this.binDirectory = binDirectory;
         this.backupName = backupName;
-        this.backupFolder = backupFolder;
+        this.temporaryBackupFolder = temporaryBackupFolder;
+        this.scheduledBackupFolder = scheduledBackupFolder;
     }
 
     public String getBinDirectory() {
@@ -22,7 +25,11 @@ public class DatabaseBackupConfig {
         return backupName;
     }
 
-    public String getBackupFolder() {
-        return backupFolder;
+    public String getTemporaryBackupFolder() {
+        return temporaryBackupFolder;
+    }
+
+    public String getScheduledBackupFolder() {
+        return scheduledBackupFolder;
     }
 }

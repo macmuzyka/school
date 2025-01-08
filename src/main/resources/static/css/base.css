@@ -170,8 +170,8 @@ button:disabled {
 }
 
 #drop-area {
-    width: 300px;
-    height: 150px;
+    width: 350px;
+    height: 180px;
     border: 2px dashed #888;
     text-align: center;
     padding: 20px;

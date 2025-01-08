@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add students</title>
+    <link rel="stylesheet" type="text/css" href="/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/css/buttons.css">
+    <link rel="stylesheet" type="text/css" href="/css/icons.css">
+    <link rel="stylesheet" type="text/css" href="/css/forms.css">
+    <link rel="stylesheet" type="text/css" href="/css/popup-form.css">
+    <link rel="stylesheet" type="text/css" href="/css/notification.css">
+    <script src="/js/notification.js"></script>
+    <script src="/js/go-back.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1 class="header">
+        <button class="redirect-icon go-up"
+                onclick="window.location.href='http://localhost:9000/school'"
+                title="Go to students">
+            <i class="fa-solid fa-arrow-turn-up"></i>
+        </button>
+        <span class="title">Database backup options</span>
+        <button class="redirect-icon previous-page-icon"
+                onclick="goBack()"
+                title="Go back">
+            <i class="fa-solid fa-circle-arrow-left"></i>
+        </button>
+    </h1>
+
+    <h1 class="header">
+        <div></div>
+        <button class="green-button" onclick="getDatabaseBackupDumpFile()" type="button">Get database backup file 💾
+        </button>
+        <div class="drop-area" id="drop-area">
+            Drag & drop a database .dump file here or <a href="#" id="file-link">select a file</a>
+            <input type="file" id="file-input" accept=".txt">
+        </div>
+    </h1>
+</div>
+<div id="loadingSpinner" style="display: none;">
+    <i class="fa fa-spinner fa-spin"></i> Uploading...
+</div>
+<div class="notification-container" id="notification-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script>
+    const socket = new SockJS('http://localhost:9000/websocket-endpoint');
+        const stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+
+            stompClient.subscribe('/topic/database-restore', function (message) {
+                console.log("Received message: " + message.body)
+                databaseRestoreNotification(message.body)
+            });
+        });
+
+        async function getDatabaseBackupDumpFile() {
+            console.log("Attempting to import database .dump backup file ")
+            const spinner = document.getElementById('loadingSpinner');
+                spinner.style.display = 'block';
+                spinner.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Preparing database backup file...`;
+            try {
+                const response = await fetch('/database-backup', {
+                    method: 'GET'
+                })
+
+                if (!response.ok) {
+                    new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const contentDisposition = response.headers.get('Content-Disposition');
+                const fileName = contentDisposition
+                    ? contentDisposition.split('filename=')[1]?.replace(/"/g, '')
+                    : 'downloaded_file';
+
+                const blob = await response.blob();
+                const downloadLink = document.createElement('a');
+                downloadLink.href = window.URL.createObjectURL(blob);
+                downloadLink.download = fileName;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                console.log(`${fileName} downloaded successfully.`);
+            } catch (error) {
+                console.error('Error fetching file:', error.message);
+            }
+            spinner.style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropArea = document.getElementById('drop-area');
+            const fileInput = document.getElementById('file-input');
+            const fileLink = document.getElementById('file-link');
+
+            dropArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropArea.classList.add('hover');
+            });
+
+            dropArea.addEventListener('dragleave', () => {
+                dropArea.classList.remove('hover');
+            });
+
+            dropArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropArea.classList.remove('hover');
+
+                const file = e.dataTransfer.files[0];
+                if (file && file.name.endsWith(".dump")) {
+                    uploadFile(file);
+                } else {
+                    alert("Please drop a .dump file.");
+                }
+            });
+
+            fileLink.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                if (file && file.name.endsWith('.dump')) {
+                    uploadFile(file);
+                } else {
+                    alert("Please select a .dump file.");
+                }
+            });
+
+            function uploadFile(file) {
+                const formData = new FormData();
+                formData.append('backup', file);
+
+                const spinner = document.getElementById('loadingSpinner');
+                spinner.style.display = 'block';
+
+                fetch('/database-backup/restore', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.code === 0) {
+                            console.log('File uploaded successfully:', data);
+                        } else {
+                            console.log('File uploaded successfully:', data);
+                        }
+                })
+                    .catch(error => {
+                        console.error('Error uploading file:', error);
+                        alert('Failed to upload file.');
+                })
+                    .finally(() => {
+                        spinner.style.display = 'none';
+
+                });
+            }
+        });
+</script>
+</body>
+</html>

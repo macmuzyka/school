@@ -79,6 +79,14 @@
     background-color: purple;
 }
 
+.notification.database-restore {
+    background-color: limegreen;
+}
+
+.notification.database-restore-error {
+    background-color: red;
+}
+
 .notification.hidden {
     top: -100px;
 }
