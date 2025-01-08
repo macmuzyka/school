@@ -38,14 +38,14 @@ public class WarmupDatabasePopulation implements ApplicationListener<Application
 
     private void addSchoolWithClassOnWarmup() {
         School savedSchool = schoolRepository.save(new School("SCHOOL ONE", new ArrayList<>()));
-        savedSchool.getSchoolClasses().add(firstWarmupClass(savedSchool));
+        savedSchool.getSchoolClasses().add(firstWarmupClass());
         schoolRepository.save(savedSchool);
 
         log.info("Application warmup school saved to database!");
         log.debug("Saved School: {}", savedSchool);
     }
 
-    private SchoolClass firstWarmupClass(School school) {
-        return classService.createNewClassWithAssignedSubjects(school);
+    private SchoolClass firstWarmupClass() {
+        return classService.createNewClassWithAssignedSubjects();
     }
 }
