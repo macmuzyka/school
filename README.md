@@ -4,6 +4,6 @@
    - default 5432 port, school database
 2. Kafka message broker
    - default 9002 port
-3. school-informer module for feedback propagation -> [school-informer project](https://github.com/macmuzyka/school-informer)
+3. [OPTIONAL] school-informer module for feedback propagation -> [school-informer project](https://github.com/macmuzyka/school-informer)
 
 In devel profile h2 memory database is used, grade adding via kafka is omitted
