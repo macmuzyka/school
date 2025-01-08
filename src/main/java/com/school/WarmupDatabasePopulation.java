@@ -19,12 +19,10 @@ import java.util.*;
 public class WarmupDatabasePopulation implements ApplicationListener<ApplicationStartedEvent> {
     private static final Logger log = LoggerFactory.getLogger(WarmupDatabasePopulation.class);
     private final SchoolRepository schoolRepository;
-    private final SchoolClassRepository schoolClassRepository;
     private final ClassService classService;
 
-    public WarmupDatabasePopulation(SchoolRepository schoolRepository, SchoolClassRepository schoolClassRepository, ClassService classService) {
+    public WarmupDatabasePopulation(SchoolRepository schoolRepository, ClassService classService) {
         this.schoolRepository = schoolRepository;
-        this.schoolClassRepository = schoolClassRepository;
         this.classService = classService;
     }
 
@@ -40,14 +38,14 @@ public class WarmupDatabasePopulation implements ApplicationListener<Application
 
     private void addSchoolWithClassOnWarmup() {
         School savedSchool = schoolRepository.save(new School("SCHOOL ONE", new ArrayList<>()));
-        savedSchool.getSchoolClasses().add(firstWarmupClass());
+        savedSchool.getSchoolClasses().add(firstWarmupClass(savedSchool));
         schoolRepository.save(savedSchool);
 
         log.info("Application warmup school saved to database!");
         log.debug("Saved School: {}", savedSchool);
     }
 
-    private SchoolClass firstWarmupClass() {
-        return schoolClassRepository.save(classService.createNewClassWithAssignedSubjects());
+    private SchoolClass firstWarmupClass(School school) {
+        return classService.createNewClassWithAssignedSubjects(school);
     }
 }

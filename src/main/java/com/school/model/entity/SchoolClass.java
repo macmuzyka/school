@@ -10,13 +10,16 @@ import java.util.List;
 public class SchoolClass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private long id = 0L;
     @Column(unique = true)
     private String name;
     @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Student> classStudents;
     @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Subject> classSubjects;
+    @ManyToOne
+    @JoinColumn(name = "school_id")
+    private School school;
 
     public SchoolClass(String name, List<Subject> classSubjects) {
         this.name = name;
@@ -28,6 +31,7 @@ public class SchoolClass {
 
     public SchoolClass(String name) {
         this.name = name;
+        this.id = 0L;
     }
 
     @Override
@@ -83,5 +87,9 @@ public class SchoolClass {
 
     public void setClassSubjects(List<Subject> classSubjects) {
         this.classSubjects = classSubjects;
+    }
+
+    public void setSchool(final School school) {
+        this.school = school;
     }
 }

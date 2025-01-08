@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS school
+(
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255)
+)

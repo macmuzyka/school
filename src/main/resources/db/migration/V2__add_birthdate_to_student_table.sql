@@ -1,1 +1,0 @@
-ALTER TABLE IF EXISTS student ADD COLUMN birth_date DATE;

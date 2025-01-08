@@ -11,8 +11,8 @@ public class School {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
-    @OneToMany(orphanRemoval = true, cascade = {CascadeType.ALL})
-    @JoinColumn(name = "school_id")
+    @OneToMany(mappedBy = "school", orphanRemoval = true, cascade = {CascadeType.ALL})
+//    @JoinColumn(name = "school_id")
     private List<SchoolClass> schoolClasses;
 
     public School(String name, List<SchoolClass> schoolClasses) {
