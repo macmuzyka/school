@@ -1,3 +1,0 @@
-ALTER TABLE IF EXISTS grade
-    ADD COLUMN grade_type VARCHAR(25),
-    ADD COLUMN note TEXT

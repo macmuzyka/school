@@ -4,9 +4,9 @@ import com.school.configuration.ApplicationConfig
 import com.school.repository.SchoolClassRepository
 import com.school.repository.SchoolRepository
 import com.school.repository.StudentRepository
-import com.school.repository.SubjectRepository
 import com.school.service.utils.mapper.QueryResultsMapper
 import com.school.model.dto.*
+import com.school.model.entity.School
 import com.school.model.entity.SchoolClass
 import com.school.model.entity.Student
 import com.school.model.entity.Subject
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service
 class ClassService(
     private val studentRepository: StudentRepository,
     private val schoolClassRepository: SchoolClassRepository,
-    private val subjectRepository: SubjectRepository,
     private val schoolRepository: SchoolRepository,
     private val applicationConfig: ApplicationConfig,
 ) {
@@ -132,11 +131,12 @@ class ClassService(
     }
 
     fun createNewClassWithAssignedSubjects(): SchoolClass {
-        val newSchoolClass = schoolClassRepository.save(SchoolClass("Class ${findNextClassNumber()}"))
+        val newSchoolClass = SchoolClass("Class ${findNextClassNumber()}")
         val newClassSubjects = applicationConfig.availableSubjects
-            .map { subject -> subjectRepository.save(Subject(subject, newSchoolClass)) }
+            .map { subject -> Subject(subject, newSchoolClass) }
             .toList()
         newSchoolClass.classSubjects = newClassSubjects
+        newSchoolClass.setSchool(motherSchool())
         return newSchoolClass
     }
 
@@ -147,5 +147,9 @@ class ClassService(
             ?.maxOf { it + 1 }
             ?.also { log.debug("Next class number resolved: $it") } ?: 1
         return nextClassNumber
+    }
+
+    private fun motherSchool(): School {
+        return schoolRepository.findAll()[0]
     }
 }

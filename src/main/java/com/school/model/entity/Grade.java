@@ -60,6 +60,7 @@ public class Grade {
                 ", gradeValue=" + gradeValue +
                 ", studentId=" + student.getId() +
                 ", subjectId=" + subject.getId() +
+                ", note=" + getNote() +
                 '}';
     }
 
