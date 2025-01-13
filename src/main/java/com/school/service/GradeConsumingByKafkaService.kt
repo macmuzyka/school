@@ -10,17 +10,20 @@ import org.springframework.stereotype.Service
 @Service
 @Profile("default", "prod")
 class GradeConsumingByKafkaService(
-        private val gradeService: GradeService
+    private val gradeService: GradeService
 ) {
     private val log = LoggerFactory.getLogger(GradeConsumingByKafkaService::class.java)
 
-    @KafkaListener(topics = [
-        "math-grade-supplier",
-        "history-grade-supplier",
-        "english-grade-supplier",
-        "art-grade-supplier"
-    ],
-            groupId = "grades")
+    @KafkaListener(
+        topics = [
+            "math-grade-supplier",
+            "history-grade-supplier",
+            "english-grade-supplier",
+            "art-grade-supplier"
+        ],
+        groupId = "grades",
+        containerFactory = "kafkaGradeListenerContainerFactory"
+    )
     fun consumeGradeFromGradesGroupId(grade: GradeDTO) {
         log.info("[KAFKA LISTENER] -> received message in [grades] group ID")
         log.info("[Received object] -> {}", grade)

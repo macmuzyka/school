@@ -1,5 +1,7 @@
 package com.school.configuration;
 
+import com.school.deserializer.ApplicationValidityDTODeserializer;
+import com.school.model.dto.ApplicationValidityDTO;
 import com.school.model.dto.GradeDTO;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -13,6 +15,7 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -22,19 +25,36 @@ public class KafkaConsumerConfig {
     private String bootstrapAddress;
 
     @Bean
-    public ConsumerFactory<String, GradeDTO> gradeConsumerFactory() {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "grades");
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(GradeDTO.class));
+    public ConcurrentKafkaListenerContainerFactory<String, GradeDTO> kafkaGradeListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, GradeDTO> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(buildConsumerConfigPropertiesForGroupId("grades", GradeDTO.class, null));
+        return factory;
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, GradeDTO> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, GradeDTO> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(gradeConsumerFactory());
+    public ConcurrentKafkaListenerContainerFactory<String, Map<String, List<String>>> kafkaRoadmapListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Map<String, List<String>>> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(buildConsumerConfigPropertiesForGroupId("roadmap-fetch", Map.class, null));
         return factory;
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, ApplicationValidityDTO> kafkaApplicationValidityListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, ApplicationValidityDTO> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(buildConsumerConfigPropertiesForGroupId("application-validity", ApplicationValidityDTO.class, ApplicationValidityDTODeserializer.class));
+        return factory;
+    }
+
+    private <T, D> ConsumerFactory<String, T> buildConsumerConfigPropertiesForGroupId(String groupId, Class<T> type, Class<D> customDeserializer) {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        if (customDeserializer != null) {
+            props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+            props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, customDeserializer);
+            return new DefaultKafkaConsumerFactory<>(props);
+        } else {
+            return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(type));
+        }
     }
 }

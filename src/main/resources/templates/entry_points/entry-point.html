@@ -48,9 +48,15 @@
 
 <div class="bottom-right-container">
     <tr>
+        <span th:style="${applicationValidity == 'UP TO DATE'} ? 'color: green;' : (applicationValidity == 'DEPRECATED' ? 'color: red;' : 'color: orange;')"
+            th:text="${applicationValidity}">Validity placeholder</span>
+
         <th>Version:</th>
-        <td th:text="${projectVersion.getVersion()}">Placeholder Version</td>
+        <td th:text="${projectVersion.getVersion()}">Version placeholder</td>
     </tr>
 </div>
+<script>
+
+</script>
 </body>
 </html>

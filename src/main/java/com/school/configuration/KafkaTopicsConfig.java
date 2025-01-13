@@ -14,13 +14,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class KafkaTopicConfig {
+public class KafkaTopicsConfig {
     private final EnvironmentService environmentService;
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
-    private final Logger log = LoggerFactory.getLogger(KafkaTopicConfig.class);
+    private final Logger log = LoggerFactory.getLogger(KafkaTopicsConfig.class);
 
-    public KafkaTopicConfig(EnvironmentService environmentService) {
+    public KafkaTopicsConfig(EnvironmentService environmentService) {
         this.environmentService = environmentService;
     }
 
@@ -61,5 +61,18 @@ public class KafkaTopicConfig {
         return new NewTopic("feedback-supplier", 1, (short) 1);
     }
 
+    @Bean
+    public NewTopic applicationVersionFetchTopic() {
+        return new NewTopic("application-version-fetch", 1, (short) 1);
+    }
 
+    @Bean
+    public NewTopic roadmapFetchTopic() {
+        return new NewTopic("roadmap-fetch", 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic applicationDeprecatedTopic() {
+        return new NewTopic("application-validity", 1, (short) 1);
+    }
 }

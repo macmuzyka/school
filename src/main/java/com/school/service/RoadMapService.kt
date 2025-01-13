@@ -1,9 +1,34 @@
 package com.school.service
 
+import org.slf4j.LoggerFactory
+import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
 
 @Service
 class RoadMapService {
+    private var roadmap: Map<String, List<String>> =
+        mapOf("Roadmap not yet fetched from central" to listOf("Check central domain availability"))
+    private val log = LoggerFactory.getLogger(RoadMapService::class.java)
+
+    @KafkaListener(
+        topics = ["roadmap-fetch"],
+        groupId = "roadmap",
+        containerFactory = "kafkaRoadmapListenerContainerFactory"
+    )
+    fun roadmapFetchConsumer(roadmap: Map<String, List<String>>) {
+        log.info("[KAFKA LISTENER] => fetched roadmap: $roadmap")
+        this.roadmap = roadmap
+    }
+
+    fun getCurrentRoadmap(): Map<String, List<String>> {
+        return roadmap.also { log.info("Current roadmap: $it") }
+    }
+
+    @Deprecated(
+        message = "Method deprecated - to delete after running tests & implementing fetching roadmap from central",
+        replaceWith = ReplaceWith("getCurrentRoadmap()"),
+        level = DeprecationLevel.WARNING
+    )
     fun getCurrentTodos(): MutableMap<String, List<String>> {
         return mutableMapOf(
             "Done" to listOf(
@@ -27,14 +52,13 @@ class RoadMapService {
                 "Student list input to be of different file type not only text file -> .xls",
                 "Road map to be stored in db & roadmap stages changed based on work progress & released newsletter " +
                         "if DONE -> list sent via newsletter and moved to 'old' done's as archive",
-                "Should removing student be moving them to other table, or just change student status -> changes in student table/entity",
+                "Should removing student be moving them to other table, or just change student status -> changes in student table/entity instead of completely removing record?",
                 "Teacher entity with assigned subject -> only teacher of given subject can add grade to this subject",
                 "Weighted grades (some grades are worth more than others, thus counting average grade will be different)"
             ),
             "Frontend" to listOf(
                 "If not application password for emailing service is set, show information about that in feedback section",
                 "Adjust timing of notification showing and page refreshing for all views",
-                "Redirection to proper pages upon detecting student duplicate & student insert error",
                 "Frontend for Road Map in school informer central registry for managing feedback and new version release propagation",
                 "Confirmation popup form instead of alerts/web popups",
                 "Unifying view, for example, wherever student record is visible, make redirection to student details & similar",

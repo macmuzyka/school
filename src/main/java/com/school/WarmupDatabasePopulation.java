@@ -1,9 +1,6 @@
 package com.school;
 
-import com.school.configuration.ApplicationConfig;
-import com.school.repository.SchoolClassRepository;
 import com.school.repository.SchoolRepository;
-import com.school.repository.SubjectRepository;
 import com.school.model.entity.School;
 import com.school.model.entity.SchoolClass;
 import com.school.service.ClassService;
@@ -17,9 +14,9 @@ import java.util.*;
 
 @Component
 public class WarmupDatabasePopulation implements ApplicationListener<ApplicationStartedEvent> {
-    private static final Logger log = LoggerFactory.getLogger(WarmupDatabasePopulation.class);
     private final SchoolRepository schoolRepository;
     private final ClassService classService;
+    private static final Logger log = LoggerFactory.getLogger(WarmupDatabasePopulation.class);
 
     public WarmupDatabasePopulation(SchoolRepository schoolRepository, ClassService classService) {
         this.schoolRepository = schoolRepository;
@@ -28,7 +25,7 @@ public class WarmupDatabasePopulation implements ApplicationListener<Application
 
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {
-        log.info("Application warmup...");
+        log.info("Warmup database population");
         if (schoolRepository.findAll().isEmpty()) {
             addSchoolWithClassOnWarmup();
         } else {

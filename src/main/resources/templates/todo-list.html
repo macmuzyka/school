@@ -36,7 +36,7 @@
         </thead>
         <tbody>
         <tr th:each="aspect : ${thingsTodo}">
-            <td th:text="${aspect.key}"></td>
+            <td th:text="${#strings.replace(aspect.key, '_', ' ')}"></td>
             <td>
                 <ul>
                     <li th:each="thing : ${aspect.value}" th:text="${thing}"></li>

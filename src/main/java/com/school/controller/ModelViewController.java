@@ -32,14 +32,17 @@ public class ModelViewController {
     private final SeedGradesService seedGradesService;
     private final RoadMapService roadMapService;
     private final ProjectVersionService projectVersionService;
+    private final ApplicationValidityService applicationValidityService;
     private final ApplicationConfig applicationConfig;
 
     public ModelViewController(ClassService classService,
                                StudentService studentService,
                                DuplicatedStudentService duplicatedStudentService,
                                InsertErrorStudentService insertErrorStudentService,
-                               GradeService gradeService, final SeedGradesService seedGradesService,
-                               RoadMapService roadMapService, final ProjectVersionService projectVersionService,
+                               GradeService gradeService,
+                               SeedGradesService seedGradesService,
+                               RoadMapService roadMapService,
+                               ProjectVersionService projectVersionService, final ApplicationValidityService applicationValidityService,
                                ApplicationConfig applicationConfig
     ) {
         this.classService = classService;
@@ -50,6 +53,7 @@ public class ModelViewController {
         this.seedGradesService = seedGradesService;
         this.roadMapService = roadMapService;
         this.projectVersionService = projectVersionService;
+        this.applicationValidityService = applicationValidityService;
         this.applicationConfig = applicationConfig;
     }
 
@@ -166,7 +170,9 @@ public class ModelViewController {
     public String entryPoint(Model model) {
         try {
             ProjectVersion pv = projectVersionService.getCurrentProjectVersion();
+            String validity = applicationValidityService.getApplicationValidity().name().replace("_", " ");
             model.addAttribute("projectVersion", pv);
+            model.addAttribute("applicationValidity", validity);
             return "entry_points/entry-point";
         } catch (Exception e) {
             return e.getMessage();
@@ -217,13 +223,12 @@ public class ModelViewController {
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
-//            return e.getMessage();
         }
     }
 
     @GetMapping("/todo")
     public String getTodo(Model model) {
-        Map<String, List<String>> thingsTodo = roadMapService.getCurrentTodos();
+        Map<String, List<String>> thingsTodo = roadMapService.getCurrentRoadmap();
         model.addAttribute("thingsTodo", thingsTodo);
         return "todo-list";
     }

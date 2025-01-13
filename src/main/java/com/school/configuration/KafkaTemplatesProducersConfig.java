@@ -16,13 +16,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class KafkaProducerConfig {
+public class KafkaTemplatesProducersConfig {
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
     @Bean
     public ProducerFactory<String, GradeDTO> gradeProducerFactory() {
-        return new DefaultKafkaProducerFactory<>(provideBasicKafkaProducerConfig());
+        return new DefaultKafkaProducerFactory<>(provideBasicKafkaProducerConfig(false));
     }
 
     @Bean
@@ -32,7 +32,7 @@ public class KafkaProducerConfig {
 
     @Bean
     public ProducerFactory<String, FeedbackDTO> feedbackProducerFactory() {
-        return new DefaultKafkaProducerFactory<>(provideBasicKafkaProducerConfig());
+        return new DefaultKafkaProducerFactory<>(provideBasicKafkaProducerConfig(false));
     }
 
     @Bean
@@ -40,11 +40,35 @@ public class KafkaProducerConfig {
         return new KafkaTemplate<>(feedbackProducerFactory());
     }
 
-    private Map<String, Object> provideBasicKafkaProducerConfig() {
+    @Bean
+    public ProducerFactory<String, String> roadmapFetchProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(provideBasicKafkaProducerConfig(true));
+    }
+
+    @Bean
+    public KafkaTemplate<String, String> roadmapFetchKafkaTemplate() {
+        return new KafkaTemplate<>(roadmapFetchProducerFactory());
+    }
+
+    @Bean
+    public ProducerFactory<String, String> applicationDeprecatedFactory() {
+        return new DefaultKafkaProducerFactory<>(provideBasicKafkaProducerConfig(true));
+    }
+
+    @Bean
+    public KafkaTemplate<String, String> applicationDeprecatedKafkaTemplate() {
+        return new KafkaTemplate<>(applicationDeprecatedFactory());
+    }
+
+    private Map<String, Object> provideBasicKafkaProducerConfig(boolean useStringValueSerializer) {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        if (useStringValueSerializer) {
+            configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        } else {
+            configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        }
         return configProps;
     }
 }
