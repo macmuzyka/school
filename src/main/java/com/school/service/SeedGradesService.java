@@ -112,8 +112,10 @@ public class SeedGradesService {
         try {
             Student randomStudent = findRandomStudent(zeroExclusiveRandomValueForId(randomStudentRange));
             if (randomStudent.getSchoolClass() != null) {
-                List<Subject> subjectsOfRandomStudent = randomStudent.getSchoolClass().getClassSubjects();
-                long randomlyChosenSubjectId = subjectsOfRandomStudent.get(randomizer.nextInt(subjectsOfRandomStudent.size())).getId();
+                Set<Subject> subjectsOfRandomStudent = randomStudent.getSchoolClass().getClassSubjects();
+                long randomlyChosenSubjectId = subjectsOfRandomStudent.stream()
+                        .toList()
+                        .get(randomizer.nextInt(subjectsOfRandomStudent.size())).getId();
 
                 List<Integer> availableGrades = applicationConfig.getAvailableGrades();
 

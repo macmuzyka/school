@@ -1,9 +1,10 @@
 package com.school.model.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.BatchSize;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "school_class")
@@ -14,16 +15,18 @@ public class SchoolClass {
     @Column(unique = true)
     private String name;
     @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Student> classStudents;
+    @BatchSize(size = 10)
+    private Set<Student> classStudents;
     @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Subject> classSubjects;
+    @BatchSize(size = 10)
+    private Set<Subject> classSubjects;
     @ManyToOne
     @JoinColumn(name = "school_id")
     private School school;
 
-    public SchoolClass(String name, List<Subject> classSubjects) {
+    public SchoolClass(String name, Set<Subject> classSubjects) {
         this.name = name;
-        this.classStudents = new ArrayList<>();
+        this.classStudents = new HashSet<>();
         this.classSubjects = classSubjects;
     }
 
@@ -70,22 +73,22 @@ public class SchoolClass {
         this.name = name;
     }
 
-    public List<Student> getClassStudents() {
+    public Set<Student> getClassStudents() {
         if (classStudents == null) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         return classStudents;
     }
 
-    public void setClassStudents(List<Student> classStudents) {
+    public void setClassStudents(Set<Student> classStudents) {
         this.classStudents = classStudents;
     }
 
-    public List<Subject> getClassSubjects() {
+    public Set<Subject> getClassSubjects() {
         return classSubjects;
     }
 
-    public void setClassSubjects(List<Subject> classSubjects) {
+    public void setClassSubjects(Set<Subject> classSubjects) {
         this.classSubjects = classSubjects;
     }
 

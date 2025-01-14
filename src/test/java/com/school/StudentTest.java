@@ -21,6 +21,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.school.utils.ValidationUtils.codeIsValidUUID;
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,9 +45,9 @@ public class StudentTest {
 
     @BeforeEach
     public void setUp() {
-        SchoolClass class1 = schoolClassRepository.save(new SchoolClass(classOne, subjects.stream().map(Subject::new).toList()));
-        SchoolClass class2 = schoolClassRepository.save(new SchoolClass(classTwo, subjects.stream().map(Subject::new).toList()));
-        SchoolClass class3 = schoolClassRepository.save(new SchoolClass(classThree, subjects.stream().map(Subject::new).toList()));
+        SchoolClass class1 = schoolClassRepository.save(new SchoolClass(classOne, subjects.stream().map(Subject::new).collect(Collectors.toSet())));
+        SchoolClass class2 = schoolClassRepository.save(new SchoolClass(classTwo, subjects.stream().map(Subject::new).collect(Collectors.toSet())));
+        SchoolClass class3 = schoolClassRepository.save(new SchoolClass(classThree, subjects.stream().map(Subject::new).collect(Collectors.toSet())));
 
         ArrayList<SchoolClass> classes = new ArrayList<>();
         classes.add(class1);

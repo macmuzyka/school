@@ -2,6 +2,7 @@ package com.school.repository;
 
 
 import com.school.model.entity.SchoolClass;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -41,4 +42,11 @@ public interface SchoolClassRepository extends JpaRepository<SchoolClass, Long> 
             nativeQuery = true
     )
     List<Long> findSchoolClassesIdsWithStudentCountLessThanMaxClassSize(@Param("maxClassSize") int maxClassSize);
+
+    @NotNull
+    @Override
+    @Query(value = "SELECT DISTINCT sc FROM SchoolClass sc " +
+            "LEFT JOIN FETCH sc.classStudents " +
+            "LEFT JOIN FETCH sc.classSubjects ")
+    List<SchoolClass> findAll();
 }

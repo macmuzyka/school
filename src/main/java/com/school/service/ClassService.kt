@@ -1,6 +1,7 @@
 package com.school.service
 
 import com.school.configuration.ApplicationConfig
+import com.school.model.SchoolClassDTO
 import com.school.repository.SchoolClassRepository
 import com.school.repository.SchoolRepository
 import com.school.repository.StudentRepository
@@ -134,7 +135,7 @@ class ClassService(
         val newSchoolClass = SchoolClass("Class ${findNextClassNumber()}")
         val newClassSubjects = applicationConfig.availableSubjects
             .map { subject -> Subject(subject, newSchoolClass) }
-            .toList()
+            .toSet()
         newSchoolClass.classSubjects = newClassSubjects
         newSchoolClass.setSchool(motherSchool())
         return newSchoolClass
@@ -151,5 +152,9 @@ class ClassService(
 
     private fun motherSchool(): School {
         return schoolRepository.findAll()[0]
+    }
+
+    fun getAll(): List<SchoolClassDTO> {
+        return schoolClassRepository.findAll().map { SchoolClassDTO(it) }
     }
 }

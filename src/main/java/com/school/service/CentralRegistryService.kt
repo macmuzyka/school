@@ -20,7 +20,6 @@ class CentralRegistryService(
     }
 
     private fun sendFeedbackViaKafka(feedback: FeedbackDTO): String {
-
         kafkaTemplate.send("feedback-supplier", feedback)
         return "Message sent via Kafka"
     }
