@@ -97,7 +97,6 @@
 <div id="loadingSpinner" style="display: none;">
     <i class="fa fa-spinner fa-spin"></i> Uploading...
 </div>
-<div hidden id="seedPossible" th:data="${seedPossible}"></div>
 <div class="notification-container" id="notification-container"></div>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
@@ -154,12 +153,7 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log('File uploaded successfully:', data);
-                    const seed = document.getElementById('seedPossible').getAttribute('data')
-                    console.log('Should seed?', seed);
-                    if (seed === true || seed === 'true') {
-                        openSeedConfirmationContainer()
-                    }
-
+                    openSeedConfirmationContainer()
                 })
                 .catch(error => {
                     console.error('Error uploading file:', error);

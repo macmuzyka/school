@@ -1,0 +1,58 @@
+services:
+  # PostgreSQL database
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: school
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts:/docker-entrypoint-initdb.d
+
+  school:
+    image: school:latest
+    container_name: school
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/school
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    ports:
+      - "9000:9000"
+    depends_on:
+      - db
+      - kafka
+
+  informer:
+    image: informer:latest
+    container_name: informer
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/informer
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    ports:
+      - "9001:9001"
+    depends_on:
+      - db
+      - kafka
+
+  kafka:
+    image: bashj79/kafka-kraft:latest
+    container_name: kafka-message-broker
+    environment:
+      - KAFKA_NODE_ID=1
+      - KAFKA_PROCESS_ROLES=broker,controller
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:9093
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+volumes:
+  postgres_data:
