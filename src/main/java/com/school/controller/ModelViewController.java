@@ -155,11 +155,8 @@ public class ModelViewController {
     }
 
     @GetMapping("/add-students")
-    public String addStudents(Model model) {
+    public String addStudents() {
         try {
-            boolean seedPossible = seedGradesService.databaseSeedCondition();
-            log.info("seedPossible: {}", seedPossible);
-            model.addAttribute("seedPossible", seedPossible);
             return "add-students";
         } catch (Exception e) {
             return e.getMessage();

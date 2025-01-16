@@ -45,16 +45,22 @@ public class KafkaConsumerConfig {
         return factory;
     }
 
-    private <T, D> ConsumerFactory<String, T> buildConsumerConfigPropertiesForGroupId(String groupId, Class<T> type, Class<D> customDeserializer) {
+    private <T, D> ConsumerFactory<String, T> buildConsumerConfigPropertiesForGroupId(String groupId, Class<T> outcome, Class<D> deserializer) {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        if (customDeserializer != null) {
+        //FIXME: need to add this in school project, but no in informer project?
+        // OTHERWISE: Caused by: java.lang.IllegalArgumentException: The class 'kotlin.collections.EmptyMap'
+        // is not in the trusted packages: [java.util, java.lang, java.util.*].
+        // If you believe this class is safe to deserialize, please provide its name.
+        // If the serialization is only done by a trusted source, you can also enable trust all (*).
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        if (deserializer != null) {
             props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-            props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, customDeserializer);
+            props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
             return new DefaultKafkaConsumerFactory<>(props);
         } else {
-            return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(type));
+            return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(outcome));
         }
     }
 }
