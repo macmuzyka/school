@@ -5,5 +5,9 @@
 2. Kafka message broker
    - default 9002 port
 3. [OPTIONAL] school-informer module for feedback propagation -> [school-informer project](https://github.com/macmuzyka/school-informer)
+###### In devel profile h2 memory database is used & grade adding via kafka is omitted
 
-In devel profile h2 memory database is used, grade adding via kafka is omitted
+### Application able to run win docker, get school & school informer projects and run docker-compose.yml file from school project:
+#### 
+1. `mvn clean install -DskipTests` for both projects
+2. `docker-compose up --build` from school project where docker-compose.yml is located 
