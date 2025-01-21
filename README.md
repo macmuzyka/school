@@ -5,7 +5,7 @@
 1. PostgresSQL database
     - default 5432 port, school database
 2. Kafka message broker
-    - default 9002 port
+    - default 9002 port, preferably set up with docker `docker run -p 9092:9092 -d bashj79/kafka-kraft`
 3. [OPTIONAL] school-informer module for feedback
    propagation -> [school-informer project](https://github.com/macmuzyka/school-informer)
 
