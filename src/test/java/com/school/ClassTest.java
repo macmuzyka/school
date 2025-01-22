@@ -10,6 +10,7 @@ import com.school.model.dto.StudentDTO;
 import com.school.model.entity.SchoolClass;
 import com.school.model.entity.Student;
 import com.school.model.enums.ClassAction;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +24,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@ActiveProfiles("devel")
+@ActiveProfiles("prod")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ClassTest {
     @Autowired
@@ -67,6 +68,7 @@ public class ClassTest {
     }
 
     @Test
+    @Transactional
     @Order(1)
     public void assignStudentToClassTest() {
         ClassDTO studentAddedClass = addStudentToClass(savedStudent);
@@ -75,23 +77,17 @@ public class ClassTest {
 
 
     @Test
+    @Transactional
     @Order(2)
     public void moveStudentToOtherClassTest() {
-        Optional<SchoolClass> schoolClassOptional = schoolClassRepository.findById(movedToClassId);
-        if (schoolClassOptional.isPresent()) {
-            SchoolClass destinationClassForStudent = schoolClassOptional.get();
+        SchoolClass newClass = classService.createNewClass();
 
-            int preMoveSize = destinationClassForStudent.getClassStudents().size();
-            moveStudentToOtherClass(additionalStudent);
-            SchoolClass movedStudentClassAfterUpdate = fetchUpdatedObject(destinationClassForStudent.getId());
-            int postMoveSize = movedStudentClassAfterUpdate.getClassStudents().size();
+        int preMoveSize = newClass.getClassStudents().size();
+        moveStudentToOtherClass(additionalStudent, newClass.getId());
+        SchoolClass movedStudentClassAfterUpdate = fetchUpdatedObject(newClass.getId());
+        int postMoveSize = movedStudentClassAfterUpdate.getClassStudents().size();
 
-            assertTrue(preMoveSize < postMoveSize);
-        } else {
-            throw new IllegalArgumentException("School class was not properly added during database warmup!");
-        }
-
-
+        assertTrue(preMoveSize < postMoveSize);
     }
 
     private SchoolClass fetchUpdatedObject(long id) {
@@ -104,6 +100,7 @@ public class ClassTest {
     }
 
     @Test
+    @Transactional
     @Order(3)
     public void removeStudentFromClassTest() {
         Student student = additionalStudent;
@@ -121,8 +118,8 @@ public class ClassTest {
         return classService.studentToClassAction(new ExistingStudentToClassDTO(student.getCode(), primaryClassId, ClassAction.ADD));
     }
 
-    private void moveStudentToOtherClass(Student student) {
-        classService.studentToClassAction(new ExistingStudentToClassDTO(student.getCode(), movedToClassId, ClassAction.MOVE));
+    private void moveStudentToOtherClass(Student student, Long toClassId) {
+        classService.studentToClassAction(new ExistingStudentToClassDTO(student.getCode(), toClassId, ClassAction.MOVE));
     }
 
     private ClassDTO removeStudentFromClass(Student student) {

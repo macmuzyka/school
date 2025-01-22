@@ -16,7 +16,7 @@ public class SchoolClass {
     private String name;
     @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL, orphanRemoval = true)
     @BatchSize(size = 10)
-    private Set<Student> classStudents;
+    private Set<Student> classStudents = new HashSet<>();
     @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL, orphanRemoval = true)
     @BatchSize(size = 10)
     private Set<Subject> classSubjects;
