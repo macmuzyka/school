@@ -26,8 +26,12 @@ public class Student extends AbstractStudentEntity {
         return super.toString();
     }
 
-    public Student(String name, String surname, String identifier, String code, LocalDate birthDate, boolean assigned) {
-        super(name, surname, identifier, code, birthDate, assigned);
+    public Student(String name, String surname, String identifier, LocalDate birthDate, boolean assigned) {
+        super(name, surname, identifier, birthDate, assigned);
+    }
+
+    public Student(final long id, final String name, final String surname, final String identifier) {
+        super(id, name, surname, identifier);
     }
 
     public Student() {

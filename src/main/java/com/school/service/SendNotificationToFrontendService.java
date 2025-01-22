@@ -8,7 +8,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SendNotificationToFrontendService {
+public class    SendNotificationToFrontendService {
     private final SimpMessagingTemplate messagingTemplate;
     private final Logger log = LoggerFactory.getLogger(SendNotificationToFrontendService.class);
 

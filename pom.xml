@@ -10,7 +10,7 @@
     </parent>
     <groupId>com</groupId>
     <artifactId>school</artifactId>
-    <version>1.6.21</version>
+    <version>1.6.22</version>
     <name>school</name>
     <description>school</description>
     <url/>
@@ -85,6 +85,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.14.2</version>
             <scope>test</scope>
         </dependency>
 

@@ -14,17 +14,18 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("prod")
+@DirtiesContext
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ClassTest {
     @Autowired
@@ -45,7 +46,6 @@ public class ClassTest {
         savedStudent = studentService.addStudent(new StudentDTO(new Student(
                         "Ad",
                         "O'Ding",
-                        UUID.randomUUID().toString(),
                         "10101022222",
                         LocalDate.now().minus(Period.ofYears(20)),
                         false)
@@ -55,7 +55,6 @@ public class ClassTest {
                         "Rem",
                         "O'Ving",
                         "01010133333",
-                        UUID.randomUUID().toString(),
                         LocalDate.now().minus(Period.ofYears(25)),
                         false)
                 )
