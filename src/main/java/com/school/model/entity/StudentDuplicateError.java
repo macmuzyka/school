@@ -11,7 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class StudentDuplicateError extends AbstractErrorStudentEntity {
 
     public StudentDuplicateError(Student student, String errorDescription, String errorCause) {
-        super(student.getName(), student.getSurname(), student.getIdentifier(), student.getCode(), student.getBirthDate(), student.isAssigned(), errorDescription, errorCause);
+        super(student.getName(), student.getSurname(), student.getIdentifier(), student.getBirthDate(), student.isAssigned(), errorDescription, errorCause);
     }
 
     public StudentDuplicateError() {

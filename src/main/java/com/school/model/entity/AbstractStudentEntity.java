@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.UUID;
 
 @MappedSuperclass
 public abstract class AbstractStudentEntity {
@@ -28,13 +29,20 @@ public abstract class AbstractStudentEntity {
     @LastModifiedDate
     private LocalDateTime lastUpdatedAt;
 
-    public AbstractStudentEntity(String name, String surname, String identifier, String code, LocalDate birthDate, boolean assigned) {
+    public AbstractStudentEntity(String name, String surname, String identifier, LocalDate birthDate, boolean assigned) {
         this.name = name;
         this.surname = surname;
         this.identifier = identifier;
-        this.code = code;
+        this.code = UUID.randomUUID().toString();
         this.birthDate = birthDate;
         this.assigned = assigned;
+    }
+
+    public AbstractStudentEntity(final long id, final String name, final String surname, final String identifier) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.identifier = identifier;
     }
 
     public AbstractStudentEntity() {}

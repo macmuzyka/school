@@ -43,11 +43,16 @@ public class GradeFileProviderService implements RecentlyProducedFile {
     @NotNull
     @Override
     public FileToImport importFile(OptionalRequestParams params) {
-        String directoryPath = fileConfig.getDirectory() + File.separator + fileConfig.getStudentsGradesSubdirectory();
-        File directory = new File(directoryPath);
-        purifyDirectoryFromAllPreviousFiles(directory);
-        produceFileAndSaveToCorrespondingDirectory(directoryPath, params);
-        return prepareFileToImport(directory);
+        try {
+            String directoryPath = fileConfig.getDirectory() + File.separator + fileConfig.getStudentsGradesSubdirectory();
+            File directory = new File(directoryPath);
+            purifyDirectoryFromAllPreviousFiles(directory);
+            produceFileAndSaveToCorrespondingDirectory(directoryPath, params);
+            return prepareFileToImport(directory);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw e;
+        }
     }
 
     private FileToImport prepareFileToImport(File directory) {

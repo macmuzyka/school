@@ -36,7 +36,6 @@ class InsertErrorStudentService(
                 correctedStudent.name,
                 correctedStudent.surname,
                 correctedStudent.identifier,
-                UUID.randomUUID().toString(),
                 correctedStudent.birthDate,
                 false
         )

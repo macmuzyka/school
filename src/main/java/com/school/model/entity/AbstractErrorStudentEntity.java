@@ -9,8 +9,8 @@ public abstract class AbstractErrorStudentEntity extends AbstractStudentEntity {
     private String errorDescription;
     private String errorCause;
 
-    public AbstractErrorStudentEntity(String name, String surname, String identifier, String code, LocalDate birthDate, boolean assigned, String errorDescription, String errorCause) {
-        super(name, surname, identifier, code, birthDate, assigned);
+    public AbstractErrorStudentEntity(String name, String surname, String identifier, LocalDate birthDate, boolean assigned, String errorDescription, String errorCause) {
+        super(name, surname, identifier, birthDate, assigned);
         this.errorDescription = errorDescription;
         this.errorCause = errorCause;
     }

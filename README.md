@@ -13,7 +13,7 @@
 
 ### Application able to run win docker, get school & school informer projects and run docker-compose.yml file from school project:
 
-1. `mvn clean install -DskipTests` for both projects
+1. `mvn clean install` for school project, `mvn clean install -DskipTests` as tests are not implemented in informer yet 
 2. `docker build -t school .` in school project
 3. `docker build -t informer .` in school-informer project
 4. `docker-compose up --build` from school project where docker-compose.yml is located 

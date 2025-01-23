@@ -120,7 +120,6 @@ class StudentsFromListBuilderService(
                 "",
                 "",
                 pseudoIdentifier,
-                UUID.randomUUID().toString(),
                 LocalDate.now(),
                 false
             ),

@@ -38,6 +38,7 @@ public class StudentCounterAfterFileInputTest {
     @BeforeEach
     public void setUp() throws IOException {
         log.info("Setting up for tests...");
+        studentRepository.deleteAll();
         File studentsFile = new File("src/test/resources/students_list.txt");
         InputStream inputStream = new FileInputStream(studentsFile);
         MultipartFile mpf = new MockMultipartFile("file", studentsFile.getName(), "text/plain", inputStream);
@@ -47,7 +48,6 @@ public class StudentCounterAfterFileInputTest {
     @Test
     @Transactional
     public void thereShouldBe97ProperlyInsertedStudents() {
-
         assertEquals(97, studentRepository.findAll().size());
     }
 

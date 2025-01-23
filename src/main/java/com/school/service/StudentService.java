@@ -65,7 +65,6 @@ public class StudentService {
                 new Student(studentDto.getName(),
                         studentDto.getSurname(),
                         studentDto.getIdentifier(),
-                        UUID.randomUUID().toString(),
                         studentDto.getBirthDate(),
                         true
                 )
@@ -94,9 +93,10 @@ public class StudentService {
                 throw new IllegalArgumentException("Student with identifier " + studentDTO.getIdentifier() + " already exists!");
             } else {
                 Student student = prepareEntityObjectFromDTO(studentDTO);
+                log.info("Prepared student: {}", student);
                 Student saved = studentRepository.save(student);
                 log.info("Saved student: {}", saved);
-                sendNotificationToFrontendService.notifyFrontendAboutAddedStudent("OK");
+//                sendNotificationToFrontendService.notifyFrontendAboutAddedStudent("OK");
                 return saved;
             }
         } catch (Exception e) {
@@ -104,8 +104,8 @@ public class StudentService {
         }
     }
 
-    private Student prepareEntityObjectFromDTO(StudentDTO student) {
-        return new Student(student.getName(), student.getSurname(), student.getIdentifier(), UUID.randomUUID().toString(), student.getBirthDate(), false);
+    public Student prepareEntityObjectFromDTO(StudentDTO student) {
+        return new Student(student.getName(), student.getSurname(), student.getIdentifier(), student.getBirthDate(), false);
     }
 
     public String deleteStudent(Long id) {
@@ -148,7 +148,7 @@ public class StudentService {
         return !incomingValue.equals(existingValue);
     }
 
-    private Boolean identifierAlreadyExists(String incomingIdentifier) {
+    public Boolean identifierAlreadyExists(String incomingIdentifier) {
         return studentRepository.findAll().stream().map(Student::getIdentifier).collect(Collectors.toSet())
                 .contains(incomingIdentifier);
     }
