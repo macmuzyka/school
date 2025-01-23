@@ -30,8 +30,8 @@ public class KafkaTopicsConfig {
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         if (environmentService.currentProfileIsDevel() || environmentService.currentProfileIsProd()) {
             log.warn("On purpose decreasing request timeout to Kafka message broker in devel profile (for example, when Kafka is not installed");
-            configs.put(AdminClientConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, 10);
-            configs.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, 10);
+            configs.put(AdminClientConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, 1000);
+            configs.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, 1000);
         }
         return new KafkaAdmin(configs);
     }

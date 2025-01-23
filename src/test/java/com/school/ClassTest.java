@@ -14,7 +14,6 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -25,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("prod")
-@DirtiesContext
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ClassTest {
     @Autowired
@@ -43,6 +41,7 @@ public class ClassTest {
 
     @BeforeEach
     public void setUp() {
+        studentRepository.deleteAll();
         savedStudent = studentService.addStudent(new StudentDTO(new Student(
                         "Ad",
                         "O'Ding",
@@ -62,7 +61,7 @@ public class ClassTest {
     }
 
     @AfterEach
-    public void teardown() {
+    public void tearDown() {
         studentRepository.deleteAll();
     }
 

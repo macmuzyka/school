@@ -1,7 +1,7 @@
 FROM openjdk:17-jdk-slim
 
 WORKDIR /app
-RUN mkdir -p logs backup backup_scheduled produced_files seed_performance config
+RUN mkdir -p logs backup backup_scheduled produced_files/students_grades produced_files/students_list seed_performance config
 RUN apt-get update && apt-get install -y netcat && rm -rf /var/lib/apt/lists/*
 
 COPY target/*.jar school-application.jar
