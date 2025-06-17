@@ -118,12 +118,11 @@ public class SeedGradesService {
         return (record + 1 == applicationConfig.getGradesToAdd());
     }
 
-    private void saveCurrentProgressRecord(int record/*, long tenthPartLoopTime*/, long startTime) {
+    private void saveCurrentProgressRecord(int record, long tenthPartLoopTime) {
         if (isLastRecord(record)) {
             record++;
         }
-        long duration = System.currentTimeMillis() - startTime;
-        ProgressRecord currentProgressRecord = prepareProgressRecord(record, duration);
+        ProgressRecord currentProgressRecord = prepareProgressRecord(record, tenthPartLoopTime);
         progressRecords.add(currentProgressRecord);
         logProgressRecord(currentProgressRecord);
     }
