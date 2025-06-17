@@ -13,6 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.school.service.ProgressRecordExportService.progressRecords;
 import static com.school.service.ProgressRecordExportService.recordsReadyToExport;
@@ -26,7 +31,6 @@ public class SeedGradesService {
     private final ApplicationConfig applicationConfig;
     private final Random randomizer = new Random();
     private final Logger log = LoggerFactory.getLogger(SeedGradesService.class);
-
     private List<Long> studentIds;
 
     public SeedGradesService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SendNotificationToFrontendService sendNotificationToFrontendService, ApplicationConfig applicationConfig) {
@@ -37,24 +41,56 @@ public class SeedGradesService {
         this.applicationConfig = applicationConfig;
     }
 
-    public void seedStudentsWithRandomizedGrades() {
+    public void seedStudentsWithRandomizedGrades(boolean optimized) throws InterruptedException {
         int totalGrades = applicationConfig.getGradesToAdd();
         log.info("Populating students with {} example grades by random..", totalGrades);
         sendNotificationToFrontendService.notifyFrontendAboutSeedingGradesStatus("Seeding " + totalGrades + " grades randomly " +
                 "among added students, this might take a while");
-        seedGradesAmongStudents(totalGrades);
+        seedGradesAmongStudents(totalGrades, optimized);
     }
 
-    private void seedGradesAmongStudents(int totalGrades) {
-        long tenthPartLoopTime = startNewLoopTime();
-        studentIds = studentRepository.findAllIds();
-        for (int record = 0; record < totalGrades; record++) {
-            if (progressIsTenthPart(record)) {
-                saveCurrentProgressRecord(record, tenthPartLoopTime);
-                tenthPartLoopTime = startNewLoopTime();
-            }
+    private void seedGradesAmongStudents(int totalGrades, boolean optimized) throws InterruptedException {
+        if (optimized) {
+            int availableProcessors = Runtime.getRuntime().availableProcessors();
+            ExecutorService executorService = Executors.newFixedThreadPool(availableProcessors);
+            int chunkSize = totalGrades / availableProcessors;
+            int totalChunks = totalGrades / chunkSize;
 
-            saveRandomGradeForRandomStudent();
+            AtomicInteger completed = new AtomicInteger(0);
+            Set<Integer> loggedSteps = ConcurrentHashMap.newKeySet();
+            List<Callable<Void>> tasks = new ArrayList<>();
+            List<Student> students = studentRepository.findAll();
+            Random randomStudent = new Random();
+            log.info("STARTING MULTI-THREAD TASK");
+            for (int i = 0; i < totalChunks; i++) {
+                tasks.add(() -> {
+                    long startTime = System.currentTimeMillis();
+                    for (int j = 0; j < chunkSize; j++) {
+                        Student student = students.get(randomStudent.nextInt(students.size()));
+                        log.info("RANDOM STUDENT FOUND: {}", student.toString());
+                        saveRandomGradeForRandomStudent(student);
+                        int current = completed.incrementAndGet();
+
+                        if (current % chunkSize == 0 && loggedSteps.add(current)) {
+                            saveCurrentProgressRecord(current, startTime);
+                        }
+                    }
+                    return null;
+
+                });
+            }
+            executorService.invokeAll(tasks);
+        } else {
+            long tenthPartLoopTime = startNewLoopTime();
+            studentIds = studentRepository.findAllIds();
+            for (int record = 0; record < totalGrades; record++) {
+                if (progressIsTenthPart(record)) {
+                    saveCurrentProgressRecord(record, tenthPartLoopTime);
+                    tenthPartLoopTime = startNewLoopTime();
+                }
+
+                saveRandomGradeForRandomStudent(findRandomStudent());
+            }
         }
         log.info("Populating with random grades done");
         sendNotificationToFrontendService.notifyFrontendAboutSeedingGradesStatus("Seeding Done!");
@@ -82,11 +118,12 @@ public class SeedGradesService {
         return (record + 1 == applicationConfig.getGradesToAdd());
     }
 
-    private void saveCurrentProgressRecord(int record, long tenthPartLoopTime) {
+    private void saveCurrentProgressRecord(int record/*, long tenthPartLoopTime*/, long startTime) {
         if (isLastRecord(record)) {
             record++;
         }
-        ProgressRecord currentProgressRecord = prepareProgressRecord(record, tenthPartLoopTime);
+        long duration = System.currentTimeMillis() - startTime;
+        ProgressRecord currentProgressRecord = prepareProgressRecord(record, duration);
         progressRecords.add(currentProgressRecord);
         logProgressRecord(currentProgressRecord);
     }
@@ -108,9 +145,8 @@ public class SeedGradesService {
         sendNotificationToFrontendService.notifyFrontendAboutSeedingProgress(currentProgressRecord);
     }
 
-    private void saveRandomGradeForRandomStudent() {
+    private void saveRandomGradeForRandomStudent(Student randomStudent) {
         try {
-            Student randomStudent = findRandomStudent();
             if (randomStudent.getSchoolClass() != null) {
                 Set<Subject> subjectsOfRandomStudent = randomStudent.getSchoolClass().getClassSubjects();
                 long randomlyChosenSubjectId = subjectsOfRandomStudent.stream()
