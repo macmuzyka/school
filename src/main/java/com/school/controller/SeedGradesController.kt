@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -14,9 +13,9 @@ class SeedGradesController(
     private val seedGradesService: SeedGradesService
 ) {
     @PostMapping("/grades")
-    fun seedGrades(@RequestParam(defaultValue = "false") optimized: Boolean): ResponseEntity<Any> {
+    fun seedGrades(): ResponseEntity<Any> {
         return try {
-            ResponseEntity.status(HttpStatus.OK).body(seedGradesService.seedStudentsWithRandomizedGrades(optimized))
+            ResponseEntity.status(HttpStatus.OK).body(seedGradesService.seedStudentsWithRandomizedGrades())
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.OK).body(e.message)
         }
