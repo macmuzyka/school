@@ -31,6 +31,7 @@ public class SeedGradesService {
     private final ApplicationConfig applicationConfig;
     private final Random randomizer = new Random();
     private final Logger log = LoggerFactory.getLogger(SeedGradesService.class);
+    //TODO: remove after tests, also remove redundant methods
     private List<Long> studentIds;
 
     public SeedGradesService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SendNotificationToFrontendService sendNotificationToFrontendService, ApplicationConfig applicationConfig) {
@@ -66,6 +67,7 @@ public class SeedGradesService {
                 tasks.add(() -> {
                     long startTime = System.currentTimeMillis();
                     for (int j = 0; j < chunkSize; j++) {
+                        //FIXME: out of bounds exception
                         Student student = students.get(randomStudent.nextInt(students.size()));
                         log.info("RANDOM STUDENT FOUND: {}", student.toString());
                         saveRandomGradeForRandomStudent(student);
