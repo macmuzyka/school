@@ -62,7 +62,6 @@ public class SeedGradesService {
             List<Callable<Void>> tasks = new ArrayList<>();
             List<Student> students = studentRepository.findAll();
             Random randomStudent = new Random();
-            log.info("STARTING MULTI-THREAD TASK");
             for (int i = 0; i < totalChunks; i++) {
                 tasks.add(() -> {
                     long startTime = System.currentTimeMillis();
