@@ -64,7 +64,7 @@ public class ClassScheduleTests {
     private ClassScheduleService classScheduleService;
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() throws IOException, InterruptedException {
         File studentsFile = new File("src/test/resources/students_list.txt");
         InputStream inputStream = new FileInputStream(studentsFile);
         MultipartFile mpf = new MockMultipartFile("file", studentsFile.getName(), "text/plain", inputStream);
