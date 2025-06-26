@@ -31,8 +31,6 @@ public class SeedGradesService {
     private final ApplicationConfig applicationConfig;
     private final Random randomizer = new Random();
     private final Logger log = LoggerFactory.getLogger(SeedGradesService.class);
-    //TODO: remove after tests, also remove redundant methods
-    private List<Long> studentIds;
 
     public SeedGradesService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SendNotificationToFrontendService sendNotificationToFrontendService, ApplicationConfig applicationConfig) {
         this.studentRepository = studentRepository;
@@ -93,23 +91,6 @@ public class SeedGradesService {
             executorService.shutdown();
         }
 
-    }
-
-    private long startNewLoopTime() {
-        return System.currentTimeMillis();
-    }
-
-    private boolean progressIsTenthPart(int record) {
-        int divider = calculateDivider();
-        return progressIsExactlyTenthPathOfTotalRecords(record, divider) || isLastRecord(record);
-    }
-
-    private int calculateDivider() {
-        return applicationConfig.getGradesToAdd() / 10;
-    }
-
-    private boolean progressIsExactlyTenthPathOfTotalRecords(double progress, int divider) {
-        return progress % divider == 0;
     }
 
     private boolean isLastRecord(int record) {
@@ -179,15 +160,5 @@ public class SeedGradesService {
     private String randomGradeType() {
         List<String> gradeTypes = applicationConfig.getGradeTypes().stream().toList();
         return gradeTypes.get(randomizer.nextInt(gradeTypes.size()));
-    }
-
-    private Student findRandomStudent() {
-        Long randomStudentID = studentIds.get(randomizer.nextInt(studentIds.size()));
-        Optional<Student> student = studentRepository.findById(randomStudentID);
-        if (student.isPresent()) {
-            return student.get();
-        } else {
-            throw new IllegalArgumentException("Student not present upon application warmup!");
-        }
     }
 }
