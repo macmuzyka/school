@@ -1,8 +1,6 @@
 package com.school.repository;
 
 import com.school.model.entity.Student;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -39,8 +37,4 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             nativeQuery = true
     )
     List<Long> findAllIds();
-
-//    @NotNull
-//    @Query(value = "SELECT DISTINCT s FROM Student s JOIN FETCH s.studentGrades")
-//    List<Student> findAll();
 }

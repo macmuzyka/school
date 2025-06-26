@@ -13,11 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.school.service.ProgressRecordExportService.progressRecords;
 import static com.school.service.ProgressRecordExportService.recordsReadyToExport;
@@ -31,7 +26,7 @@ public class SeedGradesService {
     private final ApplicationConfig applicationConfig;
     private final Random randomizer = new Random();
     private final Logger log = LoggerFactory.getLogger(SeedGradesService.class);
-    //TODO: remove after tests, also remove redundant methods
+
     private List<Long> studentIds;
 
     public SeedGradesService(StudentRepository studentRepository, SubjectRepository subjectRepository, GradeRepository gradeRepository, SendNotificationToFrontendService sendNotificationToFrontendService, ApplicationConfig applicationConfig) {
@@ -42,7 +37,7 @@ public class SeedGradesService {
         this.applicationConfig = applicationConfig;
     }
 
-    public void seedStudentsWithRandomizedGrades() throws InterruptedException {
+    public void seedStudentsWithRandomizedGrades() {
         int totalGrades = applicationConfig.getGradesToAdd();
         log.info("Populating students with {} example grades by random..", totalGrades);
         sendNotificationToFrontendService.notifyFrontendAboutSeedingGradesStatus("Seeding " + totalGrades + " grades randomly " +
@@ -50,49 +45,20 @@ public class SeedGradesService {
         seedGradesAmongStudents(totalGrades);
     }
 
-    private void seedGradesAmongStudents(int totalGrades) throws InterruptedException {
-        int availableProcessors = Runtime.getRuntime().availableProcessors();
-        ExecutorService executorService = Executors.newFixedThreadPool(availableProcessors);
-        int chunkSize = totalGrades / availableProcessors;
-        int totalChunks = totalGrades / chunkSize;
-
-        try {
-            AtomicInteger completed = new AtomicInteger(0);
-            Set<Integer> loggedSteps = ConcurrentHashMap.newKeySet();
-            List<Callable<Void>> tasks = new ArrayList<>();
-            List<Student> students = studentRepository.findAll();
-            Random randomStudent = new Random();
-            for (int i = 0; i < totalChunks; i++) {
-                tasks.add(() -> {
-                    long startTime = System.currentTimeMillis();
-                    for (int j = 0; j < chunkSize; j++) {
-                        //FIXME: out of bounds exception
-                        Student student = students.get(randomStudent.nextInt(students.size()));
-                        log.info("RANDOM STUDENT FOUND: {}", student.toString());
-                        saveRandomGradeForRandomStudent(student);
-                        int current = completed.incrementAndGet();
-
-                        if (current % chunkSize == 0 && loggedSteps.add(current)) {
-                            saveCurrentProgressRecord(current, startTime);
-                        }
-                    }
-                    return null;
-
-                });
+    private void seedGradesAmongStudents(int totalGrades) {
+        long tenthPartLoopTime = startNewLoopTime();
+        studentIds = studentRepository.findAllIds();
+        for (int record = 0; record < totalGrades; record++) {
+            if (progressIsTenthPart(record)) {
+                saveCurrentProgressRecord(record, tenthPartLoopTime);
+                tenthPartLoopTime = startNewLoopTime();
             }
-            executorService.invokeAll(tasks);
-            log.info("Populating with random grades done");
-            sendNotificationToFrontendService.notifyFrontendAboutSeedingGradesStatus("Seeding Done!");
-            recordsReadyToExport = true;
-        } catch (InterruptedException ie) {
-            String errorMessage = "InterruptedException :: Error seeding grades among students using " +
-                    "multithreading strategy, original exception: " + ie.getMessage();
-            log.error(errorMessage);
-            throw new InterruptedException(errorMessage);
-        } finally {
-            executorService.shutdown();
-        }
 
+            saveRandomGradeForRandomStudent();
+        }
+        log.info("Populating with random grades done");
+        sendNotificationToFrontendService.notifyFrontendAboutSeedingGradesStatus("Seeding Done!");
+        recordsReadyToExport = true;
     }
 
     private long startNewLoopTime() {
@@ -142,8 +108,9 @@ public class SeedGradesService {
         sendNotificationToFrontendService.notifyFrontendAboutSeedingProgress(currentProgressRecord);
     }
 
-    private void saveRandomGradeForRandomStudent(Student randomStudent) {
+    private void saveRandomGradeForRandomStudent() {
         try {
+            Student randomStudent = findRandomStudent();
             if (randomStudent.getSchoolClass() != null) {
                 Set<Subject> subjectsOfRandomStudent = randomStudent.getSchoolClass().getClassSubjects();
                 long randomlyChosenSubjectId = subjectsOfRandomStudent.stream()
