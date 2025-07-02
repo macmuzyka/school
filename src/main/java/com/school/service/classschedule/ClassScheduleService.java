@@ -1,6 +1,9 @@
 package com.school.service.classschedule;
 
 import com.school.configuration.ApplicationConfig;
+import com.school.model.dto.sclassschedule.ClassScheduleDisplayDTO;
+import com.school.model.dto.sclassschedule.LessonUnitDTO;
+import com.school.model.dto.sclassschedule.ScheduleEntryDTO;
 import com.school.model.entity.SchoolClass;
 import com.school.model.entity.classschedule.ClassSchedule;
 import com.school.model.entity.classschedule.ScheduleEntry;
@@ -13,9 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.EnumSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassScheduleService {
@@ -35,6 +37,22 @@ public class ClassScheduleService {
         this.timeSlotRepository = timeSlotRepository;
         this.schoolClassRepository = schoolClassRepository;
         this.applicationConfig = applicationConfig;
+    }
+
+    public Map<String, ClassScheduleDisplayDTO> classScheduleDisplayDTO() {
+        List<ClassSchedule> schedules = classScheduleRepository.findAll();
+        return schedules.stream()
+                .collect(Collectors.toMap(
+                        ClassSchedule::getClassScheduleName,
+                        schedule -> new ClassScheduleDisplayDTO(schedule.getScheduleEntries().stream()
+                                .map(entry -> new ScheduleEntryDTO(entry.getDayOfWeek(), entry.getTimeSlots().stream()
+                                        .map(slot -> new LessonUnitDTO(
+                                                slot.getStartTime().toString() + "-" + slot.getEndTime(),
+                                                slot.getSubject() == null ? "No assigned subject yet!" : slot.getSubject().getName()
+                                        )).toList()
+                                )).toList()
+                        )
+                ));
     }
 
     public ClassSchedule generateEmptyScheduleForSchoolClass(Long schoolClassId) {

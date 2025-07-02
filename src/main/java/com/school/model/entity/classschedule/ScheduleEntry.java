@@ -53,8 +53,8 @@ public class ScheduleEntry extends Audit {
         return dayOfWeek;
     }
 
-    public LinkedList<TimeSlot> getTimeSlots() {
-        return (LinkedList<TimeSlot>) timeSlots;
+    public List<TimeSlot> getTimeSlots() {
+        return timeSlots;
     }
 
     public void setClassSchedule(final ClassSchedule classSchedule) {
