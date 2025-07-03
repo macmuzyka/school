@@ -48,6 +48,4 @@ public class Student extends AbstractStudentEntity {
     public void setSchoolClass(SchoolClass schoolClass) {
         this.schoolClass = schoolClass;
     }
-
-
 }
