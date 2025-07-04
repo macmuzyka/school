@@ -12,15 +12,18 @@ import com.school.model.entity.SchoolClass
 import com.school.model.entity.Student
 import com.school.model.entity.Subject
 import com.school.model.enums.ClassAction
+import com.school.service.classschedule.ScheduleGeneratorService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
+//TODO: refactor this shit
 class ClassService(
     private val studentRepository: StudentRepository,
     private val schoolClassRepository: SchoolClassRepository,
     private val schoolRepository: SchoolRepository,
+    private val scheduleGeneratorService: ScheduleGeneratorService,
     private val applicationConfig: ApplicationConfig,
 ) {
     private val log: Logger = LoggerFactory.getLogger(ClassService::class.java)
@@ -36,6 +39,18 @@ class ClassService(
             throw e
         }
     }
+
+    fun getClassesDTOs(): List<ClassForScheduleDTO> {
+        return schoolClassRepository.findAll()
+            .map { schoolClass ->
+                ClassForScheduleDTO(
+                    schoolClass.id,
+                    schoolClass.name,
+                    schoolClass.classSchedule != null
+                )
+            }.toList()
+    }
+
 
     //TODO: separate each action to each controller method
     fun studentToClassAction(existingStudentToClassDTO: ExistingStudentToClassDTO): ClassDTO {
@@ -120,7 +135,7 @@ class ClassService(
 
     fun createNewClass(): SchoolClass {
         val newSchoolClass = createNewClassWithAssignedSubjects()
-        schoolClassRepository.save(newSchoolClass)
+        scheduleGeneratorService.generateSchedule(newSchoolClass)
 
         val school = schoolRepository.findAll()
             .firstOrNull()
@@ -132,13 +147,14 @@ class ClassService(
     }
 
     fun createNewClassWithAssignedSubjects(): SchoolClass {
-        val newSchoolClass = SchoolClass("Class ${findNextClassNumber()}")
+        val newSchoolClass =
+            SchoolClass("Class ${findNextClassNumber()}"/*, scheduleGeneratorService.generateEmptyScheduleForSchoolClass()*/)
         val newClassSubjects = applicationConfig.availableSubjects
             .map { subject -> Subject(subject, newSchoolClass) }
             .toSet()
         newSchoolClass.classSubjects = newClassSubjects
         newSchoolClass.setSchool(motherSchool())
-        return newSchoolClass
+        return schoolClassRepository.save(newSchoolClass);
     }
 
     private fun findNextClassNumber(): Int {

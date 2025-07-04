@@ -49,7 +49,7 @@ public class SeedGradeWorker {
             Long studentId = studentIds.get(randomizer.nextInt(studentIds.size()));
             Student student = studentRepository.findById(studentId)
                     .orElseThrow(() -> new IllegalArgumentException("Student with id" + studentId + " not found!"));
-            log.debug("RANDOM STUDENT FOUND: {}", student.toString());
+            log.debug("Random student found: {}", student.toString());
 
             saveRandomGradeForRandomStudent(student);
             int current = completed.incrementAndGet();
@@ -87,7 +87,6 @@ public class SeedGradeWorker {
             } else {
                 log.info("Student with identifier {} unassigned, skipping seeding grade in this student record", randomStudent.getIdentifier());
             }
-
         } catch (Exception e) {
             log.error("Exception while saving random grade to random student: ", e);
         }

@@ -2,7 +2,7 @@ package com.school.classschedule;
 
 import com.school.WarmupDatabasePopulation;
 import com.school.configuration.ApplicationConfig;
-import com.school.model.dto.sclassschedule.ClassScheduleDisplayDTO;
+import com.school.model.dto.sclassschedule.DaySubject;
 import com.school.model.entity.classschedule.ClassSchedule;
 import com.school.model.entity.classschedule.TimeSlot;
 import com.school.repository.GradeRepository;
@@ -13,7 +13,8 @@ import com.school.repository.classschedule.ScheduleEntryRepository;
 import com.school.repository.classschedule.TimeSlotRepository;
 import com.school.service.*;
 import com.school.service.classschedule.ClassScheduleService;
-import org.junit.jupiter.api.BeforeEach;
+import com.school.service.classschedule.ScheduleGeneratorService;
+import com.school.service.classschedule.TimeSlotService;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,17 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +40,10 @@ import static org.junit.jupiter.api.Assertions.*;
         ClassService.class,
         SendNotificationToFrontendService.class,
         SeedGradesService.class,
+        SeedGradeWorker.class,
+        ScheduleGeneratorService.class,
         ClassScheduleService.class,
+        TimeSlotService.class,
         WarmupDatabasePopulation.class
 })
 public class ClassScheduleTests {
@@ -71,38 +70,80 @@ public class ClassScheduleTests {
     private ApplicationConfig applicationConfig;
     @Autowired
     private ClassScheduleService classScheduleService;
+    @Autowired
+    private ScheduleGeneratorService scheduleGeneratorService;
+    @Autowired
+    private TimeSlotService timeSlotService;
 
     @Test
-    public void createSampleClassScheduleForDefaultConditions() {
-        long scheduleTimeFromApplicationConfig = calculateScheduleTimeFromApplicationConfig();
-        long scheduleTimeFromCalculatedDurationFromFirstAndLastTimeslot = calculateDurationFromGeneratedSchedule(classScheduleService.generateEmptyScheduleForSchoolClass(1L));
+    public void scheduleBeginningSlotAndEndSlotShouldMatchApplicationConfigValues() {
+        long scheduleTimeFromApplicationConfig = calculateScheduleTotalDurationFromApplicationConfig();
+        long scheduleTimeFromCalculatedDurationFromFirstAndLastTimeslot =
+                calculateScheduleTotalDurationFromGeneratedSchedule(classScheduleRepository
+                        .findAll()
+                        .stream()
+                        .findAny()
+                        .orElseThrow(() ->
+                                new IllegalStateException("Application warmup phase did not execute correctly, " +
+                                        "could not find any schedule!")
+                        )
+                );
         assertEquals(scheduleTimeFromApplicationConfig, scheduleTimeFromCalculatedDurationFromFirstAndLastTimeslot);
     }
 
-    private long calculateScheduleTimeFromApplicationConfig() {
-        int lessonsDuration = applicationConfig.getMaxLessons() * applicationConfig.getLessonDuration();
-        int numberOfLongBreaks = (applicationConfig.getFirstLongBreak() != 0 ? 1 : 0) + (applicationConfig.getSecondLongBreak() != 0 ? 1 : 0);
-        int longBreaksDuration = applicationConfig.getLongBreakDuration() * numberOfLongBreaks;
-        int shortBreaksDuration = (applicationConfig.getMaxLessons() - 1 - numberOfLongBreaks) * applicationConfig.getShortBreakDuration();
-        return (lessonsDuration + longBreaksDuration + shortBreaksDuration);
-    }
-
-    private long calculateDurationFromGeneratedSchedule(ClassSchedule classSchedule) {
+    private long calculateScheduleTotalDurationFromGeneratedSchedule(ClassSchedule classSchedule) {
         List<TimeSlot> firstTimeslots = classSchedule.getScheduleEntries().get(0).getTimeSlots();
         LocalTime scheduleBeginning = firstTimeslots.get(0).getStartTime();
         LocalTime scheduleEnding = classSchedule.getScheduleEntries().get(0).getTimeSlots().get(firstTimeslots.size() - 1).getEndTime();
         return Duration.between(scheduleBeginning, scheduleEnding).toMinutes();
     }
 
-    @Test
-    public void shouldProperlyMapDatabaseResultsToDTOObjects() {
-        classScheduleService.generateEmptyScheduleForSchoolClass(1L);
-        Map<String, ClassScheduleDisplayDTO> dto = classScheduleService.classScheduleDisplayDTO();
-        System.out.println("dto.size() : " + dto.size());
-        System.out.println("dto.toString() : " + dto.toString());
-        ClassScheduleDisplayDTO anyKey = dto.values().stream().findFirst().orElseThrow(() -> new IllegalArgumentException("Could not find any records in a test map!"));
+    private long calculateScheduleTotalDurationFromApplicationConfig() {
+        int lessonsDuration = applicationConfig.getMaxLessons() * applicationConfig.getLessonDuration();
+        int numberOfLongBreaks = (longBreakNumberOne()) + (longBreakNumberTwo());
+        int longBreaksDuration = numberOfLongBreaks * applicationConfig.getLongBreakDuration();
+        int shortBreaksDuration = (actualNumberOfShortBreaks() - numberOfLongBreaks) * applicationConfig.getShortBreakDuration();
+        return (lessonsDuration + longBreaksDuration + shortBreaksDuration);
+    }
 
-        assertInstanceOf(Map.class, dto);
-        assertInstanceOf(ClassScheduleDisplayDTO.class, anyKey);
+    private int longBreakNumberOne() {
+        return applicationConfig.getFirstLongBreak() != 0 ? 1 : 0;
+    }
+
+    private int longBreakNumberTwo() {
+        return applicationConfig.getSecondLongBreak() != 0 ? 1 : 0;
+    }
+
+    private int actualNumberOfShortBreaks() {
+        return applicationConfig.getMaxLessons() - 1; //should that be explained by variable? e.g. noBreakAfterLastLesson?
+    }
+
+    @Test
+    public void shouldProperlyMapDatabaseResultsToDisplayScheduleWithoutErrors() {
+//        Long generatedClassScheduleId = scheduleGeneratorService.generateSchedule(schoolClassRepository.findById(1L).get()).getId();
+        Long anyScheduleId = classScheduleRepository
+                .findAll()
+                .stream()
+                .findAny()
+                .orElseThrow(() ->
+                        new IllegalStateException("Application warmup phase did not execute correctly, " +
+                                "could not find any schedule!"))
+                .getId();
+
+        Map<String, List<DaySubject>> scheduleDisplay = classScheduleService
+                .classScheduleGroupedByDaySubjectAndTimeframe(anyScheduleId, false);
+        System.out.println("Numbers of schedules: " + scheduleDisplay.size());
+        System.out.println("Timeframes display: ");
+
+        for (String timeframe : scheduleDisplay.keySet()) {
+            System.out.println("[" + timeframe + "]");
+        }
+        DaySubject anyKey = scheduleDisplay.values().stream()
+                .flatMap(Collection::stream)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Could not find any DaySubject from mapped object to display!"));
+
+        assertInstanceOf(Map.class, scheduleDisplay);
+        assertInstanceOf(DaySubject.class, anyKey);
     }
 }

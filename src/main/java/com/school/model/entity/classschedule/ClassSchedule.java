@@ -1,23 +1,35 @@
 package com.school.model.entity.classschedule;
 
 import com.school.model.entity.Audit;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.school.model.entity.SchoolClass;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
+//TODO: shouldn't class schedule be holding SchoolClass, not ScheduleEntry?
 @Entity
 @Table(name = "class_schedule")
 public class ClassSchedule extends Audit {
     private String classScheduleName;
     @OneToMany(mappedBy = "classSchedule", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ScheduleEntry> scheduleEntries;
+    private List<ScheduleEntry> scheduleEntries = new ArrayList<>();
+    @OneToOne
+    @JoinColumn(name = "school_class_id")
+    private SchoolClass schoolClass;
 
-    public ClassSchedule(String classScheduleName, List<ScheduleEntry> scheduleEntries) {
+    public ClassSchedule(String classScheduleName, List<ScheduleEntry> scheduleEntries, SchoolClass schoolClass) {
         this.classScheduleName = classScheduleName;
         this.scheduleEntries = scheduleEntries;
+        this.schoolClass = schoolClass;
+    }
+
+    public SchoolClass getSchoolClass() {
+        return schoolClass;
+    }
+
+    public void setSchoolClass(final SchoolClass schoolClass) {
+        this.schoolClass = schoolClass;
     }
 
     public ClassSchedule() {

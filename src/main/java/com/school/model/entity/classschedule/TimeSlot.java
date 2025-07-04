@@ -59,4 +59,16 @@ public class TimeSlot extends Audit {
     public boolean isBreak() {
         return isBreak;
     }
+
+    public boolean isNotBreak() {
+        return !isBreak;
+    }
+
+    public void setSubject(final Subject subject) {
+        this.subject = subject;
+    }
+
+    public String getDurationDisplay() {
+        return startTime + "-" + endTime;
+    }
 }

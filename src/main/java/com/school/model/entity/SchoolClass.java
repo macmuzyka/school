@@ -1,5 +1,6 @@
 package com.school.model.entity;
 
+import com.school.model.entity.classschedule.ClassSchedule;
 import jakarta.persistence.*;
 import org.hibernate.annotations.BatchSize;
 
@@ -20,6 +21,8 @@ public class SchoolClass {
     @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL, orphanRemoval = true)
     @BatchSize(size = 10)
     private Set<Subject> classSubjects;
+    @OneToOne(mappedBy = "schoolClass", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ClassSchedule classSchedule;
     @ManyToOne
     @JoinColumn(name = "school_id")
     private School school;
@@ -30,11 +33,19 @@ public class SchoolClass {
         this.classSubjects = classSubjects;
     }
 
-    public SchoolClass() {}
+    public SchoolClass() {
+    }
 
     public SchoolClass(String name) {
         this.name = name;
-        this.id = 0L;
+    }
+
+    public ClassSchedule getClassSchedule() {
+        return classSchedule;
+    }
+
+    public void setClassSchedule(ClassSchedule classSchedule) {
+        this.classSchedule = classSchedule;
     }
 
     @Override

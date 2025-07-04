@@ -53,6 +53,7 @@ class StudentsFromListBuilderService(
             "File uploaded successfully"
         } catch (e: Exception) {
             log.error(e.message)
+            e.printStackTrace()
             "Error uploading students file: ${e.message}"
         } finally {
             clearAuxiliaryMap()

@@ -4,6 +4,7 @@ import com.school.repository.SchoolRepository;
 import com.school.model.entity.School;
 import com.school.model.entity.SchoolClass;
 import com.school.service.ClassService;
+import com.school.service.classschedule.ScheduleGeneratorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -16,11 +17,15 @@ import java.util.*;
 public class WarmupDatabasePopulation implements ApplicationListener<ApplicationStartedEvent> {
     private final SchoolRepository schoolRepository;
     private final ClassService classService;
+    private final ScheduleGeneratorService scheduleGeneratorService;
     private static final Logger log = LoggerFactory.getLogger(WarmupDatabasePopulation.class);
 
-    public WarmupDatabasePopulation(SchoolRepository schoolRepository, ClassService classService) {
+    public WarmupDatabasePopulation(SchoolRepository schoolRepository,
+                                    ClassService classService,
+                                    ScheduleGeneratorService scheduleGeneratorService) {
         this.schoolRepository = schoolRepository;
         this.classService = classService;
+        this.scheduleGeneratorService = scheduleGeneratorService;
     }
 
     @Override
@@ -34,15 +39,17 @@ public class WarmupDatabasePopulation implements ApplicationListener<Application
     }
 
     private void addSchoolWithClassOnWarmup() {
-        School savedSchool = schoolRepository.save(new School("SCHOOL ONE", new ArrayList<>()));
-        savedSchool.getSchoolClasses().add(firstWarmupClass());
+        School savedSchool = schoolRepository.save(new School("Main School NO. 1", new ArrayList<>()));
+        SchoolClass firstWarmupClass = createWarmupSchoolClass();
+        savedSchool.getSchoolClasses().add(firstWarmupClass);
         schoolRepository.save(savedSchool);
-
         log.info("Application warmup school saved to database!");
         log.debug("Saved School: {}", savedSchool);
+
+        scheduleGeneratorService.generateSchedule(firstWarmupClass);
     }
 
-    private SchoolClass firstWarmupClass() {
+    private SchoolClass createWarmupSchoolClass() {
         return classService.createNewClassWithAssignedSubjects();
     }
 }

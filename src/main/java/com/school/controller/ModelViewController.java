@@ -8,13 +8,16 @@ import com.school.model.dto.ClassWithListedStudentsDTO;
 import com.school.model.dto.StudentDTO;
 import com.school.model.dto.StudentSubjectGradesDTO;
 import com.school.service.*;
+import com.school.service.classschedule.ClassScheduleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +32,7 @@ public class ModelViewController {
     private final DuplicatedStudentService duplicatedStudentService;
     private final InsertErrorStudentService insertErrorStudentService;
     private final GradeService gradeService;
-    private final SeedGradesService seedGradesService;
+    private final ClassScheduleService classScheduleService;
     private final RoadMapService roadMapService;
     private final ProjectVersionService projectVersionService;
     private final ApplicationValidityService applicationValidityService;
@@ -41,8 +44,10 @@ public class ModelViewController {
                                InsertErrorStudentService insertErrorStudentService,
                                GradeService gradeService,
                                SeedGradesService seedGradesService,
+                               ClassScheduleService classScheduleService,
                                RoadMapService roadMapService,
-                               ProjectVersionService projectVersionService, final ApplicationValidityService applicationValidityService,
+                               ProjectVersionService projectVersionService,
+                               ApplicationValidityService applicationValidityService,
                                ApplicationConfig applicationConfig
     ) {
         this.classService = classService;
@@ -50,7 +55,7 @@ public class ModelViewController {
         this.duplicatedStudentService = duplicatedStudentService;
         this.insertErrorStudentService = insertErrorStudentService;
         this.gradeService = gradeService;
-        this.seedGradesService = seedGradesService;
+        this.classScheduleService = classScheduleService;
         this.roadMapService = roadMapService;
         this.projectVersionService = projectVersionService;
         this.applicationValidityService = applicationValidityService;
@@ -189,6 +194,29 @@ public class ModelViewController {
     public String gradesEntryPoint() {
         try {
             return "entry_points/grades-entry-point";
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+    @GetMapping("/schedules-entry-point")
+    public String schedulesEntryPoint(Model model) {
+        try {
+            model.addAttribute("classes", classService.getClassesDTOs());
+            return "entry_points/schedules-entry-point";
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+    @GetMapping("/schedule-details")
+    public String schedulesList(Model model,
+                                @RequestParam("id") Long id) {
+        try {
+            model.addAttribute("classId", id);
+            model.addAttribute("timetable", classScheduleService.classScheduleGroupedByDaySubjectAndTimeframe(id, true));
+            model.addAttribute("days", EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
+            return "schedule-details";
         } catch (Exception e) {
             return e.getMessage();
         }
