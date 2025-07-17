@@ -8,6 +8,7 @@
     <link rel="stylesheet" type="text/css" href="/css/icons.css">
     <link rel="stylesheet" type="text/css" href="/css/forms.css">
     <link rel="stylesheet" type="text/css" href="/css/notification.css">
+    <link rel="stylesheet" type="text/css" href="/css/subject-list.css">
     <script src="/js/notification.js"></script>
     <script src="/js/go-back.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -39,12 +40,70 @@
             <td th:text="${entry.key}">Timeframe</td>
             <td th:each="day : ${days}">
             <span th:each="ds : ${entry.value}"
+                  th:with="classId=${classId}"
+                  th:attr="ondrop=|onDrop(event, '${ds.timeSlotId}')|"
+                  ondragover="onDragOver(event)"
+                  class="drop-target"
                   th:if="${ds.dayOfWeek == day}"
                   th:text="${ds.subject}">Subject</span>
             </td>
         </tr>
         </tbody>
+
     </table>
+    <table>
+        <tr style="border: none;">
+            <div class="subject-list">
+                <ul style="margin: 0; padding-left: 16px;">
+                    <li th:each="subject : ${subjects}"
+                        th:attr="draggable=true"
+                        th:attrappend="data-subject-id=${subject.id}"
+                        th:text="${subject.subjectName}"
+                        ondragstart="onDragStart(event)">
+                    </li>
+                </ul>
+            </div>
+        </tr>
+    </table>
+
 </div>
 </body>
+<script>
+    function onDragStart(event) {
+        console.log('onDragStart')
+        const subjectId = event.target.getAttribute("data-subject-id");
+        console.log('subjectId: ' + subjectId)
+        event.dataTransfer.setData("subjectId", subjectId);
+    }
+
+    function onDrop(event, timeSlotId) {
+        console.log('onDrop')
+        console.log('timeSlotId: ' + timeSlotId)
+        event.preventDefault();
+        const subjectId = event.dataTransfer.getData("subjectId");
+
+        fetch('/timeslot-managing/add-to-timeslot?subjectId=' + subjectId + '&timeSlotId=' + timeSlotId, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                subjectId: subjectId,
+                timeSlotId: timeSlotId
+            })
+        }).then(response => {
+            if (response.ok) {
+                console.log('response ok')
+                location.reload();
+            } else {
+                console.log('response error')
+                alert("Failed to assign subject");
+            }
+        });
+    }
+
+    function onDragOver(event) {
+        event.preventDefault(); // Needed to allow dropping
+    }
+</script>
 </html>

@@ -33,6 +33,7 @@ public class ModelViewController {
     private final InsertErrorStudentService insertErrorStudentService;
     private final GradeService gradeService;
     private final ClassScheduleService classScheduleService;
+    private final SubjectService subjectService;
     private final RoadMapService roadMapService;
     private final ProjectVersionService projectVersionService;
     private final ApplicationValidityService applicationValidityService;
@@ -44,7 +45,7 @@ public class ModelViewController {
                                InsertErrorStudentService insertErrorStudentService,
                                GradeService gradeService,
                                SeedGradesService seedGradesService,
-                               ClassScheduleService classScheduleService,
+                               ClassScheduleService classScheduleService, final SubjectService subjectService,
                                RoadMapService roadMapService,
                                ProjectVersionService projectVersionService,
                                ApplicationValidityService applicationValidityService,
@@ -56,6 +57,7 @@ public class ModelViewController {
         this.insertErrorStudentService = insertErrorStudentService;
         this.gradeService = gradeService;
         this.classScheduleService = classScheduleService;
+        this.subjectService = subjectService;
         this.roadMapService = roadMapService;
         this.projectVersionService = projectVersionService;
         this.applicationValidityService = applicationValidityService;
@@ -216,6 +218,7 @@ public class ModelViewController {
             model.addAttribute("classId", id);
             model.addAttribute("timetable", classScheduleService.classScheduleGroupedByDaySubjectAndTimeframe(id, true));
             model.addAttribute("days", EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
+            model.addAttribute("subjects", subjectService.getSchoolClassSubjects(id));
             return "schedule-details";
         } catch (Exception e) {
             return e.getMessage();
