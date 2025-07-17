@@ -1,0 +1,21 @@
+.subject-list {
+        display: inline-block;
+        vertical-align: top;
+        margin-left: 20px;
+    }
+
+    .subject-list li {
+        list-style-type: none;
+        padding: 4px;
+        margin: 4px 0;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        cursor: grab;
+        user-select: none;
+    }
+
+    .drop-target {
+        min-height: 40px;
+        border: 1px dashed #aaa;
+        padding: 4px;
+    }

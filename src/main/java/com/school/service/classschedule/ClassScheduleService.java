@@ -35,7 +35,7 @@ public class ClassScheduleService {
                         .filter(slot -> !shouldExcludeBreaks || slot.isNotBreak())
                         .map(slot -> {
                             String key = slot.getDurationDisplay();
-                            DaySubject ds = new DaySubject(entry.getDayOfWeek(), slot.getSubject() == null ? "-----" : slot.getSubject().getName());
+                            DaySubject ds = new DaySubject(slot.getId(), entry.getDayOfWeek(), slot.getSubject() == null ? "-----" : slot.getSubject().getName());
                             return Map.entry(key, ds);
                         }))
                 .collect(Collectors.groupingBy(
