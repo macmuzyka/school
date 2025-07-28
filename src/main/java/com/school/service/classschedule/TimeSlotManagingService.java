@@ -36,7 +36,7 @@ public class TimeSlotManagingService {
         } else {
             ClassRoom unassignedClassRoom;
             //TODO: find a way to ensure that if previous lesson time slot has the same subject,
-            // lesson can take place in the same class room with the same number (number)
+            // lesson can take place in the same class room with the same number
             if (previousTimeSlotHasMatchingSubjectWithCurrent(timeSlot, subject)) {
                 log.debug("Trying to find previous class room to reduce traffic within school");
                 unassignedClassRoom = findPreviousTimeSlotClassRoom(timeSlot);
