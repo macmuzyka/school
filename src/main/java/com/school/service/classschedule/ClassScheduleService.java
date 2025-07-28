@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,16 +27,23 @@ public class ClassScheduleService {
         this.scheduleGeneratorService = scheduleGeneratorService;
     }
 
-    public Map<String, List<DaySubject>> classScheduleGroupedByDaySubjectAndTimeframe(Long classId, boolean shouldExcludeBreaks) {
+    public Map<String, List<DaySubject>> getClassScheduleGroupedByDaySubjectAndTimeframe(Long classId, boolean shouldExcludeBreaks) {
         Long scheduleIdForSchoolClass = findScheduleIdForClass(classId);
         ClassSchedule schedule = classScheduleRepository.findById(scheduleIdForSchoolClass)
                 .orElseThrow(() -> new IllegalArgumentException("Could not find school class with id: " + classId));
+
+        AtomicInteger classCounter = new AtomicInteger();
         return schedule.getScheduleEntries().stream()
                 .flatMap(entry -> entry.getTimeSlots().stream()
                         .filter(slot -> !shouldExcludeBreaks || slot.isNotBreak())
                         .map(slot -> {
                             String key = slot.getDurationDisplay();
-                            DaySubject ds = new DaySubject(slot.getId(), entry.getDayOfWeek(), slot.getSubject() == null ? "-----" : slot.getSubject().getName());
+                            DaySubject ds = new DaySubject(slot.getId(),
+                                    entry.getDayOfWeek(),
+                                    slot.getSubject() == null ? "-----" : slot.getSubject().getName(),
+                                    slot.getClassRoom() == null ? 0 : slot.getClassRoom().getRoomNumber()
+                            );
+                            classCounter.getAndIncrement();
                             return Map.entry(key, ds);
                         }))
                 .collect(Collectors.groupingBy(
@@ -50,10 +58,10 @@ public class ClassScheduleService {
                 .findById(classId)
                 .orElseThrow(() -> new IllegalArgumentException("Could not find class with id" + classId));
         if (schoolClass.getClassSchedule() != null) {
-            log.info("Class [ID] = {} has schedule, skipping..", schoolClass.getId());
+            log.debug("Returning schedule for school class id: {}", schoolClass.getId());
             return schoolClass.getClassSchedule().getId();
         } else {
-            log.info("Attempting to generate empty schedule for Class [ID] = {}", classId);
+            log.warn("Attempting to generate empty schedule for school class id: {}", classId);
             return scheduleGeneratorService.generateSchedule(schoolClass).getId();
         }
     }

@@ -3,10 +3,12 @@ package com.school.service;
 import com.school.model.dto.SubjectDTO;
 import com.school.model.entity.Subject;
 import com.school.repository.SubjectRepository;
+import com.school.service.utils.EntityFetcher;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SubjectService {
@@ -23,5 +25,15 @@ public class SubjectService {
         } else {
             return Collections.emptyList();
         }
+    }
+
+    public Subject getSubjectById(Long subjectId) {
+        return EntityFetcher.getByIdOrThrow(subjectRepository::findById, subjectId, "Subject");
+        /*Optional<Subject> subject = subjectRepository.findById(subjectId);
+        if (subject.isPresent()) {
+            return subject.get();
+        } else {
+            throw new IllegalArgumentException("Could not find subject with id: " + subjectId);
+        }*/
     }
 }

@@ -17,7 +17,7 @@ public class TimeSlotManagingController {
     @PostMapping("/add-to-timeslot")
     public ResponseEntity<?> addSubjectToTimeSlot(@RequestParam Long subjectId, @RequestParam Long timeSlotId) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(timeSlotManagingService.addSubjectToTimeSlot(subjectId, timeSlotId));
+            return ResponseEntity.status(HttpStatus.CREATED).body(timeSlotManagingService.assignSubjectToTimeSlot(subjectId, timeSlotId));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

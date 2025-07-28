@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class TimeSlotService {
+public class TimeSlotBuilderService {
     private final TimeSlotRepository timeSlotRepository;
     private final ApplicationConfig applicationConfig;
-    private static final Logger log = LoggerFactory.getLogger(TimeSlotService.class);
+    private static final Logger log = LoggerFactory.getLogger(TimeSlotBuilderService.class);
 
-    public TimeSlotService(TimeSlotRepository timeSlotRepository, ApplicationConfig applicationConfig) {
+    public TimeSlotBuilderService(TimeSlotRepository timeSlotRepository, ApplicationConfig applicationConfig) {
         this.timeSlotRepository = timeSlotRepository;
         this.applicationConfig = applicationConfig;
     }

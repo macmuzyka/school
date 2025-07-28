@@ -17,6 +17,10 @@ public class TimeSlot extends Audit {
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
+    @OneToOne
+    @JoinColumn(name = "class_room_id")
+    private ClassRoom classRoom = null;
+
     private LocalTime startTime;
     private LocalTime endTime;
 
@@ -70,5 +74,13 @@ public class TimeSlot extends Audit {
 
     public String getDurationDisplay() {
         return startTime + "-" + endTime;
+    }
+
+    public ClassRoom getClassRoom() {
+        return classRoom;
+    }
+
+    public void setClassRoom(ClassRoom classRoom) {
+        this.classRoom = classRoom;
     }
 }
