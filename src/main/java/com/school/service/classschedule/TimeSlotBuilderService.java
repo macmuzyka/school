@@ -1,8 +1,6 @@
 package com.school.service.classschedule;
 
 import com.school.configuration.ApplicationConfig;
-import com.school.model.entity.Subject;
-import com.school.model.entity.classschedule.ClassRoom;
 import com.school.model.entity.classschedule.ScheduleEntry;
 import com.school.model.entity.classschedule.TimeSlot;
 import com.school.repository.classschedule.TimeSlotRepository;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TimeSlotBuilderService {

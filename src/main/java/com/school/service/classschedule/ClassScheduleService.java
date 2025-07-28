@@ -5,7 +5,6 @@ import com.school.model.entity.SchoolClass;
 import com.school.model.entity.classschedule.ClassSchedule;
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.classschedule.ClassScheduleRepository;
-import com.school.service.ClassRoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
