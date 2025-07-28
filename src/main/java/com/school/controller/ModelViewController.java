@@ -216,7 +216,7 @@ public class ModelViewController {
                                 @RequestParam("id") Long id) {
         try {
             model.addAttribute("classId", id);
-            model.addAttribute("timetable", classScheduleService.classScheduleGroupedByDaySubjectAndTimeframe(id, true));
+            model.addAttribute("timetable", classScheduleService.getClassScheduleGroupedByDaySubjectAndTimeframe(id, true));
             model.addAttribute("days", EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
             model.addAttribute("subjects", subjectService.getSchoolClassSubjects(id));
             return "schedule-details";

@@ -19,17 +19,17 @@ public class ScheduleGeneratorService {
     private final SchoolClassRepository schoolClassRepository;
     private final ClassScheduleRepository classScheduleRepository;
     private final ScheduleEntryRepository scheduleEntryRepository;
-    private final TimeSlotService timeSlotService;
+    private final TimeSlotBuilderService timeSlotBuilderService;
     private static final Logger log = LoggerFactory.getLogger(ScheduleGeneratorService.class);
 
     public ScheduleGeneratorService(SchoolClassRepository schoolClassRepository,
                                     ClassScheduleRepository classScheduleRepository,
                                     ScheduleEntryRepository scheduleEntryRepository,
-                                    TimeSlotService timeSlotService) {
+                                    TimeSlotBuilderService timeSlotBuilderService) {
         this.schoolClassRepository = schoolClassRepository;
         this.classScheduleRepository = classScheduleRepository;
         this.scheduleEntryRepository = scheduleEntryRepository;
-        this.timeSlotService = timeSlotService;
+        this.timeSlotBuilderService = timeSlotBuilderService;
     }
 
     public ClassSchedule generateSchedule(SchoolClass schoolClass) {
@@ -44,7 +44,7 @@ public class ScheduleGeneratorService {
             for (DayOfWeek day : EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.FRIDAY)) {
                 ScheduleEntry dayEntry = scheduleEntryRepository.save(new ScheduleEntry(classSchedule, day, new ArrayList<>()));
                 List<TimeSlot> timeSlots = dayEntry.getTimeSlots();
-                timeSlots.addAll(timeSlotService.buildTimeSlots(dayEntry));
+                timeSlots.addAll(timeSlotBuilderService.buildTimeSlots(dayEntry));
 
                 scheduleEntryRepository.save(dayEntry);
                 entries.add(dayEntry);

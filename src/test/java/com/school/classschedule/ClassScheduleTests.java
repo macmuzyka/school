@@ -14,7 +14,7 @@ import com.school.repository.classschedule.TimeSlotRepository;
 import com.school.service.*;
 import com.school.service.classschedule.ClassScheduleService;
 import com.school.service.classschedule.ScheduleGeneratorService;
-import com.school.service.classschedule.TimeSlotService;
+import com.school.service.classschedule.TimeSlotBuilderService;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.*;
         SeedGradeWorker.class,
         ScheduleGeneratorService.class,
         ClassScheduleService.class,
-        TimeSlotService.class,
+        TimeSlotBuilderService.class,
         WarmupDatabasePopulation.class
 })
 public class ClassScheduleTests {
@@ -73,7 +73,7 @@ public class ClassScheduleTests {
     @Autowired
     private ScheduleGeneratorService scheduleGeneratorService;
     @Autowired
-    private TimeSlotService timeSlotService;
+    private TimeSlotBuilderService timeSlotBuilderService;
 
     @Test
     public void scheduleBeginningSlotAndEndSlotShouldMatchApplicationConfigValues() {
@@ -131,7 +131,7 @@ public class ClassScheduleTests {
                 .getId();
 
         Map<String, List<DaySubject>> scheduleDisplay = classScheduleService
-                .classScheduleGroupedByDaySubjectAndTimeframe(anyScheduleId, false);
+                .getClassScheduleGroupedByDaySubjectAndTimeframe(anyScheduleId, false);
         System.out.println("Numbers of schedules: " + scheduleDisplay.size());
         System.out.println("Timeframes display: ");
 
