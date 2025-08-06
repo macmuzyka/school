@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SubjectService {
@@ -29,11 +28,5 @@ public class SubjectService {
 
     public Subject getSubjectById(Long subjectId) {
         return EntityFetcher.getByIdOrThrow(subjectRepository::findById, subjectId, "Subject");
-        /*Optional<Subject> subject = subjectRepository.findById(subjectId);
-        if (subject.isPresent()) {
-            return subject.get();
-        } else {
-            throw new IllegalArgumentException("Could not find subject with id: " + subjectId);
-        }*/
     }
 }

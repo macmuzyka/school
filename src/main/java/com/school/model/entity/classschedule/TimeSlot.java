@@ -17,7 +17,7 @@ public class TimeSlot extends Audit {
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "class_room_id")
     private ClassRoom classRoom = null;
 
@@ -45,6 +45,7 @@ public class TimeSlot extends Audit {
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
                 ", isBreak=" + isBreak +
+                ", classRoomNumber=" + (classRoom != null ? "Class Room number: " + classRoom.getRoomNumber() : "NO NUMBER") +
                 '}';
     }
 
@@ -82,5 +83,9 @@ public class TimeSlot extends Audit {
 
     public void setClassRoom(ClassRoom classRoom) {
         this.classRoom = classRoom;
+    }
+
+    public ScheduleEntry getScheduleEntry() {
+        return scheduleEntry;
     }
 }

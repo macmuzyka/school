@@ -21,7 +21,7 @@ public class ClassRoomService {
     }
 
     public void updateWithAssignedTimeSlot(ClassRoom classRoom, TimeSlot timeSlot) {
-        classRoom.setTimeSlot(timeSlot);
+        classRoom.addTimeSlot(timeSlot);
         classRoomRepository.save(classRoom);
     }
 }

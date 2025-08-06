@@ -10,8 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
+import static com.school.service.classschedule.AdjacentTimeSlotsUtils.adjacentTimeSlotIsPresent;
+import static com.school.service.classschedule.AdjacentTimeSlotsUtils.findPreviousOrNextTimeSlotWithMatchingSubject;
 
 @Service
 public class TimeSlotManagingService {
@@ -27,38 +29,55 @@ public class TimeSlotManagingService {
     }
 
     public TimeSlotDTO assignSubjectToTimeSlot(Long subjectId, Long timeSlotId) {
-        log.debug("subjectId to be added: {} timeSlotId to be taken: {}", subjectId, timeSlotId);
-        Subject subject = subjectService.getSubjectById(subjectId);
-        TimeSlot timeSlot = timeSlotQueryService.getTimeSlotById(timeSlotId);
-        List<ClassRoom> unassignedClassRooms = classRoomService.getUnassignedClassRooms();
-        if (unassignedClassRooms.isEmpty()) {
-            throw new IllegalStateException("No empty class rooms available, consider adding new class rooms!");
-        } else {
-            ClassRoom unassignedClassRoom;
-            //TODO: find a way to ensure that if previous lesson time slot has the same subject,
-            // lesson can take place in the same class room with the same number
-            if (previousTimeSlotHasMatchingSubjectWithCurrent(timeSlot, subject)) {
-                log.debug("Trying to find previous class room to reduce traffic within school");
-                unassignedClassRoom = findPreviousTimeSlotClassRoom(timeSlot);
+        try {
+            List<ClassRoom> unassignedClassRooms = classRoomService.getUnassignedClassRooms();
+            if (unassignedClassRooms.isEmpty()) {
+                throw new IllegalStateException("No empty class rooms available, consider adding new class rooms!");
             } else {
-                log.debug("Finding random class room");
-                Collections.shuffle(unassignedClassRooms);
-                unassignedClassRoom = unassignedClassRooms.get(0);
-            }
+                log.debug("subjectId to be added: {} timeSlotId to be taken: {}", subjectId, timeSlotId);
+                Subject currentSubject = subjectService.getSubjectById(subjectId);
+                TimeSlot currentTimeSlot = timeSlotQueryService.getTimeSlotById(timeSlotId);
+                List<TimeSlot> currentScheduleEntryTimeSlots = timeSlotQueryService.getTimeSlotsByScheduleEntry(currentTimeSlot.getScheduleEntry());
 
-            TimeSlot updatedTimeSlot = timeSlotQueryService.assignSubjectAndClassRoomToTimeSlot(timeSlot, subject, unassignedClassRoom);
-            unassignedClassRoom.assignTimeSlot(updatedTimeSlot);
-            classRoomService.updateWithAssignedTimeSlot(unassignedClassRoom, updatedTimeSlot);
-            log.info("subject id: {} added to time slot id: {}", subjectId, timeSlotId);
-            return new TimeSlotDTO(updatedTimeSlot);
+                ClassRoom unassignedClassRoom;
+                TimeSlot adjacentTimeSlot = findPreviousOrNextTimeSlotWithMatchingSubject(
+                        currentScheduleEntryTimeSlots,
+                        currentTimeSlot,
+                        currentSubject
+                );
+                if (adjacentTimeSlotIsPresent(adjacentTimeSlot)) {
+                    unassignedClassRoom = getMatchingSubjectClassRoom(adjacentTimeSlot);
+                } else {
+                    unassignedClassRoom = getRandomUnassignedClassRoom(unassignedClassRooms);
+                }
+                return new TimeSlotDTO(saveTimeSlotWithAssignedSubjectAndClassRoom(currentTimeSlot, currentSubject, unassignedClassRoom));
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while assigning subject to time slot: ", e);
+            throw new IllegalStateException(e);
         }
     }
 
-    private boolean previousTimeSlotHasMatchingSubjectWithCurrent(TimeSlot timeSlot, Subject subject) {
-        return false;
+    private ClassRoom getMatchingSubjectClassRoom(TimeSlot currentTimeSlot) {
+
+        return currentTimeSlot.getClassRoom();
     }
 
-    private ClassRoom findPreviousTimeSlotClassRoom(TimeSlot timeSlot) {
-        return null;
+    private ClassRoom getRandomUnassignedClassRoom(List<ClassRoom> unassignedClassRooms) {
+        log.info("Timeslot has no previous or next slots taken, thus returning class room randomly");
+        Collections.shuffle(unassignedClassRooms);
+        return unassignedClassRooms.get(0);
+    }
+
+    private TimeSlot saveTimeSlotWithAssignedSubjectAndClassRoom(TimeSlot timeSlot, Subject subject, ClassRoom classRoom) {
+        TimeSlot updatedTimeSlot = timeSlotQueryService.assignSubjectAndClassRoomToTimeSlot(timeSlot, subject, classRoom);
+        classRoom.assignTimeSlot(timeSlot);
+        classRoomService.updateWithAssignedTimeSlot(classRoom, timeSlot);
+        log.info("subject id: {} added to time slot id: {} and assigned class room no: {}",
+                updatedTimeSlot.getSubject().getId(),
+                updatedTimeSlot.getId(),
+                updatedTimeSlot.getClassRoom().getRoomNumber()
+        );
+        return updatedTimeSlot;
     }
 }

@@ -2,6 +2,8 @@ package com.school.model.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "subject")
 public class Subject {
@@ -54,5 +56,17 @@ public class Subject {
 
     public void setSchoolClass(SchoolClass schoolClass) {
         this.schoolClass = schoolClass;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof final Subject subject)) return false;
+        return id == subject.id && Objects.equals(name, subject.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

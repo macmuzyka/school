@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO: shouldn't class schedule be holding SchoolClass, not ScheduleEntry?
 @Entity
 @Table(name = "class_schedule")
 public class ClassSchedule extends Audit {

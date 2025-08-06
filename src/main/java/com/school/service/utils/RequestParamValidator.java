@@ -3,6 +3,17 @@ package com.school.service.utils;
 import com.school.model.OptionalRequestParams;
 
 public class RequestParamValidator {
+    public static OptionalRequestParams prepareOptionalRequestParams(String fileType, Long id, String name, String surname, String identifier, String subject) {
+        return new OptionalRequestParams(
+                validate(fileType),
+                validate(id),
+                validate(name),
+                validate(surname),
+                validate(identifier),
+                validate(subject)
+        );
+    }
+
     private static Long validate(Long id) {
         if (id == null || id == 0) {
             return null;
@@ -17,16 +28,5 @@ public class RequestParamValidator {
         } else {
             return param;
         }
-    }
-
-    public static OptionalRequestParams prepareOptionalRequestParams(String fileType, Long id, String name, String surname, String identifier, String subject) {
-        return new OptionalRequestParams(
-                validate(fileType),
-                validate(id),
-                validate(name),
-                validate(surname),
-                validate(identifier),
-                validate(subject)
-        );
     }
 }
