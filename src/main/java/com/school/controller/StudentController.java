@@ -25,9 +25,6 @@ public class StudentController {
     public ResponseEntity<?> addStudent(@RequestBody StudentDTO student) {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(studentService.addStudent(student));
-        } catch (IllegalArgumentException iae) {
-            sendNotificationToFrontendService.notifyFrontendAboutAddedStudent(iae.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(iae.getMessage());
         } catch (Exception e) {
             sendNotificationToFrontendService.notifyFrontendAboutAddedStudent(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

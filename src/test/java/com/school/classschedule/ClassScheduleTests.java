@@ -34,7 +34,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@ActiveProfiles({"devel"})
+@ActiveProfiles("devel")
 @Import({InputStudentsFromTextFileService.class,
         StudentsFromListBuilderService.class,
         ClassService.class,
@@ -115,12 +115,11 @@ public class ClassScheduleTests {
     }
 
     private int actualNumberOfShortBreaks() {
-        return applicationConfig.getMaxLessons() - 1; //should that be explained by variable? e.g. noBreakAfterLastLesson?
+        return applicationConfig.getMaxLessons() - 1;
     }
 
     @Test
     public void shouldProperlyMapDatabaseResultsToDisplayScheduleWithoutErrors() {
-//        Long generatedClassScheduleId = scheduleGeneratorService.generateSchedule(schoolClassRepository.findById(1L).get()).getId();
         Long anyScheduleId = classScheduleRepository
                 .findAll()
                 .stream()

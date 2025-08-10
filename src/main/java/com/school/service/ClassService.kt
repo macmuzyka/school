@@ -148,7 +148,7 @@ class ClassService(
 
     fun createNewClassWithAssignedSubjects(): SchoolClass {
         val newSchoolClass =
-            SchoolClass("Class ${findNextClassNumber()}"/*, scheduleGeneratorService.generateEmptyScheduleForSchoolClass()*/)
+            SchoolClass("Class ${findNextClassNumber()}")
         val newClassSubjects = applicationConfig.availableSubjects
             .map { subject -> Subject(subject, newSchoolClass) }
             .toSet()
@@ -168,9 +168,5 @@ class ClassService(
 
     private fun motherSchool(): School {
         return schoolRepository.findAll()[0]
-    }
-
-    fun getAll(): List<SchoolClassDTO> {
-        return schoolClassRepository.findAll().map { SchoolClassDTO(it) }
     }
 }
