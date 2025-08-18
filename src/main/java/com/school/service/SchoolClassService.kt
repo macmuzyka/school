@@ -17,7 +17,6 @@ import com.school.service.utils.EntityFetcher
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import kotlin.reflect.jvm.internal.impl.name.ClassId
 
 @Service
 //TODO: refactor this shit
@@ -156,7 +155,7 @@ class SchoolClassService(
             .toSet()
         newSchoolClass.classSubjects = newClassSubjects
         newSchoolClass.setSchool(motherSchool())
-        return schoolClassRepository.save(newSchoolClass);
+        return schoolClassRepository.save(newSchoolClass)
     }
 
     private fun findNextClassNumber(): Int {

@@ -11,7 +11,6 @@ import com.school.service.classschedule.AdjacentTimeSlotsUtils;
 import com.school.service.classschedule.TimeSlotManagingService;
 import com.school.service.classschedule.TimeSlotQueryService;
 import com.school.service.utils.TimeSlotUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +32,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PreviousOrNextSlotsTakenTests {
     private final TimeSlotManagingService timeSlotManagingService;
     private final TimeSlotQueryService timeSlotQueryService;
-    private final TimeSlotRepository timeSlotRepository;
     private final ScheduleEntryRepository scheduleEntryRepository;
     private final SubjectRepository subjectRepository;
     private ScheduleEntry entry;
@@ -43,16 +41,13 @@ public class PreviousOrNextSlotsTakenTests {
     @Autowired
     public PreviousOrNextSlotsTakenTests(TimeSlotManagingService timeSlotManagingService,
                                          TimeSlotQueryService timeSlotQueryService,
-                                         TimeSlotRepository timeSlotRepository,
                                          ScheduleEntryRepository scheduleEntryRepository,
                                          SubjectRepository subjectRepository) {
         this.timeSlotManagingService = timeSlotManagingService;
         this.timeSlotQueryService = timeSlotQueryService;
-        this.timeSlotRepository = timeSlotRepository;
         this.scheduleEntryRepository = scheduleEntryRepository;
         this.subjectRepository = subjectRepository;
     }
-
 
     @BeforeEach
     public void setUp() {

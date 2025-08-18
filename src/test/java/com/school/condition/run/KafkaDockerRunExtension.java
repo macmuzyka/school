@@ -23,7 +23,6 @@ public class KafkaDockerRunExtension implements BeforeAllCallback {
                 "bashj79/kafka-kraft:latest"
         ).start();
 
-        int exitCode = process.waitFor();
         String id = new String(process.getInputStream().readAllBytes()).trim();
         System.out.println("Started Kafka container: " + id);
         return id;

@@ -5,7 +5,6 @@ import com.school.configuration.ClassScheduleConfig
 import com.school.model.dto.sclassschedule.ClassScheduleSummary
 import com.school.model.entity.classschedule.ClassSchedule
 import com.school.repository.classschedule.ClassScheduleRepository
-import com.school.repository.classschedule.TimeSlotRepository
 import com.school.service.classschedule.ClassScheduleService
 import com.school.service.classschedule.ScheduleSeederService
 import org.junit.jupiter.api.Assertions.assertFalse

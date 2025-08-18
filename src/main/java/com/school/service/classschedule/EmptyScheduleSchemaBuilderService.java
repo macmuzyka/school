@@ -20,7 +20,6 @@ public class EmptyScheduleSchemaBuilderService {
     private final ClassScheduleRepository classScheduleRepository;
     private final ScheduleEntryRepository scheduleEntryRepository;
     private final TimeSlotBuilderService timeSlotBuilderService;
-    private static final Logger log = LoggerFactory.getLogger(EmptyScheduleSchemaBuilderService.class);
 
     public EmptyScheduleSchemaBuilderService(SchoolClassRepository schoolClassRepository,
                                              ClassScheduleRepository classScheduleRepository,

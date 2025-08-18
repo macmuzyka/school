@@ -1,10 +1,5 @@
 package com.school.configuration;
 
-/**
- * Created by Raweshau
- * on 12.08.2025
- */
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.LocalTime;
