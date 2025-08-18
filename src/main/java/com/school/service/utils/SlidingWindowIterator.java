@@ -15,7 +15,7 @@ public class SlidingWindowIterator<T> implements Iterator<T> {
         return (index > 1) ? list.get(index - 1) : null;
     }
 
-    public T current() {
+    public T windowMiddle() { // or current
         return (index < 0 || index <= list.size()) ? list.get(index) : null;
     }
 
@@ -30,7 +30,7 @@ public class SlidingWindowIterator<T> implements Iterator<T> {
     }
 
     public T peekNext() {
-        return (index < list.size()) ? list.get(index + 1) : null;
+        return (index < list.size() - 1) ? list.get(index + 1) : null;
     }
 
     public int size() {

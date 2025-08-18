@@ -1,6 +1,6 @@
 package com.school.service.classschedule;
 
-import com.school.configuration.ApplicationConfig;
+import com.school.configuration.ClassScheduleConfig;
 import com.school.model.entity.classschedule.ScheduleEntry;
 import com.school.model.entity.classschedule.TimeSlot;
 import com.school.repository.classschedule.TimeSlotRepository;
@@ -15,12 +15,12 @@ import java.util.List;
 @Service
 public class TimeSlotBuilderService {
     private final TimeSlotRepository timeSlotRepository;
-    private final ApplicationConfig applicationConfig;
+    private final ClassScheduleConfig classScheduleConfig;
     private static final Logger log = LoggerFactory.getLogger(TimeSlotBuilderService.class);
 
-    public TimeSlotBuilderService(TimeSlotRepository timeSlotRepository, ApplicationConfig applicationConfig) {
+    public TimeSlotBuilderService(TimeSlotRepository timeSlotRepository, ClassScheduleConfig classScheduleConfig) {
         this.timeSlotRepository = timeSlotRepository;
-        this.applicationConfig = applicationConfig;
+        this.classScheduleConfig = classScheduleConfig;
     }
 
     public List<TimeSlot> buildTimeSlots(ScheduleEntry scheduleEntry) {
@@ -41,8 +41,8 @@ public class TimeSlotBuilderService {
     //TODO: special case object pattern to prevent passing subject as null in empty time slot
     private TimeSlot buildFirstTimeSlot(ScheduleEntry scheduleEntry) {
         return new TimeSlot(
-                applicationConfig.getLessonScheduleStart(),
-                applicationConfig.getLessonScheduleStart().plusMinutes(applicationConfig.getLessonDuration()),
+                classScheduleConfig.getLessonScheduleStart(),
+                classScheduleConfig.getLessonScheduleStart().plusMinutes(classScheduleConfig.getLessonDuration()),
                 null,
                 scheduleEntry,
                 false
@@ -82,7 +82,7 @@ public class TimeSlotBuilderService {
     }
 
     private int calculateMaxSlots() {
-        return (applicationConfig.getMaxLessons() * 2) - 1;
+        return (classScheduleConfig.getMaxLessonPerDay() * 2) - 1;
     }
 
     private boolean slotIsBreak(int timeSlot) {
@@ -90,20 +90,20 @@ public class TimeSlotBuilderService {
     }
 
     private LocalTime addLongBreak(LocalTime startingPoint) {
-        return startingPoint.plusMinutes(applicationConfig.getLongBreakDuration());
+        return startingPoint.plusMinutes(classScheduleConfig.getLongBreakDuration());
     }
 
     private LocalTime addShortBreak(LocalTime startingPoint) {
-        return startingPoint.plusMinutes(applicationConfig.getShortBreakDuration());
+        return startingPoint.plusMinutes(classScheduleConfig.getShortBreakDuration());
     }
 
     private LocalTime addLessonDuration(LocalTime startingPoint) {
-        return startingPoint.plusMinutes(applicationConfig.getLessonDuration());
+        return startingPoint.plusMinutes(classScheduleConfig.getLessonDuration());
     }
 
     private boolean slotIsLongBreak(int timeSlot) {
-        int firstLongBreak = applicationConfig.getFirstLongBreak() * 2;
-        int secondLongBreak = applicationConfig.getSecondLongBreak() * 2;
+        int firstLongBreak = classScheduleConfig.getFirstLongBreak() * 2;
+        int secondLongBreak = classScheduleConfig.getSecondLongBreak() * 2;
         return timeSlot == firstLongBreak || timeSlot == secondLongBreak;
     }
 }

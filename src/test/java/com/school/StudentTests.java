@@ -19,9 +19,9 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 @ActiveProfiles("prod")
-class StudentTest {
+@ExtendWith(MockitoExtension.class)
+class StudentTests {
 
     @Mock
     private StudentRepository studentRepository;

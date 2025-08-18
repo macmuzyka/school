@@ -1,10 +1,23 @@
 package com.school;
 
-import org.junit.platform.suite.api.IncludeClassNamePatterns;
+import com.school.unit.ClassDispenserTests;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 
 @Suite
-@SelectClasses({ClassTest.class, StudentTest.class, StudentCounterAfterFileInputTest.class})
-@IncludeClassNamePatterns(".*Test")
-public class AllTestsSuite { }
+@SelectClasses(
+        {
+                SchoolApplicationTests.class,
+                ClassTests.class,
+                ClassDispenserTests.class,
+                EmptyScheduleSchemaBuilderTests.class,
+                ScheduleSeederTests.class,
+                PreviousOrNextSlotsTakenTests.class,
+                StudentCounterAfterFileInputTest.class,
+                StudentTests.class,
+                SubjectTests.class,
+        }
+)
+
+public class AllTestsSuite {
+}

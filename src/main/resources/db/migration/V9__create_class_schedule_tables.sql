@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS class_schedule
     id BIGSERIAL PRIMARY KEY,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    class_schedule_name VARCHAR(255) UNIQUE NOT NULL,
+    class_schedule_name VARCHAR(255) NOT NULL,
     school_class_id BIGINT NOT NULL,
     CONSTRAINT fk_schedule_entry_school_class
             FOREIGN KEY (school_class_id)

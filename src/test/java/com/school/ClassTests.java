@@ -2,7 +2,7 @@ package com.school;
 
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.StudentRepository;
-import com.school.service.ClassService;
+import com.school.service.SchoolClassService;
 import com.school.service.StudentService;
 import com.school.model.dto.ExistingStudentToClassDTO;
 import com.school.model.dto.ClassDTO;
@@ -25,11 +25,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("prod")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ClassTest {
+public class ClassTests {
     @Autowired
     public StudentService studentService;
     @Autowired
-    public ClassService classService;
+    public SchoolClassService schoolClassService;
     @Autowired
     public SchoolClassRepository schoolClassRepository;
     @Autowired
@@ -78,7 +78,7 @@ public class ClassTest {
     @Transactional
     @Order(2)
     public void moveStudentToOtherClassTest() {
-        SchoolClass newClass = classService.createNewClass();
+        SchoolClass newClass = schoolClassService.createNewClass();
 
         int preMoveSize = newClass.getClassStudents().size();
         moveStudentToOtherClass(additionalStudent, newClass.getId());
@@ -113,14 +113,14 @@ public class ClassTest {
     }
 
     private ClassDTO addStudentToClass(Student student) {
-        return classService.studentToClassAction(new ExistingStudentToClassDTO(student.getCode(), primaryClassId, ClassAction.ADD));
+        return schoolClassService.studentToClassAction(new ExistingStudentToClassDTO(student.getCode(), primaryClassId, ClassAction.ADD));
     }
 
     private void moveStudentToOtherClass(Student student, Long toClassId) {
-        classService.studentToClassAction(new ExistingStudentToClassDTO(student.getCode(), toClassId, ClassAction.MOVE));
+        schoolClassService.studentToClassAction(new ExistingStudentToClassDTO(student.getCode(), toClassId, ClassAction.MOVE));
     }
 
     private ClassDTO removeStudentFromClass(Student student) {
-        return classService.studentToClassAction(new ExistingStudentToClassDTO(student.getCode(), primaryClassId, ClassAction.REMOVE));
+        return schoolClassService.studentToClassAction(new ExistingStudentToClassDTO(student.getCode(), primaryClassId, ClassAction.REMOVE));
     }
 }

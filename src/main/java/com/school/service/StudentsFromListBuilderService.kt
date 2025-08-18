@@ -23,7 +23,7 @@ class StudentsFromListBuilderService(
     private val studentDuplicateErrorRepository: StudentDuplicateErrorRepository,
     private val studentInsertErrorRepository: StudentInsertErrorRepository,
     private val schoolClassRepository: SchoolClassRepository,
-    private val classService: ClassService,
+    private val schoolClassService: SchoolClassService,
     private val sendNotificationToFrontendService: SendNotificationToFrontendService,
     private val applicationConfig: ApplicationConfig
 ) {
@@ -93,7 +93,7 @@ class StudentsFromListBuilderService(
     }
 
     private fun assignClass(student: Student) {
-        val schoolClass = classService.assignStudentToFirstOpenClass(student)
+        val schoolClass = schoolClassService.assignStudentToFirstOpenClass(student)
         schoolClassRepository.save(schoolClass)
     }
 

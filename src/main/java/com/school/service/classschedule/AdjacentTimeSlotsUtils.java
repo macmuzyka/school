@@ -12,42 +12,46 @@ import java.util.List;
 public class AdjacentTimeSlotsUtils {
     private static final Logger log = LoggerFactory.getLogger(AdjacentTimeSlotsUtils.class);
 
-    public static TimeSlot findPreviousOrNextTimeSlotWithMatchingSubject(List<TimeSlot> scheduleEntrySlots, TimeSlot targetTimeSlot, Subject subject) {
-        SlidingWindowIterator<TimeSlot> scheduleEntryTimeSlots =
+    public static boolean adjacentTimeSlotIsPresent(TimeSlot timeSlot) {
+        return timeSlot != null;
+    }
+
+    public static TimeSlot lookForPreviousOrNextTimeSlotWithMatchingSubject(List<TimeSlot> scheduleEntrySlots, TimeSlot targetTimeSlot, Subject subject) {
+        SlidingWindowIterator<TimeSlot> timeSlotsSlidingWindow =
                 new SlidingWindowIterator<>(scheduleEntrySlots.stream()
                         .filter(TimeSlot::isNotBreak)
                         .sorted(Comparator.comparingLong(TimeSlot::getId))
                         .toList()
                 );
-        while (scheduleEntryTimeSlots.hasNext()) {
-            log.debug("Current time slot: {}", scheduleEntryTimeSlots.current());
-            if (currentTimeSlotFoundInScheduleEntry(scheduleEntryTimeSlots.current(), targetTimeSlot)) {
-                TimeSlot previousMatching = findMatchingPreviousTimeSlot(scheduleEntryTimeSlots, subject);
-                if (previousMatching != null) {
-                    return previousMatching;
-                }
-                TimeSlot nextMatching = findMatchingNextTimeSlot(scheduleEntryTimeSlots, subject);
-                if (nextMatching != null) {
-                    return nextMatching;
+        while (timeSlotsSlidingWindow.hasNext()) {
+            log.debug("Current time slot: {}", timeSlotsSlidingWindow.windowMiddle());
+            if (currentTimeSlotFoundInSlidingWindow(timeSlotsSlidingWindow.windowMiddle(), targetTimeSlot)) {
+                TimeSlot matchingSlot = lookForAdjacentMatchingSubjectTimeSlot(timeSlotsSlidingWindow, subject);
+                if (matchingSlot != null) {
+                    return matchingSlot;
                 }
             }
-            scheduleEntryTimeSlots.next();
+            timeSlotsSlidingWindow.next();
         }
         return null;
     }
 
-    public static boolean adjacentTimeSlotIsPresent(TimeSlot timeSlot) {
-        return timeSlot != null;
+    private static TimeSlot lookForAdjacentMatchingSubjectTimeSlot(SlidingWindowIterator<TimeSlot> timeSlotsSlidingWindow, Subject subject) {
+        TimeSlot previousMatching = lookForMatchingPreviousTimeSlot(timeSlotsSlidingWindow, subject);
+        if (previousMatching != null) {
+            return previousMatching;
+        }
+        return lookForMatchingNextTimeSlot(timeSlotsSlidingWindow, subject);
     }
 
-    private static boolean currentTimeSlotFoundInScheduleEntry(TimeSlot current, TimeSlot matchingTimeSlot) {
+    private static boolean currentTimeSlotFoundInSlidingWindow(TimeSlot current, TimeSlot matchingTimeSlot) {
         return current.equals(matchingTimeSlot);
     }
 
-    private static TimeSlot findMatchingPreviousTimeSlot(SlidingWindowIterator<TimeSlot> scheduleEntryTimeSlots, Subject currentSubject) {
+    private static TimeSlot lookForMatchingPreviousTimeSlot(SlidingWindowIterator<TimeSlot> scheduleEntryTimeSlots, Subject currentSubject) {
         if (previousSlotWithSubjectPresent(scheduleEntryTimeSlots)) {
             if (previousSubjectMatchesWithCurrent(scheduleEntryTimeSlots, currentSubject)) {
-                log.info("Found matching previous time slot: {}", scheduleEntryTimeSlots.peekPrevious());
+                log.debug("Found matching previous time slot: {}", scheduleEntryTimeSlots.peekPrevious());
                 return scheduleEntryTimeSlots.peekPrevious();
             }
         }
@@ -62,10 +66,10 @@ public class AdjacentTimeSlotsUtils {
         return scheduleEntryTimeSlots.peekPrevious().getSubject().equals(currentSubject);
     }
 
-    private static TimeSlot findMatchingNextTimeSlot(SlidingWindowIterator<TimeSlot> scheduleEntryTimeSlots, Subject currentSubject) {
+    private static TimeSlot lookForMatchingNextTimeSlot(SlidingWindowIterator<TimeSlot> scheduleEntryTimeSlots, Subject currentSubject) {
         if (nextSlotWithSubjectPresent(scheduleEntryTimeSlots)) {
             if (nextSubjectMatchesWithCurrent(scheduleEntryTimeSlots, currentSubject)) {
-                log.info("Found matching next time slot: {}", scheduleEntryTimeSlots.peekNext());
+                log.debug("Found matching next time slot: {}", scheduleEntryTimeSlots.peekNext());
                 return scheduleEntryTimeSlots.peekNext();
             }
         }

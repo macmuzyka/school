@@ -5,8 +5,8 @@ import com.school.repository.SchoolRepository;
 import com.school.model.entity.School;
 import com.school.model.entity.SchoolClass;
 import com.school.repository.classschedule.ClassRoomRepository;
-import com.school.service.ClassService;
-import com.school.service.classschedule.ScheduleGeneratorService;
+import com.school.service.SchoolClassService;
+import com.school.service.classschedule.EmptyScheduleSchemaBuilderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -19,18 +19,18 @@ import java.util.*;
 public class WarmupDatabasePopulation implements ApplicationListener<ApplicationStartedEvent> {
     private final SchoolRepository schoolRepository;
     private final ClassRoomRepository classRoomRepository;
-    private final ClassService classService;
-    private final ScheduleGeneratorService scheduleGeneratorService;
+    private final SchoolClassService schoolClassService;
+    private final EmptyScheduleSchemaBuilderService emptyScheduleSchemaBuilderService;
     private static final Logger log = LoggerFactory.getLogger(WarmupDatabasePopulation.class);
 
     public WarmupDatabasePopulation(SchoolRepository schoolRepository,
                                     ClassRoomRepository classRoomRepository,
-                                    ClassService classService,
-                                    ScheduleGeneratorService scheduleGeneratorService) {
+                                    SchoolClassService schoolClassService,
+                                    EmptyScheduleSchemaBuilderService emptyScheduleSchemaBuilderService) {
         this.schoolRepository = schoolRepository;
         this.classRoomRepository = classRoomRepository;
-        this.classService = classService;
-        this.scheduleGeneratorService = scheduleGeneratorService;
+        this.schoolClassService = schoolClassService;
+        this.emptyScheduleSchemaBuilderService = emptyScheduleSchemaBuilderService;
     }
 
     @Override
@@ -52,11 +52,11 @@ public class WarmupDatabasePopulation implements ApplicationListener<Application
         log.info("Application warmup school saved to database!");
         log.debug("Saved School: {}", savedSchool);
 
-        scheduleGeneratorService.generateSchedule(firstWarmupClass);
+        emptyScheduleSchemaBuilderService.generateEmptySchedule(firstWarmupClass);
     }
 
     private SchoolClass createWarmupSchoolClass() {
-        return classService.createNewClassWithAssignedSubjects();
+        return schoolClassService.createNewClassWithAssignedSubjects();
     }
 
     private void addRooms() {

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service
 class EnvironmentService(
         private val environment: Environment
 ) {
-
     fun profileOtherThanDefaultIsActive() = environment.activeProfiles.isNotEmpty()
     fun currentProfileOtherThanDevel() = !environment.activeProfiles.contains("devel")
     fun currentProfileIsDevel() = environment.activeProfiles.contains("devel")

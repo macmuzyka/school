@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 import static com.school.service.classschedule.AdjacentTimeSlotsUtils.adjacentTimeSlotIsPresent;
-import static com.school.service.classschedule.AdjacentTimeSlotsUtils.findPreviousOrNextTimeSlotWithMatchingSubject;
+import static com.school.service.classschedule.AdjacentTimeSlotsUtils.lookForPreviousOrNextTimeSlotWithMatchingSubject;
 
 @Service
 public class TimeSlotManagingService {
@@ -40,7 +40,7 @@ public class TimeSlotManagingService {
                 List<TimeSlot> currentScheduleEntryTimeSlots = timeSlotQueryService.getTimeSlotsByScheduleEntry(currentTimeSlot.getScheduleEntry());
 
                 ClassRoom unassignedClassRoom;
-                TimeSlot adjacentTimeSlot = findPreviousOrNextTimeSlotWithMatchingSubject(
+                TimeSlot adjacentTimeSlot = lookForPreviousOrNextTimeSlotWithMatchingSubject(
                         currentScheduleEntryTimeSlots,
                         currentTimeSlot,
                         currentSubject
@@ -64,7 +64,7 @@ public class TimeSlotManagingService {
     }
 
     private ClassRoom getRandomUnassignedClassRoom(List<ClassRoom> unassignedClassRooms) {
-        log.info("Timeslot has no previous or next slots taken, thus returning class room randomly");
+//        log.info("Timeslot has no previous or next slots taken, thus returning class room randomly");
         Collections.shuffle(unassignedClassRooms);
         return unassignedClassRooms.get(0);
     }

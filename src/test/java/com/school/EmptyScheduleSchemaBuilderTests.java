@@ -1,7 +1,7 @@
-package com.school.classschedule;
+package com.school;
 
-import com.school.WarmupDatabasePopulation;
 import com.school.configuration.ApplicationConfig;
+import com.school.configuration.ClassScheduleConfig;
 import com.school.model.dto.sclassschedule.DaySubject;
 import com.school.model.entity.classschedule.ClassSchedule;
 import com.school.model.entity.classschedule.TimeSlot;
@@ -13,9 +13,10 @@ import com.school.repository.classschedule.ScheduleEntryRepository;
 import com.school.repository.classschedule.TimeSlotRepository;
 import com.school.service.*;
 import com.school.service.classschedule.ClassScheduleService;
-import com.school.service.classschedule.ScheduleGeneratorService;
+import com.school.service.classschedule.EmptyScheduleSchemaBuilderService;
 import com.school.service.classschedule.TimeSlotBuilderService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,20 +35,20 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@ActiveProfiles("devel")
+@ActiveProfiles("prod")
 @Import({InputStudentsFromTextFileService.class,
         StudentsFromListBuilderService.class,
-        ClassService.class,
+        SchoolClassService.class,
         SendNotificationToFrontendService.class,
         SeedGradesService.class,
         SeedGradeWorker.class,
-        ScheduleGeneratorService.class,
+        EmptyScheduleSchemaBuilderService.class,
         ClassScheduleService.class,
         TimeSlotBuilderService.class,
         WarmupDatabasePopulation.class
 })
-public class ClassScheduleTests {
-    private static final Logger log = LoggerFactory.getLogger(ClassScheduleTests.class);
+public class EmptyScheduleSchemaBuilderTests {
+    private static final Logger log = LoggerFactory.getLogger(EmptyScheduleSchemaBuilderTests.class);
     @Autowired
     private ClassScheduleRepository classScheduleRepository;
     @Autowired
@@ -69,9 +70,11 @@ public class ClassScheduleTests {
     @Autowired
     private ApplicationConfig applicationConfig;
     @Autowired
+    private ClassScheduleConfig classScheduleConfig;
+    @Autowired
     private ClassScheduleService classScheduleService;
     @Autowired
-    private ScheduleGeneratorService scheduleGeneratorService;
+    private EmptyScheduleSchemaBuilderService emptyScheduleSchemaBuilderService;
     @Autowired
     private TimeSlotBuilderService timeSlotBuilderService;
 
@@ -99,23 +102,23 @@ public class ClassScheduleTests {
     }
 
     private long calculateScheduleTotalDurationFromApplicationConfig() {
-        int lessonsDuration = applicationConfig.getMaxLessons() * applicationConfig.getLessonDuration();
+        int lessonsDuration = classScheduleConfig.getMaxLessonPerDay() * classScheduleConfig.getLessonDuration();
         int numberOfLongBreaks = (longBreakNumberOne()) + (longBreakNumberTwo());
-        int longBreaksDuration = numberOfLongBreaks * applicationConfig.getLongBreakDuration();
-        int shortBreaksDuration = (actualNumberOfShortBreaks() - numberOfLongBreaks) * applicationConfig.getShortBreakDuration();
+        int longBreaksDuration = numberOfLongBreaks * classScheduleConfig.getLongBreakDuration();
+        int shortBreaksDuration = (actualNumberOfShortBreaks() - numberOfLongBreaks) * classScheduleConfig.getShortBreakDuration();
         return (lessonsDuration + longBreaksDuration + shortBreaksDuration);
     }
 
     private int longBreakNumberOne() {
-        return applicationConfig.getFirstLongBreak() != 0 ? 1 : 0;
+        return classScheduleConfig.getFirstLongBreak() != 0 ? 1 : 0;
     }
 
     private int longBreakNumberTwo() {
-        return applicationConfig.getSecondLongBreak() != 0 ? 1 : 0;
+        return classScheduleConfig.getSecondLongBreak() != 0 ? 1 : 0;
     }
 
     private int actualNumberOfShortBreaks() {
-        return applicationConfig.getMaxLessons() - 1;
+        return classScheduleConfig.getMaxLessonPerDay() - 1;
     }
 
     @Test

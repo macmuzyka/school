@@ -27,7 +27,7 @@ import static com.school.service.utils.RequestParamValidator.prepareOptionalRequ
 @RequestMapping("/school")
 public class ModelViewController {
 
-    private final ClassService classService;
+    private final SchoolClassService schoolClassService;
     private final StudentService studentService;
     private final DuplicatedStudentService duplicatedStudentService;
     private final InsertErrorStudentService insertErrorStudentService;
@@ -39,7 +39,7 @@ public class ModelViewController {
     private final ApplicationValidityService applicationValidityService;
     private final ApplicationConfig applicationConfig;
 
-    public ModelViewController(ClassService classService,
+    public ModelViewController(SchoolClassService schoolClassService,
                                StudentService studentService,
                                DuplicatedStudentService duplicatedStudentService,
                                InsertErrorStudentService insertErrorStudentService,
@@ -51,7 +51,7 @@ public class ModelViewController {
                                ApplicationValidityService applicationValidityService,
                                ApplicationConfig applicationConfig
     ) {
-        this.classService = classService;
+        this.schoolClassService = schoolClassService;
         this.studentService = studentService;
         this.duplicatedStudentService = duplicatedStudentService;
         this.insertErrorStudentService = insertErrorStudentService;
@@ -102,7 +102,7 @@ public class ModelViewController {
     @GetMapping("/classes")
     public String getClassesWithStudents(Model model) {
         try {
-            List<ClassWithListedStudentsDTO> classes = classService.getClassesWithStudents();
+            List<ClassWithListedStudentsDTO> classes = schoolClassService.getClassesWithStudents();
             model.addAttribute("classes", classes);
             return "class-list";
         } catch (Exception e) {
@@ -204,7 +204,7 @@ public class ModelViewController {
     @GetMapping("/schedules-entry-point")
     public String schedulesEntryPoint(Model model) {
         try {
-            model.addAttribute("classes", classService.getClassesDTOs());
+            model.addAttribute("classes", schoolClassService.getClassesDTOs());
             return "entry_points/schedules-entry-point";
         } catch (Exception e) {
             return e.getMessage();
@@ -218,7 +218,7 @@ public class ModelViewController {
             model.addAttribute("classId", id);
             model.addAttribute("timetable", classScheduleService.getClassScheduleGroupedByDaySubjectAndTimeframe(id, true));
             model.addAttribute("days", EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
-            model.addAttribute("subjects", subjectService.getSchoolClassSubjects(id));
+            model.addAttribute("subjects", subjectService.getSchoolClassSubjectsDTOs(id));
             return "schedule-details";
         } catch (Exception e) {
             return e.getMessage();
@@ -228,7 +228,7 @@ public class ModelViewController {
     @GetMapping("/add-student-grade")
     public String addGrade(Model model) {
         try {
-            List<ClassWithListedStudentsDTO> classes = classService.getClassesWithStudents();
+            List<ClassWithListedStudentsDTO> classes = schoolClassService.getClassesWithStudents();
             model.addAttribute("classes", classes);
             return "add-student-grade";
         } catch (Exception e) {

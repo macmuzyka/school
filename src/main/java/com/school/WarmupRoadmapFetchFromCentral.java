@@ -35,6 +35,6 @@ public class WarmupRoadmapFetchFromCentral implements ApplicationListener<Applic
 
     private void fetchRoadmapFromCentral() {
         log.info("Sending fetch request via kafka");
-        roadmapFetchKafkaTemplate.send("application-version-fetch", projectVersionService.getCurrentProjectVersion().getVersion());
+        roadmapFetchKafkaTemplate.send("application-version", projectVersionService.getCurrentProjectVersion().getVersion());
     }
 }

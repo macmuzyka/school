@@ -5,6 +5,7 @@ import com.school.model.entity.SchoolClass;
 import com.school.model.entity.classschedule.ClassSchedule;
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.classschedule.ClassScheduleRepository;
+import com.school.service.utils.EntityFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,15 @@ import java.util.stream.Collectors;
 public class ClassScheduleService {
     private final ClassScheduleRepository classScheduleRepository;
     private final SchoolClassRepository schoolClassRepository;
-    private final ScheduleGeneratorService scheduleGeneratorService;
+    private final EmptyScheduleSchemaBuilderService emptyScheduleSchemaBuilderService;
     private static final Logger log = LoggerFactory.getLogger(ClassScheduleService.class);
 
-    public ClassScheduleService(ClassScheduleRepository classScheduleRepository, SchoolClassRepository schoolClassRepository, ScheduleGeneratorService scheduleGeneratorService) {
+    public ClassScheduleService(ClassScheduleRepository classScheduleRepository,
+                                SchoolClassRepository schoolClassRepository,
+                                EmptyScheduleSchemaBuilderService emptyScheduleSchemaBuilderService) {
         this.classScheduleRepository = classScheduleRepository;
         this.schoolClassRepository = schoolClassRepository;
-        this.scheduleGeneratorService = scheduleGeneratorService;
+        this.emptyScheduleSchemaBuilderService = emptyScheduleSchemaBuilderService;
     }
 
     public Map<String, List<DaySubject>> getClassScheduleGroupedByDaySubjectAndTimeframe(Long classId, boolean shouldExcludeBreaks) {
@@ -62,7 +65,15 @@ public class ClassScheduleService {
             return schoolClass.getClassSchedule().getId();
         } else {
             log.warn("Attempting to generate empty schedule for school class id: {}", classId);
-            return scheduleGeneratorService.generateSchedule(schoolClass).getId();
+            return emptyScheduleSchemaBuilderService.generateEmptySchedule(schoolClass).getId();
         }
+    }
+
+    public ClassSchedule getClassSchedule(Long scheduleId) {
+        return EntityFetcher.getByIdOrThrow(classScheduleRepository::findById, scheduleId, "ClassSchedule");
+    }
+
+    public ClassSchedule updateClassSchedule(ClassSchedule classSchedule) {
+        return classScheduleRepository.save(classSchedule);
     }
 }

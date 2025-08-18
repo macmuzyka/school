@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS student
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     school_class_id BIGINT,
-    CONSTRAINT fk_school_class
+    CONSTRAINT fk_school_class_student
         FOREIGN KEY (school_class_id)
         REFERENCES school_class (id)
         ON DELETE SET NULL
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS student_insert_error
     error_cause TEXT,
     error_description TEXT,
     school_class_id BIGINT,
-    CONSTRAINT fk_school_class
+    CONSTRAINT fk_school_class_student_insert_error
             FOREIGN KEY (school_class_id)
             REFERENCES school_class (id)
             ON DELETE SET NULL
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS student_duplicate_error
     error_cause TEXT,
     error_description TEXT,
     school_class_id BIGINT,
-    CONSTRAINT fk_school_class
+    CONSTRAINT fk_school_class_student_student_duplicate_error
             FOREIGN KEY (school_class_id)
             REFERENCES school_class (id)
             ON DELETE SET NULL

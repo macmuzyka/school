@@ -17,13 +17,17 @@ public class SubjectService {
         this.subjectRepository = subjectRepository;
     }
 
-    public List<SubjectDTO> getSchoolClassSubjects(Long schoolClassId) {
+    public List<SubjectDTO> getSchoolClassSubjectsDTOs(Long schoolClassId) {
         List<Subject> schoolClassSubjects = subjectRepository.findBySchoolClassId(schoolClassId);
         if (!schoolClassSubjects.isEmpty()) {
             return schoolClassSubjects.stream().map(s -> new SubjectDTO(s.getId(), s.getName())).toList();
         } else {
             return Collections.emptyList();
         }
+    }
+
+    public List<Subject> getSubjectsBySchoolClassId(Long schoolClassId) {
+        return subjectRepository.findBySchoolClassId(schoolClassId);
     }
 
     public Subject getSubjectById(Long subjectId) {

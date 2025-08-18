@@ -1,7 +1,6 @@
 package com.school.service
 
 import com.school.configuration.ApplicationConfig
-import com.school.model.SchoolClassDTO
 import com.school.repository.SchoolClassRepository
 import com.school.repository.SchoolRepository
 import com.school.repository.StudentRepository
@@ -11,22 +10,25 @@ import com.school.model.entity.School
 import com.school.model.entity.SchoolClass
 import com.school.model.entity.Student
 import com.school.model.entity.Subject
+import com.school.model.entity.classschedule.ClassSchedule
 import com.school.model.enums.ClassAction
-import com.school.service.classschedule.ScheduleGeneratorService
+import com.school.service.classschedule.EmptyScheduleSchemaBuilderService
+import com.school.service.utils.EntityFetcher
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import kotlin.reflect.jvm.internal.impl.name.ClassId
 
 @Service
 //TODO: refactor this shit
-class ClassService(
+class SchoolClassService(
     private val studentRepository: StudentRepository,
     private val schoolClassRepository: SchoolClassRepository,
     private val schoolRepository: SchoolRepository,
-    private val scheduleGeneratorService: ScheduleGeneratorService,
+    private val emptyScheduleSchemaBuilderService: EmptyScheduleSchemaBuilderService,
     private val applicationConfig: ApplicationConfig,
 ) {
-    private val log: Logger = LoggerFactory.getLogger(ClassService::class.java)
+    private val log: Logger = LoggerFactory.getLogger(SchoolClassService::class.java)
 
     fun getClassesWithStudents(): List<ClassWithListedStudentsDTO> {
         return try {
@@ -135,7 +137,7 @@ class ClassService(
 
     fun createNewClass(): SchoolClass {
         val newSchoolClass = createNewClassWithAssignedSubjects()
-        scheduleGeneratorService.generateSchedule(newSchoolClass)
+        emptyScheduleSchemaBuilderService.generateEmptySchedule(newSchoolClass)
 
         val school = schoolRepository.findAll()
             .firstOrNull()
@@ -169,4 +171,9 @@ class ClassService(
     private fun motherSchool(): School {
         return schoolRepository.findAll()[0]
     }
+
+    fun getSchoolClassByClassSchedule(schedule: ClassSchedule): SchoolClass =
+        EntityFetcher.getByIdOrThrow(schoolClassRepository::findById, schedule.id, "SchoolClass")
+
+    fun getSchoolClass(schoolClassId: Long) = EntityFetcher.getByIdOrThrow(schoolClassRepository::findById, schoolClassId, "SchoolClass")
 }
