@@ -7,8 +7,6 @@ import com.school.model.entity.classschedule.TimeSlot;
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.classschedule.ClassScheduleRepository;
 import com.school.repository.classschedule.ScheduleEntryRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;

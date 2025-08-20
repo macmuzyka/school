@@ -6,40 +6,50 @@ import java.time.LocalTime;
 
 @ConfigurationProperties(prefix = "class.schedule.config")
 public class ClassScheduleConfig {
-    private final Integer lessonScheduleStart;
+    private final Integer scheduleStart;
     private final Integer lessonDuration;
-    private final Integer maxLessonPerDay;
-    private final Integer maxLessonPerSubject;
+    private final Integer latestClassScheduleStart;
+    private final Integer maxClassPerDay;
+    private final Integer maxSubjectClassPerWeek;
     private final Integer shortBreakDuration;
     private final Integer longBreakDuration;
     private final Integer firstLongBreak;
     private final Integer secondLongBreak;
 
-    public ClassScheduleConfig(Integer lessonScheduleStart, Integer lessonDuration, Integer maxLessonPerSubject, Integer maxLessonPerDay, Integer shortBreakDuration, Integer longBreakDuration, Integer firstLongBreak, Integer secondLongBreak) {
-        this.lessonScheduleStart = lessonScheduleStart;
+    public ClassScheduleConfig(Integer scheduleStart, Integer lessonDuration, Integer latestClassScheduleStart, Integer maxSubjectClassPerWeek, Integer maxClassPerDay, Integer shortBreakDuration, Integer longBreakDuration, Integer firstLongBreak, Integer secondLongBreak) {
+        this.scheduleStart = scheduleStart;
         this.lessonDuration = lessonDuration;
-        this.maxLessonPerSubject = maxLessonPerSubject;
-        this.maxLessonPerDay = maxLessonPerDay;
+        this.latestClassScheduleStart = latestClassScheduleStart;
+        this.maxSubjectClassPerWeek = maxSubjectClassPerWeek;
+        this.maxClassPerDay = maxClassPerDay;
         this.shortBreakDuration = shortBreakDuration;
         this.longBreakDuration = longBreakDuration;
         this.firstLongBreak = firstLongBreak;
         this.secondLongBreak = secondLongBreak;
     }
 
-    public LocalTime getLessonScheduleStart() {
-        return LocalTime.of(lessonScheduleStart, 0, 0);
+    public LocalTime getScheduleStart() {
+        return LocalTime.of(scheduleStart, 0, 0);
     }
 
     public Integer getLessonDuration() {
         return lessonDuration;
     }
 
-    public Integer getMaxLessonPerSubject() {
-        return maxLessonPerSubject;
+    public Integer getLatestClassScheduleStart() {
+        return latestClassScheduleStart;
     }
 
-    public Integer getMaxLessonPerDay() {
-        return maxLessonPerDay;
+    public Integer getLatestClassScheduleStartAsIndex() {
+        return latestClassScheduleStart - 1;
+    }
+
+    public Integer getMaxSubjectClassPerWeek() {
+        return maxSubjectClassPerWeek;
+    }
+
+    public Integer getMaxClassPerDay() {
+        return maxClassPerDay;
     }
 
     public Integer getShortBreakDuration() {

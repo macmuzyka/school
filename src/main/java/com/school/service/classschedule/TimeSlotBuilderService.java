@@ -41,8 +41,8 @@ public class TimeSlotBuilderService {
     //TODO: special case object pattern to prevent passing subject as null in empty time slot
     private TimeSlot buildFirstTimeSlot(ScheduleEntry scheduleEntry) {
         return new TimeSlot(
-                classScheduleConfig.getLessonScheduleStart(),
-                classScheduleConfig.getLessonScheduleStart().plusMinutes(classScheduleConfig.getLessonDuration()),
+                classScheduleConfig.getScheduleStart(),
+                classScheduleConfig.getScheduleStart().plusMinutes(classScheduleConfig.getLessonDuration()),
                 null,
                 scheduleEntry,
                 false
@@ -82,7 +82,7 @@ public class TimeSlotBuilderService {
     }
 
     private int calculateMaxSlots() {
-        return (classScheduleConfig.getMaxLessonPerDay() * 2) - 1;
+        return (classScheduleConfig.getMaxClassPerDay() * 2) - 1;
     }
 
     private boolean slotIsBreak(int timeSlot) {

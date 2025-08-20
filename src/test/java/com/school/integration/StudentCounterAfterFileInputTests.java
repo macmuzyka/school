@@ -1,4 +1,4 @@
-package com.school;
+package com.school.integration;
 
 import com.school.repository.StudentDuplicateErrorRepository;
 import com.school.repository.StudentInsertErrorRepository;
@@ -20,19 +20,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @ActiveProfiles("prod")
-public class StudentCounterAfterFileInputTest {
-    private final Logger log = LoggerFactory.getLogger(StudentCounterAfterFileInputTest.class);
-    @Autowired
-    public InputStudentsFromTextFileService inputStudentsFromTextFileService;
+public class StudentCounterAfterFileInputTests {
+    private final Logger log = LoggerFactory.getLogger(StudentCounterAfterFileInputTests.class);
+    public final InputStudentsFromTextFileService inputStudentsFromTextFileService;
+    public final StudentRepository studentRepository;
+    public final StudentInsertErrorRepository studentInsertErrorRepository;
+    public final StudentDuplicateErrorRepository studentDuplicateErrorRepository;
 
     @Autowired
-    public StudentRepository studentRepository;
-
-    @Autowired
-    public StudentInsertErrorRepository studentInsertErrorRepository;
-
-    @Autowired
-    public StudentDuplicateErrorRepository studentDuplicateErrorRepository;
+    public StudentCounterAfterFileInputTests(InputStudentsFromTextFileService inputStudentsFromTextFileService, StudentRepository studentRepository, StudentInsertErrorRepository studentInsertErrorRepository, StudentDuplicateErrorRepository studentDuplicateErrorRepository) {
+        this.inputStudentsFromTextFileService = inputStudentsFromTextFileService;
+        this.studentRepository = studentRepository;
+        this.studentInsertErrorRepository = studentInsertErrorRepository;
+        this.studentDuplicateErrorRepository = studentDuplicateErrorRepository;
+    }
 
 
     @BeforeEach

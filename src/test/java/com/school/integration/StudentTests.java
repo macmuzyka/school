@@ -1,4 +1,4 @@
-package com.school;
+package com.school.integration;
 
 import com.school.configuration.ApplicationConfig;
 import com.school.model.dto.StudentDTO;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 
 @ActiveProfiles("prod")
 @ExtendWith(MockitoExtension.class)
-class StudentTests {
+public class StudentTests {
 
     @Mock
     private StudentRepository studentRepository;
@@ -43,7 +43,7 @@ class StudentTests {
     private StudentService studentService;
 
     @Test
-    void testAddStudentSuccess() {
+    void shouldProperlyAddStudent() {
         // Arrange
         Student student = new Student(0L, "John", "Doe", "12345");
         StudentDTO studentDTO = new StudentDTO(student);

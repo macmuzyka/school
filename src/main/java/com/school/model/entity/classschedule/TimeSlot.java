@@ -40,7 +40,7 @@ public class TimeSlot extends Audit {
     @Override
     public String toString() {
         return "TimeSlot{" +
-                "scheduleEntry=" + scheduleEntry.getId() +
+                " id=" + this.getId() +
                 ", subject=" + (subject == null ? "NO SUBJECT ASSIGNED" : subject.getId() + " : " + subject.getName()) +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +

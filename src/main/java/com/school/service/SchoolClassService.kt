@@ -10,7 +10,6 @@ import com.school.model.entity.School
 import com.school.model.entity.SchoolClass
 import com.school.model.entity.Student
 import com.school.model.entity.Subject
-import com.school.model.entity.classschedule.ClassSchedule
 import com.school.model.enums.ClassAction
 import com.school.service.classschedule.EmptyScheduleSchemaBuilderService
 import com.school.service.utils.EntityFetcher
@@ -171,8 +170,8 @@ class SchoolClassService(
         return schoolRepository.findAll()[0]
     }
 
-    fun getSchoolClassByClassSchedule(schedule: ClassSchedule): SchoolClass =
-        EntityFetcher.getByIdOrThrow(schoolClassRepository::findById, schedule.id, "SchoolClass")
+    fun getSchoolClass(schoolClassId: Long): SchoolClass =
+        EntityFetcher.getByIdOrThrow(schoolClassRepository::findById, schoolClassId, "SchoolClass")
 
-    fun getSchoolClass(schoolClassId: Long) = EntityFetcher.getByIdOrThrow(schoolClassRepository::findById, schoolClassId, "SchoolClass")
+    fun removeClass(schoolClass: SchoolClass) = schoolClassRepository.delete(schoolClass)
 }

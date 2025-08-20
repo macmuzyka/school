@@ -1,4 +1,4 @@
-package com.school;
+package com.school.integration;
 
 import com.school.condition.run.KafkaDockerRunExtension;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ActiveProfiles("prod")
 @ExtendWith(KafkaDockerRunExtension.class)
-class SchoolApplicationTests {
+public class SchoolApplicationTests {
     @Test
     void contextLoads() {
     }

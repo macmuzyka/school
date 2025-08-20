@@ -9,6 +9,7 @@ import com.school.service.SubjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -28,6 +29,7 @@ public class TimeSlotManagingService {
         this.classRoomService = classRoomService;
     }
 
+    @Transactional
     public TimeSlotDTO assignSubjectToTimeSlot(Long subjectId, Long timeSlotId) {
         try {
             List<ClassRoom> unassignedClassRooms = classRoomService.getUnassignedClassRooms();
@@ -64,7 +66,7 @@ public class TimeSlotManagingService {
     }
 
     private ClassRoom getRandomUnassignedClassRoom(List<ClassRoom> unassignedClassRooms) {
-//        log.info("Timeslot has no previous or next slots taken, thus returning class room randomly");
+        log.debug("Timeslot has no previous or next slots taken, thus returning class room randomly");
         Collections.shuffle(unassignedClassRooms);
         return unassignedClassRooms.get(0);
     }

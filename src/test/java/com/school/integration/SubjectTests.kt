@@ -1,4 +1,4 @@
-package com.school
+package com.school.integration
 
 import com.school.condition.shutdown.KafkaDockerStopExtension
 import com.school.configuration.ApplicationConfig

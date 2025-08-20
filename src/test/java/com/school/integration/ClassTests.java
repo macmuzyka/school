@@ -1,4 +1,4 @@
-package com.school;
+package com.school.integration;
 
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.StudentRepository;

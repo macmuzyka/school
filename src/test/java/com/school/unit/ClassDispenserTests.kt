@@ -29,12 +29,6 @@ class ClassDispenserTests {
         assertEquals(moves, counter)
     }
 
-    @Test
-    fun objectTakenFromOneMapToOther() {
-
-    }
-
-
     inner class KeyMock(private val identifier: String) {
         override fun toString(): String {
             return "KeyMock(identifier='$identifier')"
