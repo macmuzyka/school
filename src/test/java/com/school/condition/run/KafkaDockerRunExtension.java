@@ -15,7 +15,7 @@ public class KafkaDockerRunExtension implements BeforeAllCallback {
         containerId = startKafkaContainer();
     }
 
-    private String startKafkaContainer() throws IOException, InterruptedException {
+    private String startKafkaContainer() throws IOException {
         Process process = new ProcessBuilder(
                 "docker", "run", "-d",
                 "--name", kafkaKraftForTests,
