@@ -30,7 +30,7 @@ public class ScheduleEntry extends Audit {
 
     @Override
     public String toString() {
-        return "ScheduleEntry{" +
+        return "[ID]" + getId() + " ScheduleEntry{" +
                 "classSchedule=" + classSchedule.getId() +
                 ", dayOfWeek=" + dayOfWeek +
                 ", timeSlots=" + timeSlots +

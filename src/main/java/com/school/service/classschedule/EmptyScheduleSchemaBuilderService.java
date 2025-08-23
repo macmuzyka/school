@@ -7,6 +7,8 @@ import com.school.model.entity.classschedule.TimeSlot;
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.classschedule.ClassScheduleRepository;
 import com.school.repository.classschedule.ScheduleEntryRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -14,6 +16,7 @@ import java.util.*;
 
 @Service
 public class EmptyScheduleSchemaBuilderService {
+    private static final Logger log = LoggerFactory.getLogger(EmptyScheduleSchemaBuilderService.class);
     private final SchoolClassRepository schoolClassRepository;
     private final ClassScheduleRepository classScheduleRepository;
     private final ScheduleEntryRepository scheduleEntryRepository;
@@ -30,6 +33,7 @@ public class EmptyScheduleSchemaBuilderService {
     }
 
     public ClassSchedule generateEmptySchedule(SchoolClass schoolClass) {
+        log.debug("Generating schedule for class: " + schoolClass.getName());
         if (schoolClass.getClassSchedule() != null) {
             schoolClass.setClassSchedule(null);
             schoolClassRepository.save(schoolClass);

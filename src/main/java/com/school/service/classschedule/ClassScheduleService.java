@@ -1,5 +1,6 @@
 package com.school.service.classschedule;
 
+import com.school.controller.ClassController;
 import com.school.model.dto.sclassschedule.DaySubject;
 import com.school.model.entity.SchoolClass;
 import com.school.model.entity.classschedule.ClassSchedule;
@@ -75,5 +76,9 @@ public class ClassScheduleService {
 
     public ClassSchedule updateClassSchedule(ClassSchedule classSchedule) {
         return classScheduleRepository.save(classSchedule);
+    }
+
+    public void removeClassSchedule(ClassSchedule classSchedule) {
+        classScheduleRepository.delete(classSchedule);
     }
 }

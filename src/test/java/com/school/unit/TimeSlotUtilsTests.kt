@@ -11,7 +11,7 @@ class TimeSlotUtilsTests {
     @Test
     fun shouldBeEqualOrEarlier() {
         val now = LocalTime.now()
-        val alsoNow = LocalTime.now()
+        val alsoNow = now
         assertTrue { now.isNotLaterThan(alsoNow) }
         assertTrue { alsoNow.isNotLaterThan(now) }
 

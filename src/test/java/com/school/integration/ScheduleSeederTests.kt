@@ -9,7 +9,7 @@ import com.school.service.SchoolClassService
 import com.school.service.classschedule.ClassScheduleService
 import com.school.service.classschedule.ScheduleSeederService
 import com.school.service.utils.TimeSlotUtils.Companion.getBeginningOfTargetSlot
-import com.school.service.utils.TimeSlotUtils.Companion.isChain
+import com.school.service.utils.TimeSlotUtils.Companion.isConsistentClassChain
 import com.school.service.utils.TimeSlotUtils.Companion.isNotBreakAndHasClass
 import com.school.service.utils.TimeSlotUtils.Companion.isNotLaterThan
 import org.junit.jupiter.api.AfterEach
@@ -45,6 +45,7 @@ class ScheduleSeederTests(
     @AfterEach
     fun tearDownTestObjects() {
         schoolClassService.removeClass(testClass)
+        classScheduleService.removeClassSchedule(emptySchedule)
     }
 
     @Test
@@ -86,7 +87,6 @@ class ScheduleSeederTests(
                     .filter { timeslot -> timeslot.isNotBreakAndHasClass() }
             }
         for (entry in shouldBeChain) {
-            println("ENTRY ...")
             for (timeslot in entry) {
                 println(timeslot)
             }
@@ -94,7 +94,7 @@ class ScheduleSeederTests(
 
         assertTrue {
             generatedSchedule.scheduleEntries.all { entry ->
-                entry.timeSlots.filter { it.isNotBreakAndHasClass() }.isChain()
+                entry.timeSlots.filter { it.isNotBreakAndHasClass() }.isConsistentClassChain()
             }
         }
     }

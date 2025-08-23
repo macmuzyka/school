@@ -4,11 +4,12 @@ import com.school.configuration.ClassScheduleConfig
 import com.school.model.entity.Subject
 import com.school.model.entity.classschedule.ClassSchedule
 import com.school.model.entity.classschedule.ScheduleEntry
-import com.school.service.utils.TimeSlotUtils.Companion.countAvailableLesson
+import com.school.service.utils.TimeSlotUtils.Companion.canHaveMoreClass
 import com.school.service.utils.TimeSlotUtils.Companion.doesNotExceedMaxClassStartTime
 import com.school.service.utils.TimeSlotUtils.Companion.getBeginningOfTargetSlot
 import com.school.service.utils.TimeSlotUtils.Companion.isNotBreakAndIsFreeToHaveClass
 import com.school.service.utils.oneLess
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
@@ -16,6 +17,7 @@ class ClassSeederService(
     private val timeSlotManagingService: TimeSlotManagingService,
     private val classScheduleConfig: ClassScheduleConfig,
 ) {
+    private val log = LoggerFactory.getLogger(ClassSeederService::class.java)
     fun seedClasses(schedule: ClassSchedule, subjects: List<Subject>): ClassSchedule {
         val classDispenser = prepareClassDispenser(subjects)
         while (classDispenser.isNotEmpty()) {
@@ -24,11 +26,12 @@ class ClassSeederService(
 
             val latestClassStart = schedule.getBeginningOfTargetSlot(classScheduleConfig.latestClassScheduleStart)
             val scheduleEntryToSeed = schedule.scheduleEntries
-                .filter { entry -> entry.timeSlots.countAvailableLesson() <= classScheduleConfig.maxClassPerDay }
+                .filter { entry -> entry.canHaveMoreClass(classScheduleConfig.maxClassPerDay) }
                 .random()
-            val beginningTimeSlotId = scheduleEntryToSeed.timeSlots
+            val firstEverTimeSlotForScheduleEntry = scheduleEntryToSeed.timeSlots
                 .firstOrNull { it.isNotBreakAndIsFreeToHaveClass() && it.doesNotExceedMaxClassStartTime(latestClassStart) }
-            val timeSlotId = beginningTimeSlotId?.id ?: findLaterTimeSlotId(scheduleEntryToSeed)
+            val timeSlotId =
+                firstEverTimeSlotForScheduleEntry?.id ?: findNextTimeSlotForScheduleEntry(scheduleEntryToSeed)
             timeSlotManagingService.assignSubjectToTimeSlot(currentSubject.id, timeSlotId)
         }
         return schedule
@@ -37,6 +40,6 @@ class ClassSeederService(
     private fun prepareClassDispenser(subjects: List<Subject>) =
         HashMap(subjects.associateWith { classScheduleConfig.maxSubjectClassPerWeek })
 
-    private fun findLaterTimeSlotId(schedule: ScheduleEntry) =
+    private fun findNextTimeSlotForScheduleEntry(schedule: ScheduleEntry) =
         schedule.timeSlots.filter { it.isNotBreakAndIsFreeToHaveClass() }.sortedBy { it.id }.first().id
 }

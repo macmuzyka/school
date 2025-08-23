@@ -1,12 +1,13 @@
 package com.school.configuration;
 
+import com.school.configuration.validate.TimeValidator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.LocalTime;
 
 @ConfigurationProperties(prefix = "class.schedule.config")
 public class ClassScheduleConfig {
-    private final Integer scheduleStart;
+    private final String scheduleStart;
     private final Integer lessonDuration;
     private final Integer latestClassScheduleStart;
     private final Integer maxClassPerDay;
@@ -16,7 +17,7 @@ public class ClassScheduleConfig {
     private final Integer firstLongBreak;
     private final Integer secondLongBreak;
 
-    public ClassScheduleConfig(Integer scheduleStart, Integer lessonDuration, Integer latestClassScheduleStart, Integer maxSubjectClassPerWeek, Integer maxClassPerDay, Integer shortBreakDuration, Integer longBreakDuration, Integer firstLongBreak, Integer secondLongBreak) {
+    public ClassScheduleConfig(String scheduleStart, Integer lessonDuration, Integer latestClassScheduleStart, Integer maxSubjectClassPerWeek, Integer maxClassPerDay, Integer shortBreakDuration, Integer longBreakDuration, Integer firstLongBreak, Integer secondLongBreak) {
         this.scheduleStart = scheduleStart;
         this.lessonDuration = lessonDuration;
         this.latestClassScheduleStart = latestClassScheduleStart;
@@ -29,7 +30,7 @@ public class ClassScheduleConfig {
     }
 
     public LocalTime getScheduleStart() {
-        return LocalTime.of(scheduleStart, 0, 0);
+        return TimeValidator.validateScheduleStart(scheduleStart);
     }
 
     public Integer getLessonDuration() {
