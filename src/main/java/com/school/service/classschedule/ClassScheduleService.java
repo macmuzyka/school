@@ -30,6 +30,7 @@ public class ClassScheduleService {
         this.emptyScheduleSchemaBuilderService = emptyScheduleSchemaBuilderService;
     }
 
+    //TODO: find a simpler and smoother way of achieving this
     public Map<String, List<DaySubject>> getClassScheduleGroupedByDaySubjectAndTimeframe(Long classId, boolean shouldExcludeBreaks) {
         Long scheduleIdForSchoolClass = findScheduleIdForClass(classId);
         ClassSchedule schedule = classScheduleRepository.findById(scheduleIdForSchoolClass)
