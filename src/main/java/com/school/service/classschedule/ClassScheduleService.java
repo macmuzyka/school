@@ -1,6 +1,5 @@
 package com.school.service.classschedule;
 
-import com.school.controller.ClassController;
 import com.school.model.dto.sclassschedule.DaySubject;
 import com.school.model.entity.SchoolClass;
 import com.school.model.entity.classschedule.ClassSchedule;
