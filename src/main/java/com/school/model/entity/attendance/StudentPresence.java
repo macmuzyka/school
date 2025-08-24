@@ -15,4 +15,30 @@ public class StudentPresence extends Audit {
     private Attendance attendance;
     private boolean present;
     private String note;
+
+    public StudentPresence(Student student, Attendance attendance, boolean present, String note) {
+        this.student = student;
+        this.attendance = attendance;
+        this.present = present;
+        this.note = note;
+    }
+
+    public StudentPresence() {
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public Attendance getAttendance() {
+        return attendance;
+    }
+
+    public boolean isPresent() {
+        return present;
+    }
+
+    public String getNote() {
+        return note;
+    }
 }
