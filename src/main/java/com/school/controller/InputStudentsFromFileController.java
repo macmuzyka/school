@@ -21,7 +21,7 @@ public class InputStudentsFromFileController {
     @PostMapping("/students-from-file")
     public ResponseEntity<?> addStudents(@RequestParam("file") MultipartFile studentsFile) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(inputStudentsFromTextFileService.addStudents(studentsFile));
+            return ResponseEntity.status(HttpStatus.CREATED).body(inputStudentsFromTextFileService.addStudents(studentsFile, true));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

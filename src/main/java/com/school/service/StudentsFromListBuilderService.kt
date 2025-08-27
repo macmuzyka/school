@@ -33,7 +33,7 @@ class StudentsFromListBuilderService(
     private fun duplicatedInerts() = inserts[InsertStatus.DUPLICATED] ?: mutableSetOf()
     private fun errorInserts() = inserts[InsertStatus.ERROR] ?: mutableSetOf()
 
-    fun saveStudentsFromFile(studentsFile: MultipartFile): String {
+    fun saveStudentsFromFile(studentsFile: MultipartFile, assign: Boolean): String {
         initializeAuxiliaryMap()
         return try {
             //TODO: idea -> real all lines, then map to Map<K,V>, where key (K) is validation result for a line,
@@ -45,8 +45,11 @@ class StudentsFromListBuilderService(
                     tagsFound.takeIf { lineHasProperNumberOFTags(it) }
                         ?.let { values ->
                             buildAndSaveStudentFromReaderLineParts(values)
-                                ?.let { studentBuilt -> assignClass(studentBuilt) }
-                                ?: handleDuplicateStudentRecord(values)
+                                ?.let { studentBuilt ->
+                                    if (assign) {
+                                        assignClass(studentBuilt)
+                                    }
+                                } ?: handleDuplicateStudentRecord(values)
                         } ?: buildAndSaveInsertErrorStudentRecord(tagsFound)
                 }
             }

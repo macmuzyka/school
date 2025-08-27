@@ -6,14 +6,16 @@ import com.school.model.entity.classschedule.TimeSlot;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "attendance")
 public class Attendance extends Audit {
-    private LocalDate presenceTimeframeStart;
-    private LocalDate presenceTimeframeEnd;
+    private LocalTime attendanceTimeframeStart;
+    private LocalTime attendanceTimeframeEnd;
+    private LocalDate attendanceDate;
     @ManyToOne(optional = false)
     private Subject subject;
     @ManyToOne(optional = false)
@@ -21,9 +23,10 @@ public class Attendance extends Audit {
     @OneToMany(mappedBy = "attendance", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudentPresence> presenceList = new ArrayList<>();
 
-    public Attendance(LocalDate presenceTimeframeStart, LocalDate presenceTimeframeEnd, Subject subject, TimeSlot timeSlot, List<StudentPresence> presenceList) {
-        this.presenceTimeframeStart = presenceTimeframeStart;
-        this.presenceTimeframeEnd = presenceTimeframeEnd;
+    public Attendance(LocalTime attendanceTimeframeStart, LocalTime attendanceTimeframeEnd, LocalDate attendanceDate, Subject subject, TimeSlot timeSlot, List<StudentPresence> presenceList) {
+        this.attendanceTimeframeStart = attendanceTimeframeStart;
+        this.attendanceTimeframeEnd = attendanceTimeframeEnd;
+        this.attendanceDate = attendanceDate;
         this.subject = subject;
         this.timeSlot = timeSlot;
         this.presenceList = presenceList;
@@ -32,12 +35,16 @@ public class Attendance extends Audit {
     public Attendance() {
     }
 
-    public LocalDate getPresenceTimeframeStart() {
-        return presenceTimeframeStart;
+    public LocalTime getAttendanceTimeframeStart() {
+        return attendanceTimeframeStart;
     }
 
-    public LocalDate getPresenceTimeframeEnd() {
-        return presenceTimeframeEnd;
+    public LocalTime getAttendanceTimeframeEnd() {
+        return attendanceTimeframeEnd;
+    }
+
+    public LocalDate getAttendanceDate() {
+        return attendanceDate;
     }
 
     public Subject getSubject() {
