@@ -7,7 +7,7 @@ import com.school.service.StudentService
 import org.springframework.stereotype.Service
 
 @Service
-open class StudentPresenceService(
+class StudentPresenceService(
     private val studentService: StudentService
 ) {
     fun buildEntitiesFromDTO(presenceList: List<StudentPresenceDTO>) =

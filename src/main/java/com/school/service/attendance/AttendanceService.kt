@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-open class AttendanceService(
+class AttendanceService(
     private val attendanceRepository: AttendanceRepository,
     private val timeSlotQueryService: TimeSlotQueryService,
     private val studentPresentService: StudentPresenceService,
@@ -21,8 +21,8 @@ open class AttendanceService(
     @Transactional
     fun saveAttendance(request: AttendanceDTO): AttendanceResponse =
         request
-            .with(timeSlotQueryService.getTimeSlotById(request.timeslotId), studentPresentService)
-            .linkPresence()
+            .prepareEntity(timeSlotQueryService.getTimeSlotById(request.timeslotId), studentPresentService)
+            .associateAttendanceWithPresence()
             .persist(attendanceRepository)
             .respond()
 }
