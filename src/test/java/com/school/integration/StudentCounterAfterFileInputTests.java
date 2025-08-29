@@ -43,7 +43,7 @@ public class StudentCounterAfterFileInputTests {
         File studentsFile = new File("src/test/resources/students_list.txt");
         InputStream inputStream = new FileInputStream(studentsFile);
         MultipartFile mpf = new MockMultipartFile("file", studentsFile.getName(), "text/plain", inputStream);
-        inputStudentsFromTextFileService.addStudents(mpf);
+        inputStudentsFromTextFileService.addStudents(mpf, true);
     }
 
     @Test

@@ -13,6 +13,7 @@ import org.junit.platform.suite.api.Suite;
                 ScheduleSeederTests.class,
                 PreviousOrNextSlotsTakenTests.class,
                 StudentCounterAfterFileInputTests.class,
+                AttendanceTests.class,
                 StudentTests.class,
                 SubjectTests.class
         }

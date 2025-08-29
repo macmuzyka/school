@@ -25,14 +25,14 @@ public class InputStudentsFromTextFileService {
         this.sendNotificationToFrontendService = sendNotificationToFrontendService;
     }
 
-    public List<StudentDTO> addStudents(MultipartFile studentsFile) {
+    public List<StudentDTO> addStudents(MultipartFile studentsFile, boolean assign) {
         log.info("Adding students from file..");
-        saveStudentsFromFile(studentsFile);
+        saveStudentsFromFile(studentsFile, assign);
         return studentRepository.findAll().stream().map(StudentDTO::new).toList();
     }
 
-    private void saveStudentsFromFile(MultipartFile studentsFile) {
-        String result = studentsFromListBuilderService.saveStudentsFromFile(studentsFile);
+    private void saveStudentsFromFile(MultipartFile studentsFile, boolean assign) {
+        String result = studentsFromListBuilderService.saveStudentsFromFile(studentsFile, assign);
         sendNotificationToFrontendService.notifyFrontendAboutUploadingFileStatus(result);
     }
 }
