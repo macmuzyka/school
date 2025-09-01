@@ -3,7 +3,6 @@ package com.school.service.classschedule
 import com.school.model.dto.sclassschedule.ClassScheduleSummary
 import com.school.model.entity.classschedule.ClassSchedule
 import com.school.service.SchoolClassService
-import com.school.service.SubjectService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,21 +12,27 @@ class ScheduleSeederService(
     private val schoolClassService: SchoolClassService,
     private val classScheduleService: ClassScheduleService,
     private val emptyScheduleSchemaBuilderService: EmptyScheduleSchemaBuilderService,
-    private val subjectService: SubjectService
 ) {
     @Transactional
-    fun seedScheduleWithClasses(scheduleId: Long): ClassScheduleSummary =
-        run {
-            var schedule = classScheduleService.getClassSchedule(scheduleId)
-            val schoolClass = schoolClassService.getSchoolClass(schedule.schoolClass.id)
-            val subjects = subjectService.getSubjectsBySchoolClassId(schoolClass.id)
-            schedule = emptyScheduleSchemaBuilderService.generateEmptySchedule(schoolClass)
+    fun seedScheduleWithClasses(scheduleId: Long): ClassScheduleSummary {
+        return scheduleId.getSchedule()
+            .prepareEmptySchedule()
+            .seedClasses()
+            .asQuickView()
+    }
 
-            val seededSchedule = classSeederService.seedClasses(schedule, subjects)
-            val updatedClassSchedule = classScheduleService.updateClassSchedule(seededSchedule)
+    private fun Long.getSchedule() = classScheduleService.getClassScheduleById(this)
+    private fun ClassSchedule.prepareEmptySchedule(): ClassSchedule {
+        val schoolClass = schoolClassService.getSchoolClass(this.schoolClass.id)
+        classScheduleService.removeClassSchedule(this)
 
-            return updatedClassSchedule.asQuickView()
-        }
+        return emptyScheduleSchemaBuilderService.generateEmptySchedule(schoolClass)
+    }
+
+    private fun ClassSchedule.seedClasses(): ClassSchedule {
+        val seededSchedule = classSeederService.seedClasses(this)
+        return classScheduleService.updateClassSchedule(seededSchedule)
+    }
 
     private fun ClassSchedule.asQuickView(): ClassScheduleSummary {
         return ClassScheduleSummary(

@@ -174,4 +174,6 @@ class SchoolClassService(
         EntityFetcher.getByIdOrThrow(schoolClassRepository::findById, schoolClassId, "SchoolClass")
 
     fun removeClass(schoolClass: SchoolClass) = schoolClassRepository.delete(schoolClass)
+
+    fun getSchoolClassById(classId: Long): SchoolClass = EntityFetcher.getByIdOrThrow(schoolClassRepository::findById, classId, "SchoolClass")
 }

@@ -11,12 +11,12 @@ public class ApplicationConfig {
     private final String availableGrades;
     private final String availableSubjects;
     private final int classMaxSize;
-    private final int minimumStudentTags;
-    private final int gradesToAdd;
     private final Set<String> gradeTypes;
+    private final int minimumStudentTags;
     private final String progressRecordsDirectory;
     private final String progressRecordsFile;
     private final Long maxPreviousNotes;
+    private final int gradesToAdd;
 
     public ApplicationConfig(
             String availableGrades,

@@ -5,13 +5,9 @@ import com.school.configuration.ClassScheduleConfig
 import com.school.model.dto.sclassschedule.ClassScheduleSummary
 import com.school.model.entity.SchoolClass
 import com.school.model.entity.classschedule.ClassSchedule
-import com.school.service.SchoolClassService
+import com.school.service.*
 import com.school.service.classschedule.ClassScheduleService
 import com.school.service.classschedule.ScheduleSeederService
-import com.school.service.utils.TimeSlotUtils.Companion.getBeginningOfTargetSlot
-import com.school.service.utils.TimeSlotUtils.Companion.isConsistentClassChain
-import com.school.service.utils.TimeSlotUtils.Companion.isNotBreakAndHasClass
-import com.school.service.utils.TimeSlotUtils.Companion.isNotLaterThan
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -59,7 +55,7 @@ class ScheduleSeederTests(
     @Test
     @Transactional
     fun shouldSeedMaximumAtConfigTimeslot() {
-        val generatedSchedule = classScheduleService.getClassSchedule(seededSchedule.id)
+        val generatedSchedule = classScheduleService.getClassScheduleById(seededSchedule.id)
         println(generatedSchedule.toString())
         val maxClassStartTimeNotExceeded = testEntriesStarts(generatedSchedule)
         assertTrue { maxClassStartTimeNotExceeded }
@@ -80,7 +76,7 @@ class ScheduleSeederTests(
     @Test
     @Transactional
     fun generatedScheduleIsChainOfClasses() {
-        val generatedSchedule = classScheduleService.getClassSchedule(seededSchedule.id)
+        val generatedSchedule = classScheduleService.getClassScheduleById(seededSchedule.id)
         val shouldBeChain = generatedSchedule.scheduleEntries
             .map { entry ->
                 entry.timeSlots

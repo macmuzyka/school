@@ -1,13 +1,8 @@
 package com.school.service.classschedule
 
 import com.school.configuration.ClassScheduleConfig
-import com.school.model.entity.Subject
 import com.school.model.entity.classschedule.ClassSchedule
-import com.school.model.entity.classschedule.ScheduleEntry
-import com.school.service.utils.TimeSlotUtils.Companion.canHaveMoreClass
-import com.school.service.utils.TimeSlotUtils.Companion.doesNotExceedMaxClassStartTime
-import com.school.service.utils.TimeSlotUtils.Companion.getBeginningOfTargetSlot
-import com.school.service.utils.TimeSlotUtils.Companion.isNotBreakAndIsFreeToHaveClass
+import com.school.service.*
 import com.school.service.utils.oneLess
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -15,11 +10,12 @@ import org.springframework.stereotype.Service
 @Service
 class ClassSeederService(
     private val timeSlotManagingService: TimeSlotManagingService,
+    private val classDispenserForScheduleGenerationProvider: ClassDispenserForScheduleGenerationProvider,
     private val classScheduleConfig: ClassScheduleConfig,
 ) {
     private val log = LoggerFactory.getLogger(ClassSeederService::class.java)
-    fun seedClasses(schedule: ClassSchedule, subjects: List<Subject>): ClassSchedule {
-        val classDispenser = prepareClassDispenser(subjects)
+    fun seedClasses(schedule: ClassSchedule): ClassSchedule {
+        val classDispenser = classDispenserForScheduleGenerationProvider.build(schedule.schoolClass.id)
         while (classDispenser.isNotEmpty()) {
             val currentSubject = classDispenser.keys.random()
             classDispenser oneLess currentSubject
@@ -36,10 +32,4 @@ class ClassSeederService(
         }
         return schedule
     }
-
-    private fun prepareClassDispenser(subjects: List<Subject>) =
-        HashMap(subjects.associateWith { classScheduleConfig.maxSubjectClassPerWeek })
-
-    private fun findNextTimeSlotForScheduleEntry(schedule: ScheduleEntry) =
-        schedule.timeSlots.filter { it.isNotBreakAndIsFreeToHaveClass() }.sortedBy { it.id }.first().id
 }

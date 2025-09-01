@@ -40,9 +40,6 @@ public class ApplicationWarmupService {
         SchoolClass firstWarmupClass = createWarmupSchoolClass();
         assignWarmupClass(savedSchool, firstWarmupClass);
         addRooms();
-
-        ClassSchedule schedule = emptyScheduleSchemaBuilderService.generateEmptySchedule(firstWarmupClass);
-        classSeederService.seedClasses(schedule, firstWarmupClass.getClassSubjects().stream().toList());
     }
 
     private School saveMainSchool() {

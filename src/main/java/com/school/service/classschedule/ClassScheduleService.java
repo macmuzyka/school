@@ -5,6 +5,7 @@ import com.school.model.entity.SchoolClass;
 import com.school.model.entity.classschedule.ClassSchedule;
 import com.school.repository.SchoolClassRepository;
 import com.school.repository.classschedule.ClassScheduleRepository;
+import com.school.service.SchoolClassService;
 import com.school.service.utils.EntityFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +20,17 @@ import java.util.stream.Collectors;
 public class ClassScheduleService {
     private final ClassScheduleRepository classScheduleRepository;
     private final SchoolClassRepository schoolClassRepository;
+    private final SchoolClassService schoolClassService;
     private final EmptyScheduleSchemaBuilderService emptyScheduleSchemaBuilderService;
     private static final Logger log = LoggerFactory.getLogger(ClassScheduleService.class);
 
     public ClassScheduleService(ClassScheduleRepository classScheduleRepository,
                                 SchoolClassRepository schoolClassRepository,
+                                SchoolClassService schoolClassService,
                                 EmptyScheduleSchemaBuilderService emptyScheduleSchemaBuilderService) {
         this.classScheduleRepository = classScheduleRepository;
         this.schoolClassRepository = schoolClassRepository;
+        this.schoolClassService = schoolClassService;
         this.emptyScheduleSchemaBuilderService = emptyScheduleSchemaBuilderService;
     }
 
@@ -70,7 +74,7 @@ public class ClassScheduleService {
         }
     }
 
-    public ClassSchedule getClassSchedule(Long scheduleId) {
+    public ClassSchedule getClassScheduleById(Long scheduleId) {
         return EntityFetcher.getByIdOrThrow(classScheduleRepository::findById, scheduleId, "ClassSchedule");
     }
 
@@ -80,5 +84,9 @@ public class ClassScheduleService {
 
     public void removeClassSchedule(ClassSchedule classSchedule) {
         classScheduleRepository.delete(classSchedule);
+    }
+
+    public Long getClassScheduleByClassId(Long classId) {
+        return schoolClassService.getSchoolClassById(classId).getClassSchedule().getId();
     }
 }

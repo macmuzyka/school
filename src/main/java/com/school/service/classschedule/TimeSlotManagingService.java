@@ -1,8 +1,10 @@
 package com.school.service.classschedule;
 
+import com.school.configuration.ClassScheduleConfig;
 import com.school.model.dto.sclassschedule.TimeSlotDTO;
 import com.school.model.entity.Subject;
 import com.school.model.entity.classschedule.ClassRoom;
+import com.school.model.entity.classschedule.ClassSchedule;
 import com.school.model.entity.classschedule.TimeSlot;
 import com.school.service.ClassRoomService;
 import com.school.service.SubjectService;
@@ -21,47 +23,75 @@ public class TimeSlotManagingService {
     private final TimeSlotQueryService timeSlotQueryService;
     private final SubjectService subjectService;
     private final ClassRoomService classRoomService;
+    private final ClassScheduleConfig classScheduleConfig;
     private static final Logger log = LoggerFactory.getLogger(TimeSlotManagingService.class);
 
-    public TimeSlotManagingService(TimeSlotQueryService timeSlotQueryService, SubjectService subjectService, ClassRoomService classRoomService) {
+    public TimeSlotManagingService(TimeSlotQueryService timeSlotQueryService, SubjectService subjectService, ClassRoomService classRoomService, ClassScheduleConfig classScheduleConfig) {
         this.timeSlotQueryService = timeSlotQueryService;
         this.subjectService = subjectService;
         this.classRoomService = classRoomService;
+        this.classScheduleConfig = classScheduleConfig;
     }
 
     @Transactional
     public TimeSlotDTO assignSubjectToTimeSlot(Long subjectId, Long timeSlotId) {
         try {
-            List<ClassRoom> unassignedClassRooms = classRoomService.getUnassignedClassRooms();
-            if (unassignedClassRooms.isEmpty()) {
-                throw new IllegalStateException("No empty class rooms available, consider adding new class rooms!");
-            } else {
-                log.debug("subjectId to be added: {} timeSlotId to be taken: {}", subjectId, timeSlotId);
-                Subject currentSubject = subjectService.getSubjectById(subjectId);
-                TimeSlot currentTimeSlot = timeSlotQueryService.getTimeSlotById(timeSlotId);
-                List<TimeSlot> currentScheduleEntryTimeSlots = timeSlotQueryService.getTimeSlotsByScheduleEntry(currentTimeSlot.getScheduleEntry());
+            List<ClassRoom> unassignedClassRooms = checkForAvailableClassRooms();
+            TimeSlot currentTimeSlot = timeSlotQueryService.getTimeSlotById(timeSlotId);
+            Subject currentSubject = subjectService.getSubjectById(subjectId);
+            checkIfWeekHasMaxSubjectClasses(currentTimeSlot, currentSubject);
 
-                ClassRoom unassignedClassRoom;
-                TimeSlot adjacentTimeSlot = lookForPreviousOrNextTimeSlotWithMatchingSubject(
-                        currentScheduleEntryTimeSlots,
-                        currentTimeSlot,
-                        currentSubject
-                );
-                if (adjacentTimeSlotIsPresent(adjacentTimeSlot)) {
-                    unassignedClassRoom = getMatchingSubjectClassRoom(adjacentTimeSlot);
-                } else {
-                    unassignedClassRoom = getRandomUnassignedClassRoom(unassignedClassRooms);
-                }
-                return new TimeSlotDTO(saveTimeSlotWithAssignedSubjectAndClassRoom(currentTimeSlot, currentSubject, unassignedClassRoom));
+            log.debug("subjectId to be added: {} timeSlotId to be taken: {}", subjectId, timeSlotId);
+            List<TimeSlot> currentScheduleEntryTimeSlots = timeSlotQueryService.getTimeSlotsByScheduleEntry(currentTimeSlot.getScheduleEntry());
+
+            ClassRoom unassignedClassRoom;
+            TimeSlot adjacentTimeSlot = lookForPreviousOrNextTimeSlotWithMatchingSubject(
+                    currentScheduleEntryTimeSlots,
+                    currentTimeSlot,
+                    currentSubject
+            );
+            if (adjacentTimeSlotIsPresent(adjacentTimeSlot)) {
+                unassignedClassRoom = getMatchingSubjectClassRoom(adjacentTimeSlot);
+            } else {
+                unassignedClassRoom = getRandomUnassignedClassRoom(unassignedClassRooms);
             }
+            return new TimeSlotDTO(saveTimeSlotWithAssignedSubjectAndClassRoom(currentTimeSlot, currentSubject, unassignedClassRoom));
+
         } catch (Exception e) {
             log.error("Error occurred while assigning subject to time slot: ", e);
             throw new IllegalStateException(e);
         }
     }
 
-    private ClassRoom getMatchingSubjectClassRoom(TimeSlot currentTimeSlot) {
+    private List<ClassRoom> checkForAvailableClassRooms() {
+        List<ClassRoom> unassignedClassRoom = classRoomService.getUnassignedClassRooms();
+        if (unassignedClassRoom.isEmpty()) {
+            throw new IllegalStateException("No empty class rooms available, consider adding new class rooms!");
+        } else {
+            return unassignedClassRoom;
+        }
+    }
 
+    private void checkIfWeekHasMaxSubjectClasses(TimeSlot timeSlot, Subject subject) {
+        ClassSchedule schedule = timeSlot.getScheduleEntry().getClassSchedule();
+        long scheduleSubjectClassCount = schedule.getScheduleEntries().stream()
+                .flatMap(entry -> entry.getTimeSlots().stream()
+                        .filter(ts -> ts.isNotBreak() &&
+                                ts.getSubject() != null
+                                && ts.getSubject().equals(subject)
+                        )
+                )
+                .count();
+        if (scheduleSubjectClassCount >= classScheduleConfig.getMaxSubjectClassPerWeek()) {
+            throw new IllegalStateException("Max subject classes of " +
+                    classScheduleConfig.getMaxSubjectClassPerWeek() +
+                    " reached, cannot add more " + subject.getName() +
+                    " subject to this schedule!"
+            );
+        }
+    }
+
+    private ClassRoom getMatchingSubjectClassRoom(TimeSlot currentTimeSlot) {
         return currentTimeSlot.getClassRoom();
     }
 

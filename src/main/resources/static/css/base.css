@@ -266,3 +266,19 @@ h1.version-control {
     background-color: #f7f7f7;
     border-radius: 6px;
 }
+
+.schedule-wrapper {
+    display: flex;
+    align-items: flex-start; /* align top edges */
+    gap: 20px; /* space between table and subject list */
+}
+
+.timetable {
+    flex: 1; /* table takes available space */
+}
+
+.subject-list {
+    width: 200px; /* fixed width for sidebar */
+    border-left: 1px solid #ccc;
+    padding-left: 10px;
+}

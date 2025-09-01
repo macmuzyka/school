@@ -11,7 +11,6 @@ import com.school.service.SchoolClassService;
 import com.school.service.classschedule.AdjacentTimeSlotsUtils;
 import com.school.service.classschedule.TimeSlotManagingService;
 import com.school.service.classschedule.TimeSlotQueryService;
-import com.school.service.utils.TimeSlotUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +58,7 @@ public class PreviousOrNextSlotsTakenTests {
         entry = testClass.getClassSchedule().getScheduleEntries().stream()
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Could not find any schedule entry with assigned time slots for test class: " + testClass));
-        sortedTimeSlots = new ArrayList<>(entry.getTimeSlots().stream().filter(TimeSlotUtils::isNotBreak).toList());
+        sortedTimeSlots = new ArrayList<>(entry.getTimeSlots().stream().filter(TimeSlot::isNotBreak).toList());
         sortedTimeSlots.sort(Comparator.comparing(Audit::getId));
         subject = subjectRepository.findBySchoolClassId(entry.getClassSchedule().getSchoolClass().getId())
                 .stream()

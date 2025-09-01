@@ -33,7 +33,7 @@ public class EmptyScheduleSchemaBuilderService {
     }
 
     public ClassSchedule generateEmptySchedule(SchoolClass schoolClass) {
-        log.debug("Generating schedule for class: " + schoolClass.getName());
+        log.debug("Generating schedule for class: {}", schoolClass.getName());
         if (schoolClass.getClassSchedule() != null) {
             schoolClass.setClassSchedule(null);
             schoolClassRepository.save(schoolClass);
