@@ -18,7 +18,7 @@ public class TimeSlotDTO {
     public TimeSlotDTO(TimeSlot timeSlot) {
         this.startTime = timeSlot.getStartTime();
         this.endTime = timeSlot.getEndTime();
-        this.subject = timeSlot.getSubject().getName();
+        this.subject = (timeSlot.getSubject() != null) ? timeSlot.getSubject().getName() : "-----";
     }
 
     public LocalTime getStartTime() {
@@ -31,5 +31,14 @@ public class TimeSlotDTO {
 
     public String getSubject() {
         return subject;
+    }
+
+    @Override
+    public String toString() {
+        return "TimeSlotDTO{" +
+                "startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", subject='" + (subject != null ? subject : "-----") + '\'' +
+                '}';
     }
 }

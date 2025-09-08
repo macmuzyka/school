@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class ClassRoomService {
     private final ClassRoomRepository classRoomRepository;
 
-    public ClassRoomService(final ClassRoomRepository classRoomRepository) {
+    public ClassRoomService(ClassRoomRepository classRoomRepository) {
         this.classRoomRepository = classRoomRepository;
     }
 

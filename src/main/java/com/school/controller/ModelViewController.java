@@ -7,8 +7,11 @@ import com.school.model.SubjectsWithGrades;
 import com.school.model.dto.ClassWithListedStudentsDTO;
 import com.school.model.dto.StudentDTO;
 import com.school.model.dto.StudentSubjectGradesDTO;
+import com.school.model.entity.Subject;
 import com.school.service.*;
+import com.school.service.classschedule.ClassDispenserForScheduleGenerationProvider;
 import com.school.service.classschedule.ClassScheduleService;
+import com.school.service.classschedule.ClassesLeftToDispenseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -23,10 +26,10 @@ import java.util.Map;
 
 import static com.school.service.utils.RequestParamValidator.prepareOptionalRequestParams;
 
+//TODO: move endpoints to separate controllers
 @Controller
 @RequestMapping("/school")
 public class ModelViewController {
-
     private final SchoolClassService schoolClassService;
     private final StudentService studentService;
     private final DuplicatedStudentService duplicatedStudentService;
@@ -37,6 +40,7 @@ public class ModelViewController {
     private final RoadMapService roadMapService;
     private final ProjectVersionService projectVersionService;
     private final ApplicationValidityService applicationValidityService;
+    private final ClassesLeftToDispenseService classesLeftToDispenseService;
     private final ApplicationConfig applicationConfig;
 
     public ModelViewController(SchoolClassService schoolClassService,
@@ -44,11 +48,12 @@ public class ModelViewController {
                                DuplicatedStudentService duplicatedStudentService,
                                InsertErrorStudentService insertErrorStudentService,
                                GradeService gradeService,
-                               SeedGradesService seedGradesService,
-                               ClassScheduleService classScheduleService, final SubjectService subjectService,
+                               ClassScheduleService classScheduleService,
+                               SubjectService subjectService,
                                RoadMapService roadMapService,
                                ProjectVersionService projectVersionService,
                                ApplicationValidityService applicationValidityService,
+                               ClassesLeftToDispenseService classesLeftToDispenseService,
                                ApplicationConfig applicationConfig
     ) {
         this.schoolClassService = schoolClassService;
@@ -61,6 +66,7 @@ public class ModelViewController {
         this.roadMapService = roadMapService;
         this.projectVersionService = projectVersionService;
         this.applicationValidityService = applicationValidityService;
+        this.classesLeftToDispenseService = classesLeftToDispenseService;
         this.applicationConfig = applicationConfig;
     }
 
@@ -215,10 +221,17 @@ public class ModelViewController {
     public String schedulesList(Model model,
                                 @RequestParam("id") Long id) {
         try {
+            Long scheduleId = classScheduleService.getClassScheduleIdByClassId(id);
+            Map<Subject, Integer> classesLeft = classesLeftToDispenseService.getClassesLeft(scheduleId);
+            log.info("classesLeft:");
+            log.info("subjects:");
+            classesLeft.keySet().forEach(it -> log.info(it.toString()));
             model.addAttribute("classId", id);
+            model.addAttribute("scheduleId", scheduleId);
             model.addAttribute("timetable", classScheduleService.getClassScheduleGroupedByDaySubjectAndTimeframe(id, true));
             model.addAttribute("days", EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
             model.addAttribute("subjects", subjectService.getSchoolClassSubjectsDTOs(id));
+            model.addAttribute("classesLeft", classesLeft);
             return "schedule-details";
         } catch (Exception e) {
             return e.getMessage();

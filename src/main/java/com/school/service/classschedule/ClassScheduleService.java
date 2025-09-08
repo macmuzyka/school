@@ -1,10 +1,15 @@
 package com.school.service.classschedule;
 
+import com.school.model.dto.sclassschedule.ClassScheduleSummary;
 import com.school.model.dto.sclassschedule.DaySubject;
 import com.school.model.entity.SchoolClass;
+import com.school.model.entity.classschedule.ClassRoom;
 import com.school.model.entity.classschedule.ClassSchedule;
 import com.school.repository.SchoolClassRepository;
+import com.school.repository.classschedule.ClassRoomRepository;
 import com.school.repository.classschedule.ClassScheduleRepository;
+import com.school.service.SchoolClassService;
+import com.school.service.utils.ClassScheduleDSLKt;
 import com.school.service.utils.EntityFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +24,20 @@ import java.util.stream.Collectors;
 public class ClassScheduleService {
     private final ClassScheduleRepository classScheduleRepository;
     private final SchoolClassRepository schoolClassRepository;
+    private final SchoolClassService schoolClassService;
+    private final ClassRoomRepository classRoomRepository;
     private final EmptyScheduleSchemaBuilderService emptyScheduleSchemaBuilderService;
     private static final Logger log = LoggerFactory.getLogger(ClassScheduleService.class);
 
     public ClassScheduleService(ClassScheduleRepository classScheduleRepository,
                                 SchoolClassRepository schoolClassRepository,
+                                SchoolClassService schoolClassService,
+                                ClassRoomRepository classRoomRepository,
                                 EmptyScheduleSchemaBuilderService emptyScheduleSchemaBuilderService) {
         this.classScheduleRepository = classScheduleRepository;
         this.schoolClassRepository = schoolClassRepository;
+        this.schoolClassService = schoolClassService;
+        this.classRoomRepository = classRoomRepository;
         this.emptyScheduleSchemaBuilderService = emptyScheduleSchemaBuilderService;
     }
 
@@ -70,7 +81,7 @@ public class ClassScheduleService {
         }
     }
 
-    public ClassSchedule getClassSchedule(Long scheduleId) {
+    public ClassSchedule getClassScheduleById(Long scheduleId) {
         return EntityFetcher.getByIdOrThrow(classScheduleRepository::findById, scheduleId, "ClassSchedule");
     }
 
@@ -78,7 +89,38 @@ public class ClassScheduleService {
         return classScheduleRepository.save(classSchedule);
     }
 
-    public void removeClassSchedule(ClassSchedule classSchedule) {
-        classScheduleRepository.delete(classSchedule);
+    public Long getClassScheduleIdByClassId(Long classId) {
+        return schoolClassService.getSchoolClassById(classId).getClassSchedule().getId();
+    }
+
+    public ClassSchedule getClassScheduleByClassId(Long classId) {
+        return schoolClassService.getSchoolClassById(classId).getClassSchedule();
+    }
+
+    //TODO: move to separate service
+    public void purgeClassSchedule(ClassSchedule classSchedule) {
+        classSchedule.getScheduleEntries()
+                .forEach(se -> se.getTimeSlots()
+                        .forEach(ts -> {
+                                    ts.setSubject(null);
+                                    if (ts.getClassRoom() != null) {
+                                        ClassRoom classRoom = ts.getClassRoom();
+                                        classRoom.detachFromTimeSlot();
+                                        classRoomRepository.save(classRoom);
+                                    }
+                                    ts.setClassRoom(null);
+                                }
+                        )
+                );
+        classScheduleRepository.save(classSchedule);
+    }
+
+    public void purgeClassSchedule(Long classId) {
+        ClassSchedule classSchedule = getClassScheduleByClassId(classId);
+        purgeClassSchedule(classSchedule);
+    }
+
+    public List<ClassScheduleSummary> getSchedulesSummary() {
+        return classScheduleRepository.findAll().stream().map(ClassScheduleDSLKt::asQuickView).toList();
     }
 }

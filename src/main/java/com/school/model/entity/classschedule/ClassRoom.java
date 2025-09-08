@@ -32,7 +32,7 @@ public class ClassRoom extends Audit {
     }
 
     public void detachFromTimeSlot() {
-        this.timeSlot = null;
+        this.timeSlot = new ArrayList<>();
         this.occupied = false;
     }
 
@@ -46,5 +46,14 @@ public class ClassRoom extends Audit {
 
     public boolean isOccupied() {
         return occupied;
+    }
+
+    @Override
+    public String toString() {
+        return "ClassRoom{" +
+                "roomNumber=" + roomNumber +
+                ", timeSlotIds=" + timeSlot.stream().map(TimeSlot::getId).toList() +
+                ", occupied=" + occupied +
+                '}';
     }
 }

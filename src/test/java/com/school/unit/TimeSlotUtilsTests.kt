@@ -1,6 +1,6 @@
 package com.school.unit
 
-import com.school.service.utils.TimeSlotUtils.Companion.isNotLaterThan
+import com.school.service.utils.isNotLaterThan
 import java.time.LocalTime
 
 import kotlin.test.Test
@@ -11,7 +11,7 @@ class TimeSlotUtilsTests {
     @Test
     fun shouldBeEqualOrEarlier() {
         val now = LocalTime.now()
-        val alsoNow = now
+        val alsoNow = LocalTime.now()
         assertTrue { now.isNotLaterThan(alsoNow) }
         assertTrue { alsoNow.isNotLaterThan(now) }
 

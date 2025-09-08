@@ -9,9 +9,8 @@ import com.school.repository.SchoolClassRepository;
 import com.school.repository.SubjectRepository;
 import com.school.service.SchoolClassService;
 import com.school.service.classschedule.AdjacentTimeSlotsUtils;
-import com.school.service.classschedule.TimeSlotManagingService;
+import com.school.service.classschedule.TimeSlotAssigningService;
 import com.school.service.classschedule.TimeSlotQueryService;
-import com.school.service.utils.TimeSlotUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,10 +26,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-//@ExtendWith(SpringExtension.class)
 @ActiveProfiles("prod")
 public class PreviousOrNextSlotsTakenTests {
-    private final TimeSlotManagingService timeSlotManagingService;
+    private final TimeSlotAssigningService timeSlotAssigningService;
     private final TimeSlotQueryService timeSlotQueryService;
     private final SubjectRepository subjectRepository;
     private final SchoolClassService schoolClassService;
@@ -41,12 +39,12 @@ public class PreviousOrNextSlotsTakenTests {
     private Subject subject;
 
     @Autowired
-    public PreviousOrNextSlotsTakenTests(TimeSlotManagingService timeSlotManagingService,
+    public PreviousOrNextSlotsTakenTests(TimeSlotAssigningService timeSlotAssigningService,
                                          TimeSlotQueryService timeSlotQueryService,
                                          SubjectRepository subjectRepository,
                                          SchoolClassService schoolClassService,
                                          SchoolClassRepository schoolClassRepository) {
-        this.timeSlotManagingService = timeSlotManagingService;
+        this.timeSlotAssigningService = timeSlotAssigningService;
         this.timeSlotQueryService = timeSlotQueryService;
         this.subjectRepository = subjectRepository;
         this.schoolClassService = schoolClassService;
@@ -59,7 +57,7 @@ public class PreviousOrNextSlotsTakenTests {
         entry = testClass.getClassSchedule().getScheduleEntries().stream()
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Could not find any schedule entry with assigned time slots for test class: " + testClass));
-        sortedTimeSlots = new ArrayList<>(entry.getTimeSlots().stream().filter(TimeSlotUtils::isNotBreak).toList());
+        sortedTimeSlots = new ArrayList<>(entry.getTimeSlots().stream().filter(TimeSlot::isNotBreak).toList());
         sortedTimeSlots.sort(Comparator.comparing(Audit::getId));
         subject = subjectRepository.findBySchoolClassId(entry.getClassSchedule().getSchoolClass().getId())
                 .stream()
@@ -80,7 +78,7 @@ public class PreviousOrNextSlotsTakenTests {
 
         List<TimeSlot> scheduleEntryTimeSlots = timeSlotQueryService.getTimeSlotsByScheduleEntry(entry);
 
-        timeSlotManagingService.assignSubjectToTimeSlot(subject.getId(), secondClassSlot.getId());
+        timeSlotAssigningService.assignSubjectToTimeSlot(subject.getId(), secondClassSlot.getId());
         assertNull(AdjacentTimeSlotsUtils.lookForPreviousOrNextTimeSlotWithMatchingSubject(scheduleEntryTimeSlots, secondClassSlot, subject));
     }
 
@@ -89,7 +87,7 @@ public class PreviousOrNextSlotsTakenTests {
     public void shouldFindAdjacentSlotsTaken() {
         int savedBeforeOtherTimeSlotNo = 3;
         TimeSlot savedBeforeOtherTimeSlot = sortedTimeSlots.get(savedBeforeOtherTimeSlotNo);
-        timeSlotManagingService.assignSubjectToTimeSlot(subject.getId(), savedBeforeOtherTimeSlot.getId());
+        timeSlotAssigningService.assignSubjectToTimeSlot(subject.getId(), savedBeforeOtherTimeSlot.getId());
 
         int slotNoToFindAdjacentNo = 2;
         TimeSlot slotToFindAdjacent = sortedTimeSlots.get(slotNoToFindAdjacentNo);

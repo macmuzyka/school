@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/css/forms.css">
     <link rel="stylesheet" type="text/css" href="/css/notification.css">
     <link rel="stylesheet" type="text/css" href="/css/subject-list.css">
+    <link rel="stylesheet" type="text/css" href="/css/schedule.css">
     <script src="/js/notification.js"></script>
     <script src="/js/go-back.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -17,7 +18,7 @@
 <div class="container">
     <h1 class="header">
         <button class="redirect-icon go-up"
-                onclick="window.location.href='http://localhost:9000/school'"
+                onclick="window.location.href='http://localhost:9000/school/schedules-entry-point'"
                 title="Go to dashboard">
             <i class="fa-solid fa-arrow-turn-up"></i>
         </button>
@@ -28,55 +29,185 @@
             <i class="fa-solid fa-circle-arrow-left"></i>
         </button>
     </h1>
-    <table border="1">
-        <thead>
-        <tr>
-            <th>Timeframe</th>
-            <th th:each="day : ${days}" th:text="${day}">Day</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="entry : ${timetable}">
-            <td th:text="${entry.key}">Timeframe</td>
-            <td th:each="day : ${days}">
-                <div th:each="ds : ${entry.value}"
-                     th:with="classId=${classId}, bgColor=${ds.subject == '-----' ? '#e0e0e0' : '#03fcb1'}"
-                     th:style="|background-color: ${bgColor};|"
-                     th:attr="ondrop=|onDrop(event, '${ds.timeSlotId}')|"
-                     ondragover="onDragOver(event)"
-                     class="drop-target"
-                     th:if="${ds.dayOfWeek == day}">
-                    <span th:text="${ds.subject}"></span><br/>
-                    <small th:text="|Room No. ${ds.roomNumber}|"></small>
-                </div>
-            </td>
-        </tr>
-        </tbody>
 
-    </table>
-    <table>
-        <tr style="border: none;">
+    <div class="schedule-wrapper">
+        <div class="timetable">
+
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>Timeframe</th>
+                    <th th:each="day : ${days}" th:text="${day}">Day</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="entry : ${timetable}">
+                    <td th:text="${entry.key}">Timeframe</td>
+                    <td th:each="day : ${days}">
+                        <div th:each="ds : ${entry.value}"
+                             th:with="classId=${classId}, bgColor=${ds.subject == '-----' ? '#e0e0e0' : '#B3D89C'}"
+                             th:style="|background-color: ${bgColor}; border:1px solid black; border-radius:4px; display:flex; align-items:center; justify-content:flex-start; padding:4px;|"
+                             th:attr="ondrop=|onDrop(event, '${ds.timeSlotId}')|"
+                             ondragover="onDragOver(event)"
+                             class="drop-target"
+                             th:if="${ds.dayOfWeek == day}">
+
+                            <!-- Left side: vertical buttons -->
+                            <div style="display: flex; flex-direction: column; gap: 6px; margin-right: 8px;">
+                                <div class="tooltip">
+                                    <button type="button"
+                                            th:if="${ds.subject != '-----'}"
+                                            th:attr="onclick=|removeClass('${ds.timeSlotId}')|"
+                                            style="background:#8E3B46; color:white; border:1px solid black; border-radius:4px;
+                       width:24px; height:24px; cursor:pointer; font-weight:bold; display:flex;
+                       align-items:center; justify-content:center;">
+                                        ✕
+                                    </button>
+                                    <span class="tooltiptext">Remove class</span>
+                                </div>
+                                <div class="tooltip">
+                                    <button type="button"
+                                            th:if="${ds.subject != '-----'}"
+                                            th:attr="onclick=|openAttendance('${ds.timeSlotId}')|"
+                                            style="background:#77A6B6; color:white; border:1px solid black; border-radius:4px;
+                       width:24px; height:24px; cursor:pointer; font-weight:bold; display:flex;
+                       align-items:center; justify-content:center;">
+                                        <i class="fa-solid fa-list-ul"></i>
+                                    </button>
+                                    <span class="tooltiptext">Open attendance list</span>
+                                </div>
+                                <div class="tooltip">
+                                    <button type="button"
+                                            th:if="${ds.subject != '-----'}"
+                                            th:attr="onclick=|yetToBeImplemented('${ds.timeSlotId}')|"
+                                            style="background:#9DC3C2; color:black; border:1px solid black; border-radius:4px;
+                       width:24px; height:24px; cursor:pointer; font-weight:bold; display:flex;
+                       align-items:center; justify-content:center;">
+                                        H
+                                    </button>
+                                    <span class="tooltiptext">Yet to be implemented</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span th:text="${ds.subject}"></span><br/>
+                                <small th:text="|Room No. ${ds.roomNumber}|"></small>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="parent-container">
             <div class="subject-list">
+                <h3>Subjects</h3>
                 <ul style="margin: 0; padding-left: 16px;">
-                    <li th:each="subject : ${subjects}"
+                    <li th:each="entry : ${classesLeft}"
                         th:attr="draggable=true"
-                        th:attrappend="data-subject-id=${subject.id}"
-                        th:text="${subject.subjectName}"
+                        th:attrappend="data-subject-id=${entry.key.id}"
+                        th:text="${entry.key.name + ' (' + entry.value + ')'}"
                         ondragstart="onDragStart(event)">
                     </li>
                 </ul>
             </div>
-        </tr>
-    </table>
 
+            <div>
+                <div class="tooltip">
+                    <button class="schedule-icon"
+                            onclick="generateSchedule()"
+                            style="background:#77A6B6; color:white; border:1px solid black; border-radius:4px;
+                       width:36px; height:36px; cursor:pointer; font-weight:bold; display:flex;
+                       align-items:center; justify-content:center;">➕
+                    </button>
+                    <span class="tooltiptext">Generate new schedule</span>
+                </div>
+
+                <div class="tooltip">
+                    <button class="schedule-icon"
+                            onclick="purgeSchedule()"
+                            style="background:#8E3B46; color:white; border:1px solid black; border-radius:4px;
+                       width:36px; height:36px; cursor:pointer; font-weight:bold; display:flex;
+                       align-items:center; justify-content:center;">❌
+                    </button>
+                    <span class="tooltiptext">Purge schedule</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+<div id="schedule-container" th:attr="data-class-id=${classId}"></div>
 </body>
 <script>
+    function generateSchedule() {
+        const classId = document.getElementById("schedule-container").getAttribute("data-class-id");
+
+        fetch('/schedule-generator?classId=' + classId, {
+            method: "POST"
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("HTTP error: " + response.status);
+            }
+            return response.json(); // parse body into JS object
+        })
+            .then(data => {
+                if (data.created) {
+                    console.log('schedule generated');
+                    location.reload();
+                } else {
+                    console.log('response error: created=false');
+                    alert("Failed to generate schedule");
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            alert("Server error while generating schedule");
+        });
+    }
+
+    function purgeSchedule() {
+        const classId = document.getElementById("schedule-container").getAttribute("data-class-id");
+        fetch('/schedules/purge?classId=' + classId, {
+            method: "DELETE"
+        })
+        .then(response => {
+            if (response.status === 204) {
+                console.log("Schedule purged successfully");
+                location.reload();
+            } else {
+                return response.text().then(err => {
+                throw new Error(err);
+                });
+        }
+    })
+    .catch(error => {
+        console.error("Error purging schedule:", error);
+        alert("Failed to purge schedule: " + error.message);
+        });
+    }
+
     function onDragStart(event) {
         console.log('onDragStart')
         const subjectId = event.target.getAttribute("data-subject-id");
         console.log('subjectId: ' + subjectId)
         event.dataTransfer.setData("subjectId", subjectId);
+    }
+
+    function removeClass(timeSlotId) {
+        console.log('Remove class function called')
+        console.log('timeSlotId: ' + timeSlotId)
+
+        fetch('/timeslot-purging?timeSlotId='+timeSlotId, {
+            method: "PATCH"
+        }).then(response => {
+            if (response.ok) {
+                console.log('response ok')
+                location.reload();
+            } else {
+                console.log('response error')
+                alert("Failed to remove class from time slot");
+            }
+        });
     }
 
     function onDrop(event, timeSlotId) {
@@ -85,7 +216,7 @@
         event.preventDefault();
         const subjectId = event.dataTransfer.getData("subjectId");
 
-        fetch('/timeslot-managing/add-to-timeslot?subjectId=' + subjectId + '&timeSlotId=' + timeSlotId, {
+        fetch('/timeslot-assigning/add-to-timeslot?subjectId=' + subjectId + '&timeSlotId=' + timeSlotId, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
