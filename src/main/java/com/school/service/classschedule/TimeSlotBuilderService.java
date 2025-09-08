@@ -3,7 +3,6 @@ package com.school.service.classschedule;
 import com.school.configuration.ClassScheduleConfig;
 import com.school.model.entity.classschedule.ScheduleEntry;
 import com.school.model.entity.classschedule.TimeSlot;
-import com.school.repository.classschedule.TimeSlotRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,18 +13,16 @@ import java.util.List;
 
 @Service
 public class TimeSlotBuilderService {
-    private final TimeSlotRepository timeSlotRepository;
     private final ClassScheduleConfig classScheduleConfig;
     private static final Logger log = LoggerFactory.getLogger(TimeSlotBuilderService.class);
 
-    public TimeSlotBuilderService(TimeSlotRepository timeSlotRepository, ClassScheduleConfig classScheduleConfig) {
-        this.timeSlotRepository = timeSlotRepository;
+    public TimeSlotBuilderService(ClassScheduleConfig classScheduleConfig) {
         this.classScheduleConfig = classScheduleConfig;
     }
 
     public List<TimeSlot> buildTimeSlots(ScheduleEntry scheduleEntry) {
         List<TimeSlot> timeSlots = new ArrayList<>();
-        TimeSlot firstTimeSlot = timeSlotRepository.save(buildFirstTimeSlot(scheduleEntry));
+        TimeSlot firstTimeSlot = buildFirstTimeSlot(scheduleEntry);
         timeSlots.add(firstTimeSlot);
 
         buildRemainingTimeSlots(firstTimeSlot.getEndTime(), scheduleEntry, timeSlots);
@@ -68,14 +65,12 @@ public class TimeSlotBuilderService {
                 slotIsBreak = false;
                 slotEnding = addLessonDuration(slotEnding);
             }
-            TimeSlot toSave = timeSlotRepository.save(
-                    new TimeSlot(
-                            slotBeginning,
-                            slotEnding,
-                            null,
-                            scheduleEntry,
-                            slotIsBreak
-                    )
+            TimeSlot toSave = new TimeSlot(
+                    slotBeginning,
+                    slotEnding,
+                    null,
+                    scheduleEntry,
+                    slotIsBreak
             );
             timeSlots.add(toSave);
         }

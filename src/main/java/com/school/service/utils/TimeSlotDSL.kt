@@ -1,4 +1,4 @@
-package com.school.service
+package com.school.service.utils
 
 import com.school.model.entity.classschedule.ClassSchedule
 import com.school.model.entity.classschedule.ScheduleEntry
@@ -8,11 +8,6 @@ import java.time.LocalTime
 fun ClassSchedule.getBeginningOfTargetSlot(targetSlotIndex: Int): LocalTime = this.scheduleEntries
     .first().timeSlots
     .filter { it.isNotBreak }[targetSlotIndex].startTime
-
-fun TimeSlot.isNotBreakAndIsFreeToHaveClass() = this.isNotBreak && this.subject == null
-
-fun TimeSlot.doesNotExceedMaxClassStartTime(maxClassStartTime: LocalTime) =
-    this.startTime.isNotLaterThan(maxClassStartTime)
 
 fun LocalTime.isNotLaterThan(other: LocalTime) = this.isBefore(other) ||
         (this.hour == other.hour && this.minute == other.minute && this.second == other.second)
@@ -33,5 +28,9 @@ fun List<TimeSlot>.isConsistentClassChain(): Boolean {
     return true
 }
 
-fun findNextTimeSlotForScheduleEntry(schedule: ScheduleEntry): Long =
-    schedule.timeSlots.filter { it.isNotBreakAndIsFreeToHaveClass() }.sortedBy { it.id }.first().id
+fun List<TimeSlot>.findRandomBeginningTimeSlot(maxSlotIndex: Int) =
+    filterIndexed { index, _ -> index < maxSlotIndex }.random()
+
+fun List<TimeSlot>.findNextFreeTimeSlot(latestClassTimeSlot: TimeSlot) = this.first { it.id > latestClassTimeSlot.id }
+
+fun List<TimeSlot>.alreadyHaveFirstClass(): TimeSlot? = this/*.sortedBy { it.id }*/.lastOrNull { it.subject != null }

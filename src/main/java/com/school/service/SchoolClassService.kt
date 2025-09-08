@@ -16,6 +16,7 @@ import com.school.service.utils.EntityFetcher
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 //TODO: refactor this shit
@@ -46,7 +47,10 @@ class SchoolClassService(
                 ClassForScheduleDTO(
                     schoolClass.id,
                     schoolClass.name,
-                    schoolClass.classSchedule != null
+                    schoolClass.classSchedule.scheduleEntries
+                        .flatMap { it.timeSlots }
+                        .filter { it.isNotBreak }
+                        .any { it.subject != null }
                 )
             }.toList()
     }
@@ -146,6 +150,7 @@ class SchoolClassService(
         return newSchoolClass
     }
 
+    @Transactional
     fun createNewClassWithAssignedSubjects(): SchoolClass {
         val newSchoolClass =
             SchoolClass("Class ${findNextClassNumber()}")
@@ -154,6 +159,7 @@ class SchoolClassService(
             .toSet()
         newSchoolClass.classSubjects = newClassSubjects
         newSchoolClass.setSchool(motherSchool())
+        emptyScheduleSchemaBuilderService.generateEmptySchedule(newSchoolClass)
         return schoolClassRepository.save(newSchoolClass)
     }
 
@@ -175,5 +181,6 @@ class SchoolClassService(
 
     fun removeClass(schoolClass: SchoolClass) = schoolClassRepository.delete(schoolClass)
 
-    fun getSchoolClassById(classId: Long): SchoolClass = EntityFetcher.getByIdOrThrow(schoolClassRepository::findById, classId, "SchoolClass")
+    fun getSchoolClassById(classId: Long): SchoolClass =
+        EntityFetcher.getByIdOrThrow(schoolClassRepository::findById, classId, "SchoolClass")
 }

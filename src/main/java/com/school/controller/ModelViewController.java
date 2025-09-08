@@ -26,6 +26,7 @@ import java.util.Map;
 
 import static com.school.service.utils.RequestParamValidator.prepareOptionalRequestParams;
 
+//TODO: move endpoints to separate controllers
 @Controller
 @RequestMapping("/school")
 public class ModelViewController {
@@ -40,7 +41,6 @@ public class ModelViewController {
     private final ProjectVersionService projectVersionService;
     private final ApplicationValidityService applicationValidityService;
     private final ClassesLeftToDispenseService classesLeftToDispenseService;
-    private final ClassDispenserForScheduleGenerationProvider classDispenserForScheduleGenerationProvider;
     private final ApplicationConfig applicationConfig;
 
     public ModelViewController(SchoolClassService schoolClassService,
@@ -54,7 +54,6 @@ public class ModelViewController {
                                ProjectVersionService projectVersionService,
                                ApplicationValidityService applicationValidityService,
                                ClassesLeftToDispenseService classesLeftToDispenseService,
-                               ClassDispenserForScheduleGenerationProvider classDispenserForScheduleGenerationProvider,
                                ApplicationConfig applicationConfig
     ) {
         this.schoolClassService = schoolClassService;
@@ -68,7 +67,6 @@ public class ModelViewController {
         this.projectVersionService = projectVersionService;
         this.applicationValidityService = applicationValidityService;
         this.classesLeftToDispenseService = classesLeftToDispenseService;
-        this.classDispenserForScheduleGenerationProvider = classDispenserForScheduleGenerationProvider;
         this.applicationConfig = applicationConfig;
     }
 
@@ -223,7 +221,7 @@ public class ModelViewController {
     public String schedulesList(Model model,
                                 @RequestParam("id") Long id) {
         try {
-            Long scheduleId = classScheduleService.getClassScheduleByClassId(id);
+            Long scheduleId = classScheduleService.getClassScheduleIdByClassId(id);
             Map<Subject, Integer> classesLeft = classesLeftToDispenseService.getClassesLeft(scheduleId);
             log.info("classesLeft:");
             log.info("subjects:");

@@ -19,14 +19,14 @@ import static com.school.service.classschedule.AdjacentTimeSlotsUtils.adjacentTi
 import static com.school.service.classschedule.AdjacentTimeSlotsUtils.lookForPreviousOrNextTimeSlotWithMatchingSubject;
 
 @Service
-public class TimeSlotManagingService {
+public class TimeSlotAssigningService {
     private final TimeSlotQueryService timeSlotQueryService;
     private final SubjectService subjectService;
     private final ClassRoomService classRoomService;
     private final ClassScheduleConfig classScheduleConfig;
-    private static final Logger log = LoggerFactory.getLogger(TimeSlotManagingService.class);
+    private static final Logger log = LoggerFactory.getLogger(TimeSlotAssigningService.class);
 
-    public TimeSlotManagingService(TimeSlotQueryService timeSlotQueryService, SubjectService subjectService, ClassRoomService classRoomService, ClassScheduleConfig classScheduleConfig) {
+    public TimeSlotAssigningService(TimeSlotQueryService timeSlotQueryService, SubjectService subjectService, ClassRoomService classRoomService, ClassScheduleConfig classScheduleConfig) {
         this.timeSlotQueryService = timeSlotQueryService;
         this.subjectService = subjectService;
         this.classRoomService = classRoomService;
@@ -103,9 +103,9 @@ public class TimeSlotManagingService {
 
     private TimeSlot saveTimeSlotWithAssignedSubjectAndClassRoom(TimeSlot timeSlot, Subject subject, ClassRoom classRoom) {
         TimeSlot updatedTimeSlot = timeSlotQueryService.assignSubjectAndClassRoomToTimeSlot(timeSlot, subject, classRoom);
-        classRoom.assignTimeSlot(timeSlot);
-        classRoomService.updateWithAssignedTimeSlot(classRoom, timeSlot);
-        log.info("subject id: {} added to time slot id: {} and assigned class room no: {}",
+        classRoom.assignTimeSlot(updatedTimeSlot);
+        classRoomService.updateWithAssignedTimeSlot(classRoom, updatedTimeSlot);
+        log.info("Subject id: {} added to TimeSlot with id: {} and assigned ClassRoom no: {}",
                 updatedTimeSlot.getSubject().getId(),
                 updatedTimeSlot.getId(),
                 updatedTimeSlot.getClassRoom().getRoomNumber()

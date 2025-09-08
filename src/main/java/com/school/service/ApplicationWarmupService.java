@@ -3,11 +3,8 @@ package com.school.service;
 import com.school.model.entity.School;
 import com.school.model.entity.SchoolClass;
 import com.school.model.entity.classschedule.ClassRoom;
-import com.school.model.entity.classschedule.ClassSchedule;
 import com.school.repository.SchoolRepository;
 import com.school.repository.classschedule.ClassRoomRepository;
-import com.school.service.classschedule.ClassSeederService;
-import com.school.service.classschedule.EmptyScheduleSchemaBuilderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,20 +16,14 @@ public class ApplicationWarmupService {
     private final SchoolRepository schoolRepository;
     private final ClassRoomRepository classRoomRepository;
     private final SchoolClassService schoolClassService;
-    private final ClassSeederService classSeederService;
-    private final EmptyScheduleSchemaBuilderService emptyScheduleSchemaBuilderService;
     private final Logger log = LoggerFactory.getLogger(ApplicationWarmupService.class);
 
     public ApplicationWarmupService(SchoolRepository schoolRepository,
                                     ClassRoomRepository classRoomRepository,
-                                    SchoolClassService schoolClassService,
-                                    ClassSeederService classSeederService,
-                                    EmptyScheduleSchemaBuilderService emptyScheduleSchemaBuilderService) {
+                                    SchoolClassService schoolClassService) {
         this.schoolRepository = schoolRepository;
         this.classRoomRepository = classRoomRepository;
         this.schoolClassService = schoolClassService;
-        this.classSeederService = classSeederService;
-        this.emptyScheduleSchemaBuilderService = emptyScheduleSchemaBuilderService;
     }
 
     public void addSchoolWithClassOnWarmup() {

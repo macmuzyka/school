@@ -1,6 +1,6 @@
 package com.school.unit
 
-import com.school.service.isNotLaterThan
+import com.school.service.utils.isNotLaterThan
 import java.time.LocalTime
 
 import kotlin.test.Test
