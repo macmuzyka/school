@@ -7,18 +7,18 @@ import com.school.model.entity.classschedule.TimeSlot
 import com.school.repository.attendance.AttendanceRepository
 import java.time.LocalDate
 
-fun AttendanceDTO.prepareEntity(timeSlot: TimeSlot, studentPresenceService: StudentPresenceService): Attendance =
+fun AttendanceDTO.prepareAttendanceEntity(timeSlot: TimeSlot, studentPresenceService: StudentPresenceService): Attendance =
     Attendance(
         timeSlot.startTime,
         timeSlot.endTime,
         LocalDate.now(),
         timeSlot.subject,
         timeSlot,
-        studentPresenceService.buildEntitiesFromDTO(studentPresence)
+        studentPresenceService.buildStudentPresenceEntities(studentPresence)
     )
 
 fun Attendance.associateAttendanceWithPresence(): Attendance = apply { presenceList.forEach { it.attendance = this } }
 
-fun Attendance.respond(): AttendanceResponse = AttendanceResponse(this)
+fun Attendance.asResponse(): AttendanceResponse = AttendanceResponse(this)
 
 fun Attendance.persist(attendanceRepository: AttendanceRepository): Attendance = attendanceRepository.save(this)

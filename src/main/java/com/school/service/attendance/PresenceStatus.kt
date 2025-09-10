@@ -4,5 +4,6 @@ enum class PresenceStatus(present: Boolean) {
     PRESENT(true),
     ABSENT(false),
     LATE(true),
-    LEFT_EARLY(true)
+    LEFT_EARLY(true),
+    NOT_YET_CHOSEN(false)
 }

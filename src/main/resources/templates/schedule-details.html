@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="/css/notification.css">
     <link rel="stylesheet" type="text/css" href="/css/subject-list.css">
     <link rel="stylesheet" type="text/css" href="/css/schedule.css">
+    <link rel="stylesheet" type="text/css" href="/css/attendance.css">
     <script src="/js/notification.js"></script>
     <script src="/js/go-back.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -52,7 +53,6 @@
                              class="drop-target"
                              th:if="${ds.dayOfWeek == day}">
 
-                            <!-- Left side: vertical buttons -->
                             <div style="display: flex; flex-direction: column; gap: 6px; margin-right: 8px;">
                                 <div class="tooltip">
                                     <button type="button"
@@ -136,30 +136,156 @@
     </div>
 </div>
 <div id="schedule-container" th:attr="data-class-id=${classId}"></div>
+<div id="attendance-modal" class="modal" style="display:none;">
+    <div class="modal-content" style="background:white; padding:20px; border-radius:8px; max-width:600px; margin:auto;">
+        <h2>Attendance List</h2>
+        <table id="attendance-table" border="1" style="width:100%; border-collapse: collapse;">
+            <thead>
+            <tr>
+                <th>Student</th>
+                <th>Status</th>
+                <th>Note</th>
+            </tr>
+            </thead>
+            <tbody id="attendance-body">
+            </tbody>
+        </table>
+        <div style="margin-top:15px; display:flex; justify-content:flex-end; gap:10px;">
+            <button onclick="closeAttendance()" style="background:#ccc; padding:6px 12px;">Cancel</button>
+            <button onclick="submitAttendance()" style="background:#77A6B6; color:white; padding:6px 12px;">Submit
+            </button>
+        </div>
+    </div>
+</div>
+
 </body>
 <script>
+    let currentTimeSlotId = null;
+
+    function openAttendance(timeSlotId) {
+        currentTimeSlotId = timeSlotId;
+
+        fetch('/attendance/get?timeSlotId=' + timeSlotId)
+            .then(response => {
+            if (!response.ok) throw new Error("Failed to load students");
+            return response.json();
+        })
+            .then(attendance => {
+            const tbody = document.getElementById("attendance-body");
+            tbody.innerHTML = "";
+
+            attendance.studentPresence.forEach(sp => {
+                const row = document.createElement("tr");
+
+                const nameCell = document.createElement("td");
+                nameCell.textContent = sp.name + " " + sp.surname;
+                row.appendChild(nameCell);
+
+                const statusCell = document.createElement("td");
+                const select = document.createElement("select");
+                ["NOT_YET_CHOSEN", "PRESENT", "ABSENT", "LATE", "LEFT_EARLY"].forEach(opt => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    if (sp.presenceStatus === opt) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+                console.log('sp.studentId: ' + sp.studentId)
+                select.setAttribute("data-student-id", sp.studentId);
+                statusCell.appendChild(select);
+                row.appendChild(statusCell);
+
+                const noteCell = document.createElement("td");
+                const noteInput = document.createElement("input");
+                noteInput.type = "text";
+                noteInput.placeholder = "Optional note";
+                noteInput.value = sp.note || "";
+                noteInput.setAttribute("data-student-id", sp.studentId);
+                noteCell.appendChild(noteInput);
+                row.appendChild(noteCell);
+
+                tbody.appendChild(row);
+            });
+
+            document.getElementById("attendance-modal").style.display = "flex";
+        }).catch(error => {
+            console.error(error);
+            alert("Error loading student list");
+        });
+    }
+
+    function closeAttendance() {
+        document.getElementById("attendance-modal").style.display = "none";
+    }
+
+    function submitAttendance() {
+        const rows = document.querySelectorAll("#attendance-body tr");
+        const studentPresence = [];
+
+        rows.forEach(row => {
+            const select = row.querySelector("select");
+            const noteInput = row.querySelector("input");
+
+            studentPresence.push({
+                studentId: parseInt(select.getAttribute("data-student-id")),
+                name: row.querySelector("td:first-child").textContent.split(" ")[0],
+                surname: row.querySelector("td:first-child").textContent.split(" ")[1],
+                presenceStatus: select.value,
+                note: noteInput.value || ""
+            });
+        });
+
+        const dto = {
+            timeSlotId: currentTimeSlotId,
+            studentPresence: studentPresence
+        };
+        console.log('Student presence dto current time slot id: ' + dto.timeSlotId)
+
+
+        fetch('/attendance/submit', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dto)
+        })
+            .then(response => {
+            if (!response.ok) throw new Error("Failed to submit attendance");
+            return response.json();
+        })
+            .then(result => {
+            console.log("Attendance submitted", result);
+            alert("Attendance saved successfully!");
+            closeAttendance();
+        })
+            .catch(error => {
+            console.error(error);
+            alert("Error submitting attendance: " + error.message);
+        });
+    }
+
     function generateSchedule() {
         const classId = document.getElementById("schedule-container").getAttribute("data-class-id");
 
         fetch('/schedule-generator?classId=' + classId, {
             method: "POST"
         })
-        .then(response => {
+            .then(response => {
             if (!response.ok) {
                 throw new Error("HTTP error: " + response.status);
             }
-            return response.json(); // parse body into JS object
+            return response.json();
         })
             .then(data => {
-                if (data.created) {
-                    console.log('schedule generated');
-                    location.reload();
-                } else {
-                    console.log('response error: created=false');
-                    alert("Failed to generate schedule");
+            if (data.created) {
+                console.log('Schedule generated');
+                location.reload();
+            } else {
+                console.log('Response error: created=false');
+                alert("Failed to generate schedule");
             }
         })
-        .catch(error => {
+            .catch(error => {
             console.error('Fetch error:', error);
             alert("Server error while generating schedule");
         });
@@ -170,49 +296,43 @@
         fetch('/schedules/purge?classId=' + classId, {
             method: "DELETE"
         })
-        .then(response => {
+            .then(response => {
             if (response.status === 204) {
                 console.log("Schedule purged successfully");
                 location.reload();
             } else {
                 return response.text().then(err => {
-                throw new Error(err);
+                    throw new Error(err);
                 });
-        }
-    })
-    .catch(error => {
-        console.error("Error purging schedule:", error);
-        alert("Failed to purge schedule: " + error.message);
+            }
+        })
+            .catch(error => {
+            console.error("Error purging schedule:", error);
+            alert("Failed to purge schedule: " + error.message);
         });
     }
 
     function onDragStart(event) {
-        console.log('onDragStart')
         const subjectId = event.target.getAttribute("data-subject-id");
         console.log('subjectId: ' + subjectId)
         event.dataTransfer.setData("subjectId", subjectId);
     }
 
     function removeClass(timeSlotId) {
-        console.log('Remove class function called')
-        console.log('timeSlotId: ' + timeSlotId)
-
         fetch('/timeslot-purging?timeSlotId='+timeSlotId, {
             method: "PATCH"
         }).then(response => {
             if (response.ok) {
-                console.log('response ok')
+                console.log('Response ok')
                 location.reload();
             } else {
-                console.log('response error')
+                console.log('Response error')
                 alert("Failed to remove class from time slot");
             }
         });
     }
 
     function onDrop(event, timeSlotId) {
-        console.log('onDrop')
-        console.log('timeSlotId: ' + timeSlotId)
         event.preventDefault();
         const subjectId = event.dataTransfer.getData("subjectId");
 
@@ -227,17 +347,17 @@
             })
         }).then(response => {
             if (response.ok) {
-                console.log('response ok')
+                console.log('Response ok')
                 location.reload();
             } else {
-                console.log('response error')
+                console.log('Response error')
                 alert("Failed to assign subject");
             }
         });
     }
 
     function onDragOver(event) {
-        event.preventDefault(); // Needed to allow dropping
+        event.preventDefault();
     }
 </script>
 </html>

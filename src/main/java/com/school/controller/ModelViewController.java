@@ -1,6 +1,7 @@
 package com.school.controller;
 
 import com.school.configuration.ApplicationConfig;
+import com.school.model.AttendanceDTO;
 import com.school.model.OptionalRequestParams;
 import com.school.model.ProjectVersion;
 import com.school.model.SubjectsWithGrades;
@@ -9,7 +10,7 @@ import com.school.model.dto.StudentDTO;
 import com.school.model.dto.StudentSubjectGradesDTO;
 import com.school.model.entity.Subject;
 import com.school.service.*;
-import com.school.service.classschedule.ClassDispenserForScheduleGenerationProvider;
+import com.school.service.attendance.AttendanceService;
 import com.school.service.classschedule.ClassScheduleService;
 import com.school.service.classschedule.ClassesLeftToDispenseService;
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ public class ModelViewController {
     private final GradeService gradeService;
     private final ClassScheduleService classScheduleService;
     private final SubjectService subjectService;
+    private final AttendanceService attendanceService;
     private final RoadMapService roadMapService;
     private final ProjectVersionService projectVersionService;
     private final ApplicationValidityService applicationValidityService;
@@ -50,6 +52,7 @@ public class ModelViewController {
                                GradeService gradeService,
                                ClassScheduleService classScheduleService,
                                SubjectService subjectService,
+                               AttendanceService attendanceService,
                                RoadMapService roadMapService,
                                ProjectVersionService projectVersionService,
                                ApplicationValidityService applicationValidityService,
@@ -63,6 +66,7 @@ public class ModelViewController {
         this.gradeService = gradeService;
         this.classScheduleService = classScheduleService;
         this.subjectService = subjectService;
+        this.attendanceService = attendanceService;
         this.roadMapService = roadMapService;
         this.projectVersionService = projectVersionService;
         this.applicationValidityService = applicationValidityService;
@@ -223,14 +227,21 @@ public class ModelViewController {
         try {
             Long scheduleId = classScheduleService.getClassScheduleIdByClassId(id);
             Map<Subject, Integer> classesLeft = classesLeftToDispenseService.getClassesLeft(scheduleId);
-            log.info("classesLeft:");
-            log.info("subjects:");
+//            List<StudentDTO> classStudents = schoolClassService.getSchoolClassStudents(id);
+//            List<StudentDTO> classStudentsPresence = schoolClassService.getSchoolClassStudents(id);
+//            AttendanceDTO attendance = attendanceService.getAttendance();
+//            log.info("classStudents: {}", classStudents);
+//            log.info("classStudents: {}", classStudentsPresence);
+//            log.info("attendance: {}", attendance);
             classesLeft.keySet().forEach(it -> log.info(it.toString()));
             model.addAttribute("classId", id);
             model.addAttribute("scheduleId", scheduleId);
             model.addAttribute("timetable", classScheduleService.getClassScheduleGroupedByDaySubjectAndTimeframe(id, true));
             model.addAttribute("days", EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
             model.addAttribute("subjects", subjectService.getSchoolClassSubjectsDTOs(id));
+//            model.addAttribute("classStudents", classStudents);
+//            model.addAttribute("classStudentsPresence", classStudentsPresence);
+//            model.addAttribute("classStudentsPresence", classStudentsPresence);
             model.addAttribute("classesLeft", classesLeft);
             return "schedule-details";
         } catch (Exception e) {
