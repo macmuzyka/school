@@ -1,7 +1,6 @@
 package com.school.controller;
 
 import com.school.configuration.ApplicationConfig;
-import com.school.model.AttendanceDTO;
 import com.school.model.OptionalRequestParams;
 import com.school.model.ProjectVersion;
 import com.school.model.SubjectsWithGrades;
@@ -38,7 +37,6 @@ public class ModelViewController {
     private final GradeService gradeService;
     private final ClassScheduleService classScheduleService;
     private final SubjectService subjectService;
-    private final AttendanceService attendanceService;
     private final RoadMapService roadMapService;
     private final ProjectVersionService projectVersionService;
     private final ApplicationValidityService applicationValidityService;
@@ -52,7 +50,6 @@ public class ModelViewController {
                                GradeService gradeService,
                                ClassScheduleService classScheduleService,
                                SubjectService subjectService,
-                               AttendanceService attendanceService,
                                RoadMapService roadMapService,
                                ProjectVersionService projectVersionService,
                                ApplicationValidityService applicationValidityService,
@@ -66,7 +63,6 @@ public class ModelViewController {
         this.gradeService = gradeService;
         this.classScheduleService = classScheduleService;
         this.subjectService = subjectService;
-        this.attendanceService = attendanceService;
         this.roadMapService = roadMapService;
         this.projectVersionService = projectVersionService;
         this.applicationValidityService = applicationValidityService;
