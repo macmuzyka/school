@@ -9,7 +9,6 @@ import com.school.model.dto.StudentDTO;
 import com.school.model.dto.StudentSubjectGradesDTO;
 import com.school.model.entity.Subject;
 import com.school.service.*;
-import com.school.service.attendance.AttendanceService;
 import com.school.service.classschedule.ClassScheduleService;
 import com.school.service.classschedule.ClassesLeftToDispenseService;
 import org.slf4j.Logger;
@@ -222,23 +221,12 @@ public class ModelViewController {
                                 @RequestParam("id") Long id) {
         try {
             Long scheduleId = classScheduleService.getClassScheduleIdByClassId(id);
-            Map<Subject, Integer> classesLeft = classesLeftToDispenseService.getClassesLeft(scheduleId);
-//            List<StudentDTO> classStudents = schoolClassService.getSchoolClassStudents(id);
-//            List<StudentDTO> classStudentsPresence = schoolClassService.getSchoolClassStudents(id);
-//            AttendanceDTO attendance = attendanceService.getAttendance();
-//            log.info("classStudents: {}", classStudents);
-//            log.info("classStudents: {}", classStudentsPresence);
-//            log.info("attendance: {}", attendance);
-            classesLeft.keySet().forEach(it -> log.info(it.toString()));
             model.addAttribute("classId", id);
             model.addAttribute("scheduleId", scheduleId);
             model.addAttribute("timetable", classScheduleService.getClassScheduleGroupedByDaySubjectAndTimeframe(id, true));
             model.addAttribute("days", EnumSet.range(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
             model.addAttribute("subjects", subjectService.getSchoolClassSubjectsDTOs(id));
-//            model.addAttribute("classStudents", classStudents);
-//            model.addAttribute("classStudentsPresence", classStudentsPresence);
-//            model.addAttribute("classStudentsPresence", classStudentsPresence);
-            model.addAttribute("classesLeft", classesLeft);
+            model.addAttribute("classesLeft", classesLeftToDispenseService.getClassesLeft(scheduleId));
             return "schedule-details";
         } catch (Exception e) {
             return e.getMessage();
