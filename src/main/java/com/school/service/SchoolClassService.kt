@@ -139,8 +139,6 @@ class SchoolClassService(
 
     fun createNewClass(): SchoolClass {
         val newSchoolClass = createNewClassWithAssignedSubjects()
-        emptyScheduleSchemaBuilderService.generateEmptySchedule(newSchoolClass)
-
         val school = schoolRepository.findAll()
             .firstOrNull()
             ?: throw IllegalStateException("No school to assign class to! This should be done upon application warmup!")
@@ -176,11 +174,12 @@ class SchoolClassService(
         return schoolRepository.findAll()[0]
     }
 
-    fun getSchoolClass(schoolClassId: Long): SchoolClass =
-        EntityFetcher.getByIdOrThrow(schoolClassRepository::findById, schoolClassId, "SchoolClass")
-
     fun removeClass(schoolClass: SchoolClass) = schoolClassRepository.delete(schoolClass)
 
     fun getSchoolClassById(classId: Long): SchoolClass =
         EntityFetcher.getByIdOrThrow(schoolClassRepository::findById, classId, "SchoolClass")
+
+    fun getSchoolClassStudents(classId: Long): List<StudentDTO> {
+        return getSchoolClassById(classId).classStudents.map { StudentDTO(it) }
+    }
 }

@@ -18,7 +18,7 @@ public class Attendance extends Audit {
     private LocalDate attendanceDate;
     @ManyToOne(optional = false)
     private Subject subject;
-    @ManyToOne(optional = false)
+    @OneToOne(optional = false)
     private TimeSlot timeSlot;
     @OneToMany(mappedBy = "attendance", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudentPresence> presenceList = new ArrayList<>();
