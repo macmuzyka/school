@@ -143,7 +143,7 @@
             <thead>
             <tr>
                 <th>Student</th>
-                <th>Status</th>
+                <th class="status-col">Status</th>
                 <th>Note</th>
             </tr>
             </thead>
@@ -182,19 +182,36 @@
                 row.appendChild(nameCell);
 
                 const statusCell = document.createElement("td");
-                const select = document.createElement("select");
-                ["NOT_YET_CHOSEN", "PRESENT", "ABSENT", "LATE", "LEFT_EARLY"].forEach(opt => {
-                    const option = document.createElement("option");
-                    option.value = opt;
-                    option.textContent = opt;
+                statusCell.classList.add("attendance-radio");
+
+                const radioContainer = document.createElement("div");
+                radioContainer.style.display = "flex";
+                radioContainer.style.flexDirection = "column";
+
+                ["UNSPECIFIED","ABSENT", "PRESENT", "LATE", "LEFT_EARLY"].forEach(opt => {
+                    const label = document.createElement("label");
+                    label.style.display = "inline-flex";
+                    label.style.alignItems = "center";
+                    label.style.marginBottom = "5px";
+
+                    const radio = document.createElement("input");
+                    radio.type = "radio";
+                    radio.name = "presence-" + sp.studentId;
+                    radio.value = opt;
+
                     if (sp.presenceStatus === opt) {
-                        option.selected = true;
+                        radio.checked = true;
                     }
-                    select.appendChild(option);
+
+                    radio.setAttribute("data-student-id", sp.studentId);
+
+                    label.appendChild(radio);
+                    label.appendChild(document.createTextNode(" " + opt));
+
+                    radioContainer.appendChild(label);
                 });
-                console.log('sp.studentId: ' + sp.studentId)
-                select.setAttribute("data-student-id", sp.studentId);
-                statusCell.appendChild(select);
+
+                statusCell.appendChild(radioContainer);
                 row.appendChild(statusCell);
 
                 const noteCell = document.createElement("td");
@@ -203,6 +220,11 @@
                 noteInput.placeholder = "Optional note";
                 noteInput.value = sp.note || "";
                 noteInput.setAttribute("data-student-id", sp.studentId);
+
+                noteInput.style.width = "150px";
+                noteInput.style.height = "25px";
+                noteInput.style.padding = "2px 5px";
+
                 noteCell.appendChild(noteInput);
                 row.appendChild(noteCell);
 
@@ -225,15 +247,17 @@
         const studentPresence = [];
 
         rows.forEach(row => {
-            const select = row.querySelector("select");
-            const noteInput = row.querySelector("input");
+            const studentId = row.querySelector("input[type='radio']").getAttribute("data-student-id");
+            const checkedRadio = row.querySelector(`input[name='presence-${studentId}']:checked`);
+
+            const noteInput = row.querySelector("input[type='text']");
 
             studentPresence.push({
-                studentId: parseInt(select.getAttribute("data-student-id")),
+                studentId: parseInt(studentId),
                 name: row.querySelector("td:first-child").textContent.split(" ")[0],
                 surname: row.querySelector("td:first-child").textContent.split(" ")[1],
-                presenceStatus: select.value,
-                note: noteInput.value || ""
+                presenceStatus: checkedRadio ? checkedRadio.value : "UNSPECIFIED", // fallback
+                note: noteInput ? noteInput.value : ""
             });
         });
 
@@ -241,8 +265,8 @@
             timeSlotId: currentTimeSlotId,
             studentPresence: studentPresence
         };
-        console.log('Student presence dto current time slot id: ' + dto.timeSlotId)
 
+        console.log('Student presence dto current time slot id: ' + dto.timeSlotId);
 
         fetch('/attendance/submit', {
             method: "POST",

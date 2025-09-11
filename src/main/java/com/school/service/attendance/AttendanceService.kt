@@ -65,7 +65,7 @@ class AttendanceService(
                     studentId = student.id,
                     name = student.name,
                     surname = student.surname,
-                    presenceStatus = PresenceStatus.NOT_YET_CHOSEN,
+                    presenceStatus = PresenceStatus.UNSPECIFIED,
                     note = ""
                 )
             })

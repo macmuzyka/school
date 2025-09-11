@@ -19,3 +19,20 @@
     max-height: 80vh;
     overflow-y: auto;
 }
+
+/*.attendance-radio label {*/
+/*    font-size: 12px;*/
+/*    margin-right: 10px;*/
+/*    white-space: nowrap;*/
+/*}*/
+
+.attendance-radio label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.status-col {
+    width: 275px;
+    min-width: 275px;
+}
