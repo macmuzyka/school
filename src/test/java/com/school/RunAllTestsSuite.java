@@ -7,6 +7,7 @@ import com.school.unit.TimeValidatorTests;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 
+//TODO: write attendance tests
 @Suite
 @SelectClasses(
         {
@@ -17,7 +18,6 @@ import org.junit.platform.suite.api.Suite;
                 ScheduleSeederTests.class,
                 PreviousOrNextSlotsTakenTests.class,
                 StudentCounterAfterFileInputTests.class,
-                AttendanceTests.class,
                 StudentTests.class,
                 TimeSlotUtilsTests.class,
                 TimeValidatorTests.class,

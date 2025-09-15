@@ -1,5 +1,4 @@
 services:
-  # PostgreSQL database
   db:
     image: postgres:16
     container_name: postgres_db
@@ -20,6 +19,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/school
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_APPLICATION_NAME: school
+      SPRING_CONFIG_IMPORT: "optional:configserver:http://informer:9001"
+      SPRING_CLOUD_CONFIG_FAIL_FAST: true
     ports:
       - "9000:9000"
     depends_on:

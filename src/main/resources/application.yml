@@ -1,0 +1,55 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: school
+  config:
+    import: optional:file:/config/application-secrets.properties
+  cloud:
+    config:
+      enabled: false
+  servlet:
+    path: school
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  datasource:
+    url: jdbc:postgresql://postgres_db:5432/school
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: postgres
+  data:
+    rest:
+      base-path: /
+      detection-strategy: annotated
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+  kafka:
+    bootstrap-servers: kafka:9092
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+database-name: school
+
+config:
+  file:
+    directory: produced_files
+    students-grades-subdirectory: students_grades
+    students-list-subdirectory: students_list
+    name: grades
+
+support-email: baseschoolinformer@gmail.com
+
+pg:
+  backup:
+    config:
+      file-name: school_db_backup
+      temporary-backup-folder: backup
+      scheduled-backup-folder: backup_scheduled

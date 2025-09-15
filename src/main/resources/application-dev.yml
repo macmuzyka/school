@@ -1,0 +1,51 @@
+logging:
+  level:
+    com.school: DEBUG
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+    show-sql: true
+  flyway:
+    enabled: false
+  kafka:
+    bootstrap-servers: localhost:9092
+  config:
+    import: optional:file:src/main/resources/application-secrets.properties
+  h2:
+    console:
+      enabled: true
+app:
+  config:
+    available-grades: 1,2,3,4,5,6
+    available-subjects: Math,Art,English,History,PE,Biology,Chemistry,Physics
+    class-max-size: 25
+    grade-types: EXAM,TEST,QUIZ,QUESTIONING,HOMEWORK,OTHER
+    minimum-student-tags: 5
+    progress-records-directory: seed_performance/
+    progress-records-file: performance_records.xls
+    grade-topic: -grade-supplier
+    max-previous-notes: 5
+    grades-to-add: 100000
+class:
+  schedule:
+    config:
+      schedule-start: 7:30
+      lesson-duration: 45
+      latest-class-schedule-start: 3
+      max-class-per-day: 10
+      max-subject-class-per-week: 4
+      short-break-duration: 5
+      long-break-duration: 15
+      first-long-break: 4
+      second-long-break: 7
