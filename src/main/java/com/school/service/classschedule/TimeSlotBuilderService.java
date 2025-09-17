@@ -26,12 +26,6 @@ public class TimeSlotBuilderService {
         timeSlots.add(firstTimeSlot);
 
         buildRemainingTimeSlots(firstTimeSlot.getEndTime(), scheduleEntry, timeSlots);
-        log.debug("Time slots for schedule entry id {} for a class {} for a day {}:",
-                scheduleEntry.getId(),
-                scheduleEntry.getClassSchedule().getSchoolClass().getName(),
-                scheduleEntry.getDayOfWeek()
-        );
-        timeSlots.forEach(it -> log.debug(it.toString()));
         return timeSlots;
     }
 
