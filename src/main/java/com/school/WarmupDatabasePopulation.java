@@ -24,9 +24,6 @@ public class WarmupDatabasePopulation implements ApplicationListener<Application
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {
         log.info("Warmup database population");
-        System.out.println("Bcrypt [admin123]: " + new BCryptPasswordEncoder().encode("admin123"));
-//         $2a$10$EnD/AGzFbPC1v2VjjUM8Au577qiT/QWICtPb4a8RWY8GXb1ZP4ASu
-        System.out.println("Bcrypt [password]: " + new BCryptPasswordEncoder().encode("password"));
         if (schoolRepository.findAll().isEmpty()) {
             applicationWarmupService.addSchoolWithClassOnWarmup();
         } else {
