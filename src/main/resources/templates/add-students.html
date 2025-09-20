@@ -150,19 +150,34 @@
                 method: 'POST',
                 body: formData
             })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('File uploaded successfully:', data);
-                    openSeedConfirmationContainer()
-                })
-                .catch(error => {
-                    console.error('Error uploading file:', error);
-                    alert('Failed to upload file.');
-                })
-                .finally(() => {
-                    spinner.style.display = 'none';
+                .then(async response => {
+                const data = await response.json(); // parse JSON from backend
 
-                });
+                if (response.status === 403) {
+                    // Show backend message to user
+                    alert(data.message || "You are not authorized to perform this action.");
+                    throw new Error("Unauthorized"); // stop further processing
+                }
+
+                if (!response.ok) {
+                    // Handle other errors (500, etc.)
+                    alert(data.message || "Server error: " + response.status);
+                    throw new Error("Server error: " + response.status);
+                }
+
+                return data; // this will go to the next .then
+            })
+                .then(data => {
+                console.log('File uploaded successfully:', data);
+                openSeedConfirmationContainer();
+            })
+                .catch(error => {
+                console.error('Error uploading file:', error);
+                // Optionally show a generic alert here as well
+            })
+                .finally(() => {
+                spinner.style.display = 'none';
+            });
         }
     });
 
