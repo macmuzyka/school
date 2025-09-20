@@ -15,7 +15,7 @@ public class AppUser extends Audit {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "app_user_role", joinColumns = @JoinColumn(name = "app_user_id"))
     @Column(name = "roles")
-    private Set<String> roles = new HashSet<>();
+    private final Set<String> roles = new HashSet<>();
 
     public AppUser() {
     }
