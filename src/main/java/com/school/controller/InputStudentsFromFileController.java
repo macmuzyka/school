@@ -3,6 +3,7 @@ package com.school.controller;
 import com.school.service.InputStudentsFromTextFileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,7 @@ public class InputStudentsFromFileController {
         this.inputStudentsFromTextFileService = inputStudentsFromTextFileService;
     }
 
+    @PreAuthorize("hasRole('admin')")
     @PostMapping("/students-from-file")
     public ResponseEntity<?> addStudents(@RequestParam("file") MultipartFile studentsFile) {
         try {

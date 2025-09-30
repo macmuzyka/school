@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y netcat && rm -rf /var/lib/apt/lists/*
 COPY target/*.jar school-application.jar
 COPY pom.xml pom.xml
 COPY src/main/resources/application-secrets.properties /config/application-secrets.properties
-COPY src/main/resources/application.properties /config/application.properties
+COPY src/main/resources/application.yml /config/application.yml
 COPY wait_for_informer.sh wait_for_informer.sh
 
 RUN chmod +x wait_for_informer.sh

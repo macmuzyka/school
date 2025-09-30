@@ -9,6 +9,16 @@ spring:
   cloud:
     config:
       enabled: false
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: school-client
+            scope: openid,profile,email
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/school-realm
   servlet:
     path: school
     multipart:
