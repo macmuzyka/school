@@ -17,12 +17,4 @@ public class GlobalControllerAdvice {
         mav.addObject("message", "Missing resource: " + iae.getMessage());
         return mav;
     }
-
-    @ExceptionHandler(Exception.class)
-    public ModelAndView unhandledException(Exception e) {
-        log.info("Exception: {}", e.getMessage());
-        ModelAndView mav = new ModelAndView("iae-error-page");
-        mav.addObject("message", "Exception: " + e.getMessage());
-        return mav;
-    }
 }

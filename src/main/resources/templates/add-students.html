@@ -145,24 +145,35 @@
 
             const spinner = document.getElementById('loadingSpinner');
             spinner.style.display = 'block';
-
             fetch('/input/students-from-file', {
                 method: 'POST',
                 body: formData
             })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('File uploaded successfully:', data);
-                    openSeedConfirmationContainer()
-                })
-                .catch(error => {
-                    console.error('Error uploading file:', error);
-                    alert('Failed to upload file.');
-                })
-                .finally(() => {
-                    spinner.style.display = 'none';
+                .then(async response => {
+                const data = await response.json();
 
-                });
+                if (response.status === 403) {
+                    alert(data.message || "You are not authorized to perform this action.");
+                    throw new Error("Unauthorized");
+                }
+
+                if (!response.ok) {
+                    alert(data.message || "Server error: " + response.status);
+                    throw new Error("Server error: " + response.status);
+                }
+
+                return data;
+            })
+                .then(data => {
+                console.log('File uploaded successfully:', data);
+                openSeedConfirmationContainer();
+            })
+                .catch(error => {
+                console.error('Error uploading file:', error);
+            })
+                .finally(() => {
+                spinner.style.display = 'none';
+            });
         }
     });
 
@@ -218,29 +229,29 @@
 
     function seedGrades() {
         const spinner = document.getElementById('loadingSpinner');
-            spinner.style.display = 'block';
-            spinner.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Seeding grades...`;
+        spinner.style.display = 'block';
+        spinner.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Seeding grades...`;
 
         fetch('/seed/grades', {
             method: 'POST',
         })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
             .then(data => {
-                console.log('Success:', data);
-            })
+            console.log('Success:', data);
+        })
             .catch(error => {
-                console.error('Error:', error);
-            })
+            console.error('Error:', error);
+        })
             .finally(() => {
-                    spinner.style.display = 'none';
-                    closeSeedConfirmationContainer()
-                    refreshPage()
-                });
+            spinner.style.display = 'none';
+            closeSeedConfirmationContainer()
+            refreshPage()
+        });
 
 
 
@@ -287,17 +298,17 @@
             body: JSON.stringify(newStudentData),
         })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
             .then(data => {
-                console.log('Success:', data);
-            })
+            console.log('Success:', data);
+        })
             .catch(error => {
-                console.error('Error:', error);
-            });
+            console.error('Error:', error);
+        });
         closeSubmitPopup()
     }
 </script>
