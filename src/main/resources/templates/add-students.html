@@ -145,7 +145,7 @@
 
             const spinner = document.getElementById('loadingSpinner');
             spinner.style.display = 'block';
-            fetch('/input/students-from-file', {
+            fetch('/api/input/students-from-file', {
                 method: 'POST',
                 body: formData
             })

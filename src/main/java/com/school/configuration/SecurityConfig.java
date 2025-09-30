@@ -18,12 +18,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomLoggingFilter customLoggingFilter) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .exceptionHandling(ex -> ex.accessDeniedHandler(restAccessDeniedHandler))
                 .oauth2Login(oauth2 -> oauth2.loginPage("/oauth2/authorization/keycloak"))
                 .logout(logout -> logout.logoutSuccessUrl("/").permitAll());
+//        http.addFilterAfter(customLoggingFilter, BearerTokenAuthenticationFilter.class);
         return http.build();
     }
 
