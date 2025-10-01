@@ -10,13 +10,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
-@Component
+/*@Component
 public class CustomLoggingFilter extends OncePerRequestFilter {
 
     private final Logger log = LoggerFactory.getLogger(CustomLoggingFilter.class);
@@ -47,6 +49,67 @@ public class CustomLoggingFilter extends OncePerRequestFilter {
                 log.info("[AUTHENTICATION] principal={} uri={}", username, path);
             } else {
                 log.warn("[AUTHENTICATION] unauthenticated request to {}", path);
+            }
+        }
+
+        log.info("---- Incoming Request Headers ----");
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String name = headerNames.nextElement();
+            String value = request.getHeader(name);
+            log.info("{} = {}", name, value);
+        }
+        log.info("---- End Headers ----");
+
+        filterChain.doFilter(request, response);
+    }
+}*/
+
+@Component
+public class CustomLoggingFilter extends OncePerRequestFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(CustomLoggingFilter.class);
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        String uri = request.getRequestURI();
+
+        // Only log /api/** requests
+        if (uri.startsWith("/api")) {
+
+            log.info("---- Incoming Request Headers ----");
+            Enumeration<String> headerNames = request.getHeaderNames();
+            while (headerNames.hasMoreElements()) {
+                String name = headerNames.nextElement();
+                String value = request.getHeader(name);
+                log.info("{} = {}", name, value);
+            }
+            log.info("---- End Headers ----");
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            if (authentication != null && authentication.isAuthenticated()) {
+                String username = "unknown";
+
+                if (authentication instanceof JwtAuthenticationToken jwtAuth) {
+                    Jwt jwt = jwtAuth.getToken();
+                    username = jwt.getClaimAsString("preferred_username") != null
+                            ? jwt.getClaimAsString("preferred_username")
+                            : jwt.getSubject();
+
+                    log.info("[AUTHENTICATION] principal={} uri={}", username, uri);
+                    log.info("[AUTHENTICATION] JWT claims: {}", jwt.getClaims());
+                } else {
+                    // fallback
+                    username = authentication.getName();
+                    log.info("[AUTHENTICATION] principal={} uri={}", username, uri);
+                }
+
+            } else {
+                log.warn("[AUTHENTICATION] unauthenticated request to {}", uri);
             }
         }
 

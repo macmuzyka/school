@@ -11,14 +11,19 @@ spring:
       enabled: false
   security:
     oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: school-client
-            scope: openid,profile,email
-        provider:
-          keycloak:
-            issuer-uri: http://localhost:8080/realms/school-realm
+      resourceserver:
+        jwt:
+          issuer-uri: https://localhost:8080/realms/school-realm
+#    oauth2:
+#      client:
+#        registration:
+#          keycloak:
+#            client-id: school-client
+#            scope: openid,profile,email
+#        provider:
+#          keycloak:
+#            issuer-uri: http://localhost:8080/realms/school-realm
+
   servlet:
     path: school
     multipart:
