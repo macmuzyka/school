@@ -26,14 +26,10 @@ class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/admin/**")
-//                        .hasRole("ADMIN")
-                        .anyRequest()
-                        .authenticated())
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .exceptionHandling(ex -> ex.accessDeniedHandler(customAccessDeniedHandler()))
-                .formLogin(Customizer.withDefaults())
-                .logout(Customizer.withDefaults());
+                .oauth2Login(Customizer.withDefaults())
+                .logout(logout -> logout.logoutSuccessUrl("/"));
         return http.build();
     }
 
