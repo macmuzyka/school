@@ -165,7 +165,7 @@
     function openAttendance(timeSlotId) {
         currentTimeSlotId = timeSlotId;
 
-        fetch('/attendance/get?timeSlotId=' + timeSlotId)
+        fetch('/api/attendance/get?timeSlotId=' + timeSlotId)
             .then(response => {
             if (!response.ok) throw new Error("Failed to load students");
             return response.json();
@@ -268,7 +268,7 @@
 
         console.log('Student presence dto current time slot id: ' + dto.timeSlotId);
 
-        fetch('/attendance/submit', {
+        fetch('/api/attendance/submit', {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dto)
@@ -291,7 +291,7 @@
     function generateSchedule() {
         const classId = document.getElementById("schedule-container").getAttribute("data-class-id");
 
-        fetch('/schedule-generator?classId=' + classId, {
+        fetch('/api/schedule-generator?classId=' + classId, {
             method: "POST"
         })
             .then(response => {
@@ -317,7 +317,7 @@
 
     function purgeSchedule() {
         const classId = document.getElementById("schedule-container").getAttribute("data-class-id");
-        fetch('/schedules/purge?classId=' + classId, {
+        fetch('/api/schedules/purge?classId=' + classId, {
             method: "DELETE"
         })
             .then(response => {
@@ -343,7 +343,7 @@
     }
 
     function removeClass(timeSlotId) {
-        fetch('/timeslot-purging?timeSlotId='+timeSlotId, {
+        fetch('/api/timeslot-purging?timeSlotId='+timeSlotId, {
             method: "PATCH"
         }).then(response => {
             if (response.ok) {
@@ -360,7 +360,7 @@
         event.preventDefault();
         const subjectId = event.dataTransfer.getData("subjectId");
 
-        fetch('/timeslot-assigning/add-to-timeslot?subjectId=' + subjectId + '&timeSlotId=' + timeSlotId, {
+        fetch('/api/timeslot-assigning/add-to-timeslot?subjectId=' + subjectId + '&timeSlotId=' + timeSlotId, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',

@@ -143,7 +143,7 @@
     async function importStudentsListFile() {
         console.log("Importing students list file")
         try {
-            const response = await fetch('/student/import-students-list-file', {
+            const response = await fetch('/api/student/import-students-list-file', {
                 method: 'GET',
             })
 
@@ -215,7 +215,7 @@
         console.log("updatedStudent")
         console.log(updatedStudent)
 
-        fetch('/student/update', {
+        fetch('/api/student/update', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -251,7 +251,7 @@
         let studentId = button.getAttribute('data')
         console.log("ID of student to be removed: " + studentId)
         if (confirm('Are you sure you want to remove this student?')) {
-            fetch('/student/delete?studentId=' + studentId, {
+            fetch('/api/student/delete?studentId=' + studentId, {
                 method: 'DELETE'
             }).then(response => {
                 if (response.ok) {

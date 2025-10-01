@@ -65,7 +65,7 @@
                 spinner.style.display = 'block';
                 spinner.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Preparing database backup file...`;
             try {
-                const response = await fetch('/database-backup', {
+                const response = await fetch('/api/database-backup', {
                     method: 'GET'
                 })
 
@@ -136,7 +136,7 @@
                 const spinner = document.getElementById('loadingSpinner');
                 spinner.style.display = 'block';
 
-                fetch('/database-backup/restore', {
+                fetch('/api/database-backup/restore', {
                     method: 'POST',
                     body: formData
                 })

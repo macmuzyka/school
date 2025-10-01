@@ -93,7 +93,7 @@
         let studentId = button.getAttribute('data')
         console.log("ID of student to be removed: " + studentId)
         if (confirm('Are you sure you want to remove this student?')) {
-            fetch('/duplicated/delete/' + studentId, {
+            fetch('/api/duplicated/delete/' + studentId, {
                 method: 'DELETE'
             }).then(response => {
                 if (response.ok) {
@@ -121,7 +121,7 @@
 
         console.log('Selected Student IDs:', studentIds);
 
-        fetch('/duplicated/delete-selected', {
+        fetch('/api/duplicated/delete-selected', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'

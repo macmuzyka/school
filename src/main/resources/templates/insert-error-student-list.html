@@ -152,7 +152,7 @@
         console.log("Correction data")
         console.log(correctionData)
 
-        fetch('/insert-error/correct', {
+        fetch('/api/insert-error/correct', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -180,7 +180,7 @@
         let studentId = button.getAttribute('data')
         console.log("ID of student to be removed: " + studentId)
         if (confirm('Are you sure you want to remove this student?')) {
-            fetch('/insert-error/delete/' + button.innerText, {
+            fetch('/api/insert-error/delete/' + button.innerText, {
                 method: 'DELETE'
             }).then(response => {
                 if (response.ok) {

@@ -204,7 +204,7 @@
         const bodyRequest = getObject(fileType)
 
         try {
-            const response = await fetch('/file/produce', {
+            const response = await fetch('/api/file/produce', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

@@ -259,7 +259,7 @@
         if (span.getAttribute('data-grade') !== '-') {
             infoBox.innerHTML = generateDetailsInfoboxWithFetchingDataInfo()
             console.log("Fetching grade details...")
-            fetch('/grade/details?id=' + gradeId, {
+            fetch('/api/grade/details?id=' + gradeId, {
                 method: 'GET',
             })
                 .then(response => {
@@ -337,7 +337,7 @@
             console.log("Note to save:")
             console.log(noteToSave)
 
-            fetch('/previous-note', {
+            fetch('/api/previous-note', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -408,7 +408,7 @@
 
     function populateWithPreviousNotes(subjectId) {
         console.log("Pre-populating previous notes..")
-        fetch('/previous-note?subjectId=' + subjectId, {
+        fetch('/api/previous-note?subjectId=' + subjectId, {
             method: 'GET',
         })
             .then(response => {
@@ -458,7 +458,7 @@
         console.log("Sending object:");
         console.log(grade);
 
-        fetch('/grade/add-grade', {
+        fetch('/api/grade/add-grade', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

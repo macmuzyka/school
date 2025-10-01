@@ -232,7 +232,7 @@
         spinner.style.display = 'block';
         spinner.innerHTML = `<i class="fa fa-spinner fa-spin"></i> Seeding grades...`;
 
-        fetch('/seed/grades', {
+        fetch('/api/seed/grades', {
             method: 'POST',
         })
             .then(response => {
@@ -290,7 +290,7 @@
         console.log("New student data")
         console.log(newStudentData)
 
-        fetch('/student/add', {
+        fetch('/api/student/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
