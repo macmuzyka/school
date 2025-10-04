@@ -40,6 +40,10 @@ public class CustomLoggingFilter extends OncePerRequestFilter {
                 username = authentication.getName();
             }
             log.info("[AUTHENTICATION] principal={} uri={}", username, path);
+            log.info("[AUTHENTICATION] authentication.getCredentials(): {}", authentication.getCredentials().toString());
+            log.info("[AUTHENTICATION] authentication.getPrincipal(): {}", authentication.getPrincipal().toString());
+            log.info("[AUTHENTICATION] authentication.getAuthorities(): {}", authentication.getAuthorities().toString());
+            log.info("[AUTHENTICATION] authentication.getDetails(): {}", authentication.getDetails().toString());
         } else {
             log.warn("[AUTHENTICATION] unauthenticated request to {}", path);
         }
