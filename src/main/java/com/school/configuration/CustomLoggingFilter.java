@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ public class CustomLoggingFilter extends OncePerRequestFilter {
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        
+
         if (authentication != null && authentication.isAuthenticated()) {
             String username;
 
@@ -43,6 +44,8 @@ public class CustomLoggingFilter extends OncePerRequestFilter {
             log.info("[AUTHENTICATION] authentication.getCredentials(): {}", authentication.getCredentials().toString());
             log.info("[AUTHENTICATION] authentication.getPrincipal(): {}", authentication.getPrincipal().toString());
             log.info("[AUTHENTICATION] authentication.getAuthorities(): {}", authentication.getAuthorities().toString());
+            log.info("xxx [AUTHENTICATION] authentication.getAuthorities().contains(new SimpleGrantedAuthority(\"ROLE_admin\"): {}",
+                    authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_admin")));
             log.info("[AUTHENTICATION] authentication.getDetails(): {}", authentication.getDetails().toString());
         } else {
             log.warn("[AUTHENTICATION] unauthenticated request to {}", path);

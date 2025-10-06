@@ -23,8 +23,8 @@ public class InputStudentsFromFileController {
         this.inputStudentsFromTextFileService = inputStudentsFromTextFileService;
     }
 
-    @PreAuthorize("hasRole('admin')")
     @PostMapping("/students-from-file")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addStudents(@RequestParam("file") MultipartFile studentsFile) {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(inputStudentsFromTextFileService.addStudents(studentsFile, true));
