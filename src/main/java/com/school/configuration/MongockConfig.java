@@ -14,8 +14,8 @@ class MongockConfig {
                                                                        ApplicationContext context) {
         return MongockSpringboot.builder()
                 .setDriver(driver)
-                .setSpringContext(context) // must inject ApplicationContext
-                .addMigrationScanPackage("com.school.service.mongodbmigration") // package containing @ChangeUnit classes
+                .setSpringContext(context)
+                .addMigrationScanPackage("com.school.service.mongodbmigration")
                 .buildInitializingBeanRunner();
     }
 }
