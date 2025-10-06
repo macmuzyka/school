@@ -3,7 +3,7 @@ package com.school.service.classschedule;
 import com.school.controller.classschedule.TimeSlotPurgingController;
 import com.school.model.dto.sclassschedule.TimeSlotDTO;
 import com.school.model.entity.classschedule.TimeSlot;
-import com.school.repository.classschedule.TimeSlotRepository;
+import com.school.repository.sql.classschedule.TimeSlotRepository;
 import com.school.service.utils.EntityFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package com.school.repository.classschedule;
+package com.school.repository.sql.classschedule;
 
 import com.school.model.entity.classschedule.ClassSchedule;
 import org.springframework.data.jpa.repository.JpaRepository;

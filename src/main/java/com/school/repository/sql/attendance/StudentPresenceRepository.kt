@@ -1,4 +1,4 @@
-package com.school.repository.attendance
+package com.school.repository.sql.attendance
 
 import com.school.model.entity.attendance.StudentPresence
 import org.springframework.data.jpa.repository.JpaRepository

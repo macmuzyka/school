@@ -6,20 +6,20 @@ import com.school.model.SubjectsWithGrades
 import com.school.model.dto.GradeDTO
 import com.school.model.dto.StudentSubjectGradesDTO
 import com.school.model.entity.Grade
-import com.school.repository.GradeRepository
-import com.school.repository.StudentRepository
-import com.school.repository.SubjectRepository
+import com.school.repository.sql.GradeRepository
+import com.school.repository.sql.StudentRepository
+import com.school.repository.sql.SubjectRepository
 import com.school.service.utils.mapper.QueryResultsMapper.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
 class GradeService(
-        private val subjectRepository: SubjectRepository,
-        private val studentRepository: StudentRepository,
-        private val sendNotificationToFrontendService: SendNotificationToFrontendService,
-        private val gradeRepository: GradeRepository,
-        private val applicationConfig: ApplicationConfig
+    private val subjectRepository: SubjectRepository,
+    private val studentRepository: StudentRepository,
+    private val sendNotificationToFrontendService: SendNotificationToFrontendService,
+    private val gradeRepository: GradeRepository,
+    private val applicationConfig: ApplicationConfig
 ) {
 
     private val log = LoggerFactory.getLogger(GradeService::class.java)

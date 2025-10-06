@@ -1,6 +1,6 @@
 package com.school;
 
-import com.school.repository.SchoolRepository;
+import com.school.repository.sql.SchoolRepository;
 import com.school.service.ApplicationWarmupService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

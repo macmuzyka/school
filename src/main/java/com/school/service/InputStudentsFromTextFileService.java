@@ -1,7 +1,7 @@
 package com.school.service;
 
-import com.school.repository.*;
 import com.school.model.dto.StudentDTO;
+import com.school.repository.sql.StudentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

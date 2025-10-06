@@ -1,9 +1,9 @@
 package com.school.service
 
 import com.school.configuration.ApplicationConfig
-import com.school.repository.SchoolClassRepository
-import com.school.repository.SchoolRepository
-import com.school.repository.StudentRepository
+import com.school.repository.sql.SchoolClassRepository
+import com.school.repository.sql.SchoolRepository
+import com.school.repository.sql.StudentRepository
 import com.school.service.utils.mapper.QueryResultsMapper
 import com.school.model.dto.*
 import com.school.model.entity.School

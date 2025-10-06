@@ -4,7 +4,7 @@ import com.school.model.entity.Subject;
 import com.school.model.entity.classschedule.ClassRoom;
 import com.school.model.entity.classschedule.ScheduleEntry;
 import com.school.model.entity.classschedule.TimeSlot;
-import com.school.repository.classschedule.TimeSlotRepository;
+import com.school.repository.sql.classschedule.TimeSlotRepository;
 import com.school.service.utils.EntityFetcher;
 import org.springframework.stereotype.Service;
 

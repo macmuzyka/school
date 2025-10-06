@@ -1,4 +1,4 @@
-package com.school.repository;
+package com.school.repository.sql;
 
 import com.school.model.entity.Student;
 import org.jetbrains.annotations.NotNull;

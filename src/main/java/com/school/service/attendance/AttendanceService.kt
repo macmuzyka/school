@@ -3,7 +3,7 @@ package com.school.service.attendance
 import com.school.model.AttendanceDTO
 import com.school.model.StudentPresenceDTO
 import com.school.model.dto.AttendanceResponse
-import com.school.repository.attendance.AttendanceRepository
+import com.school.repository.sql.attendance.AttendanceRepository
 import com.school.service.SchoolClassService
 import com.school.service.classschedule.TimeSlotQueryService
 import org.slf4j.LoggerFactory

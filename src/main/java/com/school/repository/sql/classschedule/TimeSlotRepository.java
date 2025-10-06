@@ -1,4 +1,4 @@
-package com.school.repository.classschedule;
+package com.school.repository.sql.classschedule;
 
 import com.school.model.entity.classschedule.ScheduleEntry;
 import com.school.model.entity.classschedule.TimeSlot;

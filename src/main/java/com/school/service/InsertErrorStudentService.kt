@@ -1,19 +1,18 @@
 package com.school.service
 
-import com.school.repository.StudentInsertErrorRepository
-import com.school.repository.StudentRepository
+import com.school.repository.sql.StudentInsertErrorRepository
+import com.school.repository.sql.StudentRepository
 import com.school.model.dto.StudentDTO
 import com.school.model.entity.Student
 import com.school.model.entity.StudentInsertError
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class InsertErrorStudentService(
-        private val studentInsertErrorRepository: StudentInsertErrorRepository,
-        private val studentRepository: StudentRepository,
-        private val sendNotificationToFrontendService: SendNotificationToFrontendService
+    private val studentInsertErrorRepository: StudentInsertErrorRepository,
+    private val studentRepository: StudentRepository,
+    private val sendNotificationToFrontendService: SendNotificationToFrontendService
 ) {
     private val log = LoggerFactory.getLogger(InsertErrorStudentService::class.java)
 

@@ -6,10 +6,10 @@ import com.school.model.entity.Student
 import com.school.model.entity.StudentDuplicateError
 import com.school.model.entity.StudentInsertError
 import com.school.model.enums.InsertStatus
-import com.school.repository.SchoolClassRepository
-import com.school.repository.StudentDuplicateErrorRepository
-import com.school.repository.StudentInsertErrorRepository
-import com.school.repository.StudentRepository
+import com.school.repository.sql.SchoolClassRepository
+import com.school.repository.sql.StudentDuplicateErrorRepository
+import com.school.repository.sql.StudentInsertErrorRepository
+import com.school.repository.sql.StudentRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile

@@ -1,14 +1,14 @@
 package com.school.service
 
-import com.school.repository.StudentDuplicateErrorRepository
+import com.school.repository.sql.StudentDuplicateErrorRepository
 import com.school.model.dto.StudentDTO
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
 class DuplicatedStudentService(
-        private val studentDuplicateErrorRepository: StudentDuplicateErrorRepository,
-        private val sendNotificationToFrontendService: SendNotificationToFrontendService
+    private val studentDuplicateErrorRepository: StudentDuplicateErrorRepository,
+    private val sendNotificationToFrontendService: SendNotificationToFrontendService
 ) {
     private val log = LoggerFactory.getLogger(DuplicatedStudentService::class.java)
     fun getAllDuplicatedStudents(): List<StudentDTO> = studentDuplicateErrorRepository.findAll().map { StudentDTO(it) }.toList()

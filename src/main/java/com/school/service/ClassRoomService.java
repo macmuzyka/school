@@ -2,7 +2,7 @@ package com.school.service;
 
 import com.school.model.entity.classschedule.ClassRoom;
 import com.school.model.entity.classschedule.TimeSlot;
-import com.school.repository.classschedule.ClassRoomRepository;
+import com.school.repository.sql.classschedule.ClassRoomRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
