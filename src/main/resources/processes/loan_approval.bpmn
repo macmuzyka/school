@@ -9,23 +9,37 @@
 
   <process id="LoanProcess" name="Loan Approval" isExecutable="true" camunda:historyTimeToLive="7">
 
+    <!-- Start Event -->
     <startEvent id="StartEvent" name="Loan Application Received">
       <outgoing>Flow_StartToDecision</outgoing>
     </startEvent>
 
+    <!-- Service Task -->
     <serviceTask id="LoanDecisionTask"
                  name="Decide Loan"
                  camunda:class="com.school.delegate.LoanDecisionDelegate">
       <incoming>Flow_StartToDecision</incoming>
-      <outgoing>Flow_DecisionToEnd</outgoing>
+      <outgoing>Flow_DecisionToUser</outgoing>
     </serviceTask>
 
+    <!-- User Task -->
+    <userTask id="UserTask" name="Approve Loan" camunda:assignee="admin">
+    <extensionElements>
+            <camunda:taskListener event="complete" class="com.school.tasklistener.LoanApprovalListener"/>
+        </extensionElements>
+      <incoming>Flow_DecisionToUser</incoming>
+      <outgoing>Flow_UserToEnd</outgoing>
+    </userTask>
+
+    <!-- End Event -->
     <endEvent id="EndEvent" name="Loan Process Ended">
-      <incoming>Flow_DecisionToEnd</incoming>
+      <incoming>Flow_UserToEnd</incoming>
     </endEvent>
 
+    <!-- Sequence Flows -->
     <sequenceFlow id="Flow_StartToDecision" sourceRef="StartEvent" targetRef="LoanDecisionTask"/>
-    <sequenceFlow id="Flow_DecisionToEnd" sourceRef="LoanDecisionTask" targetRef="EndEvent"/>
+    <sequenceFlow id="Flow_DecisionToUser" sourceRef="LoanDecisionTask" targetRef="UserTask"/>
+    <sequenceFlow id="Flow_UserToEnd" sourceRef="UserTask" targetRef="EndEvent"/>
 
   </process>
 
@@ -41,8 +55,12 @@
         <dc:Bounds x="250" y="90" width="100" height="60"/>
       </bpmndi:BPMNShape>
 
+      <bpmndi:BPMNShape id="UserTaskShape" bpmnElement="UserTask">
+        <dc:Bounds x="400" y="90" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+
       <bpmndi:BPMNShape id="EndEventShape" bpmnElement="EndEvent">
-        <dc:Bounds x="400" y="100" width="36" height="36"/>
+        <dc:Bounds x="550" y="100" width="36" height="36"/>
       </bpmndi:BPMNShape>
 
       <bpmndi:BPMNEdge id="Flow_StartToDecisionEdge" bpmnElement="Flow_StartToDecision">
@@ -50,11 +68,17 @@
         <di:waypoint x="250" y="118"/>
       </bpmndi:BPMNEdge>
 
-      <bpmndi:BPMNEdge id="Flow_DecisionToEndEdge" bpmnElement="Flow_DecisionToEnd">
+      <bpmndi:BPMNEdge id="Flow_DecisionToUserEdge" bpmnElement="Flow_DecisionToUser">
         <di:waypoint x="350" y="118"/>
         <di:waypoint x="400" y="118"/>
       </bpmndi:BPMNEdge>
 
+      <bpmndi:BPMNEdge id="Flow_UserToEndEdge" bpmnElement="Flow_UserToEnd">
+        <di:waypoint x="500" y="118"/>
+        <di:waypoint x="550" y="118"/>
+      </bpmndi:BPMNEdge>
+
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
+
 </definitions>
