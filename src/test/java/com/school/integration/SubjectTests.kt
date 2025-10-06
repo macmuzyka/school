@@ -2,7 +2,7 @@ package com.school.integration
 
 import com.school.condition.shutdown.KafkaDockerStopExtension
 import com.school.configuration.ApplicationConfig
-import com.school.repository.SubjectRepository
+import com.school.repository.sql.SubjectRepository
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired

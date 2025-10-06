@@ -1,7 +1,7 @@
 package com.school.service
 
 import com.school.model.dto.GradeDTO
-import com.school.repository.SubjectRepository
+import com.school.repository.sql.SubjectRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.kafka.core.KafkaTemplate
@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service
 
 @Service
 class GradeProducingByKafkaService(
-        private val subjectRepository: SubjectRepository,
-        private val kafkaTemplate: KafkaTemplate<String, GradeDTO>,
-        @Value("\${app.config.grade-topic}")
+    private val subjectRepository: SubjectRepository,
+    private val kafkaTemplate: KafkaTemplate<String, GradeDTO>,
+    @Value("\${app.config.grade-topic}")
         private val kafkaGradeSupplierTopic: String
 
 ) {

@@ -5,7 +5,7 @@ import com.school.model.dto.sclassschedule.DaySubject;
 import com.school.model.entity.Audit;
 import com.school.model.entity.classschedule.ClassSchedule;
 import com.school.model.entity.classschedule.TimeSlot;
-import com.school.repository.classschedule.ClassScheduleRepository;
+import com.school.repository.sql.classschedule.ClassScheduleRepository;
 import com.school.service.classschedule.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

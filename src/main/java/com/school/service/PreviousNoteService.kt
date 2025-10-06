@@ -3,8 +3,8 @@ package com.school.service
 import com.school.configuration.ApplicationConfig
 import com.school.model.dto.PreviousNoteDTO
 import com.school.model.entity.PreviousNote
-import com.school.repository.PreviousNoteRepository
-import com.school.repository.SubjectRepository
+import com.school.repository.sql.PreviousNoteRepository
+import com.school.repository.sql.SubjectRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 

@@ -6,7 +6,7 @@ import com.school.model.OptionalRequestParams
 import com.school.model.dto.StudentForListDTO
 import com.school.model.dto.StudentForListDTO.Companion.asSingleRow
 import com.school.model.exception.ErrorCreatingFileException
-import com.school.repository.StudentRepository
+import com.school.repository.sql.StudentRepository
 import com.school.service.utils.FileUtils.Companion.purifyDirectoryFromAllPreviousFiles
 import com.school.service.utils.FileUtils.Companion.validateAndPrepareFile
 import com.school.service.utils.TimestampUtils
@@ -18,8 +18,8 @@ import java.io.FileWriter
 
 @Service
 class StudentsListFileProviderService(
-        private val studentRepository: StudentRepository,
-        private val fileConfig: FileConfig
+    private val studentRepository: StudentRepository,
+    private val fileConfig: FileConfig
 ) : RecentlyProducedFile {
     private val log = LoggerFactory.getLogger(StudentsListFileProviderService::class.java)
 

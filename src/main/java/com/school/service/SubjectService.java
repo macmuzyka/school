@@ -2,7 +2,7 @@ package com.school.service;
 
 import com.school.model.dto.SubjectDTO;
 import com.school.model.entity.Subject;
-import com.school.repository.SubjectRepository;
+import com.school.repository.sql.SubjectRepository;
 import com.school.service.utils.EntityFetcher;
 import org.springframework.stereotype.Service;
 

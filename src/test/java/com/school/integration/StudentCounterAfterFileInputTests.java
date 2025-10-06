@@ -1,8 +1,8 @@
 package com.school.integration;
 
-import com.school.repository.StudentDuplicateErrorRepository;
-import com.school.repository.StudentInsertErrorRepository;
-import com.school.repository.StudentRepository;
+import com.school.repository.sql.StudentDuplicateErrorRepository;
+import com.school.repository.sql.StudentInsertErrorRepository;
+import com.school.repository.sql.StudentRepository;
 import com.school.service.InputStudentsFromTextFileService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;

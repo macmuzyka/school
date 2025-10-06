@@ -1,7 +1,7 @@
 package com.school.integration;
 
-import com.school.repository.SchoolClassRepository;
-import com.school.repository.StudentRepository;
+import com.school.repository.sql.SchoolClassRepository;
+import com.school.repository.sql.StudentRepository;
 import com.school.service.SchoolClassService;
 import com.school.service.StudentService;
 import com.school.model.dto.ExistingStudentToClassDTO;

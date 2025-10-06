@@ -4,7 +4,7 @@ import com.school.model.AttendanceDTO
 import com.school.model.dto.AttendanceResponse
 import com.school.model.entity.attendance.Attendance
 import com.school.model.entity.classschedule.TimeSlot
-import com.school.repository.attendance.AttendanceRepository
+import com.school.repository.sql.attendance.AttendanceRepository
 import java.time.LocalDate
 
 fun AttendanceDTO.prepareAttendanceEntity(timeSlot: TimeSlot, studentPresenceService: StudentPresenceService): Attendance =

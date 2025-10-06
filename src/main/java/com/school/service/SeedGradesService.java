@@ -1,8 +1,8 @@
 package com.school.service;
 
 import com.school.configuration.ApplicationConfig;
-import com.school.repository.GradeRepository;
-import com.school.repository.StudentRepository;
+import com.school.repository.sql.GradeRepository;
+import com.school.repository.sql.StudentRepository;
 import com.school.model.entity.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

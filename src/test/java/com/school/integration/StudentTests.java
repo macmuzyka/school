@@ -2,8 +2,8 @@ package com.school.integration;
 
 import com.school.configuration.ApplicationConfig;
 import com.school.model.dto.StudentDTO;
-import com.school.repository.SchoolClassRepository;
-import com.school.repository.StudentRepository;
+import com.school.repository.sql.SchoolClassRepository;
+import com.school.repository.sql.StudentRepository;
 import com.school.model.entity.Student;
 import com.school.service.SendNotificationToFrontendService;
 import com.school.service.StudentService;
