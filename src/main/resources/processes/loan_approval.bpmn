@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+             xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+             targetNamespace="http://school.com/processes">
+
+  <process id="LoanProcess" name="Loan Approval" isExecutable="true" camunda:historyTimeToLive="7">
+
+    <startEvent id="StartEvent" name="Loan Application Received">
+      <outgoing>Flow_StartToDecision</outgoing>
+    </startEvent>
+
+    <serviceTask id="LoanDecisionTask"
+                 name="Decide Loan"
+                 camunda:class="com.school.delegate.LoanDecisionDelegate">
+      <incoming>Flow_StartToDecision</incoming>
+      <outgoing>Flow_DecisionToEnd</outgoing>
+    </serviceTask>
+
+    <endEvent id="EndEvent" name="Loan Process Ended">
+      <incoming>Flow_DecisionToEnd</incoming>
+    </endEvent>
+
+    <sequenceFlow id="Flow_StartToDecision" sourceRef="StartEvent" targetRef="LoanDecisionTask"/>
+    <sequenceFlow id="Flow_DecisionToEnd" sourceRef="LoanDecisionTask" targetRef="EndEvent"/>
+
+  </process>
+
+  <!-- BPMN Diagram Interchange -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_LoanProcess">
+    <bpmndi:BPMNPlane id="BPMNPlane_LoanProcess" bpmnElement="LoanProcess">
+
+      <bpmndi:BPMNShape id="StartEventShape" bpmnElement="StartEvent">
+        <dc:Bounds x="100" y="100" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="ServiceTaskShape" bpmnElement="LoanDecisionTask">
+        <dc:Bounds x="250" y="90" width="100" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="EndEventShape" bpmnElement="EndEvent">
+        <dc:Bounds x="400" y="100" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_StartToDecisionEdge" bpmnElement="Flow_StartToDecision">
+        <di:waypoint x="136" y="118"/>
+        <di:waypoint x="250" y="118"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_DecisionToEndEdge" bpmnElement="Flow_DecisionToEnd">
+        <di:waypoint x="350" y="118"/>
+        <di:waypoint x="400" y="118"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

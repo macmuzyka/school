@@ -55,3 +55,11 @@ pg:
       file-name: school_db_backup
       temporary-backup-folder: backup
       scheduled-backup-folder: backup_scheduled
+
+camunda:
+  bpm:
+    admin-user.id: admin
+    admin-user.password: admin
+    filter.create: All tasks
+    auto-deployment-enabled: true
+    deployment-resource-pattern: classpath:/processes/*.bpmn
