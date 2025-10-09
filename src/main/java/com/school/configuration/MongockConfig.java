@@ -18,4 +18,7 @@ class MongockConfig {
                 .addMigrationScanPackage("com.school.service.mongodbmigration")
                 .buildInitializingBeanRunner();
     }
+
+
+
 }
